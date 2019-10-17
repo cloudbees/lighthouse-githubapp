@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/bradleyfalzon/ghinstallation"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
@@ -43,32 +44,62 @@ func defaultScmTransport(scmClient *scm.Client) {
 }
 
 func (o *HookOptions) getInstallScmClient(log *logrus.Entry, ctx context.Context, ref *scm.InstallationRef) (*scm.Client, error) {
-	// TODO use cache...
 	if ref == nil || ref.ID == 0 {
 		return nil, fmt.Errorf("missing installation.ID on webhok")
 	}
+	key := fmt.Sprintf("%v", ref.ID)
+	item, ok := o.tokenCache.Get(key)
+	if ok {
+		tokenResource, ok := item.(*scm.InstallationToken)
+		if ok && tokenResource != nil {
+			token := tokenResource.Token
+			if token != "" {
+				expires := tokenResource.ExpiresAt
+				if expires == nil || time.Now().Before(expires.Add(tokenCacheExpireDelta)) {
+					scmClient, _, _, err := o.createSCMClient(token)
+					return scmClient, err
+				}
+			}
+		}
+	}
+	log.WithField("InstallationID", ref.ID).Infof("requesting new installation token")
+	scmClient, tokenResource, err := o.createInstallScmClient(log, ctx, ref)
+	if err != nil {
+		return scmClient, err
+	}
+	if tokenResource != nil && tokenResource.Token != "" {
+		duration := tokenCacheExpiration
+		if tokenResource.ExpiresAt != nil {
+			duration = tokenResource.ExpiresAt.Sub(time.Now())
+		}
+		o.tokenCache.Set(key, tokenResource, duration)
+	}
+	return scmClient, err
+}
+
+func (o *HookOptions) createInstallScmClient(log *logrus.Entry, ctx context.Context, ref *scm.InstallationRef) (*scm.Client, *scm.InstallationToken, error) {
 	appsClient, _, err := o.createAppsScmClient()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	tokenResource, _, err := appsClient.Apps.CreateInstallationToken(ctx, ref.ID)
 	if err != nil {
 		log.WithError(err).Error("failed to create installation token")
-		return nil, err
+		return nil, tokenResource, err
 	}
 	if tokenResource == nil {
-		return nil, fmt.Errorf("no token returned from CreateInstallationToken()")
+		return nil, tokenResource, fmt.Errorf("no token returned from CreateInstallationToken()")
 	}
 	token := tokenResource.Token
 	if token == "" {
-		return nil, fmt.Errorf("empty token returned from CreateInstallationToken()")
+		return nil, tokenResource, fmt.Errorf("empty token returned from CreateInstallationToken()")
 	}
 	client, _, _, err := o.createSCMClient(token)
 	if err != nil {
 		log.WithError(err).Error("failed to create real SCM client")
-		return nil, err
+		return nil, tokenResource, err
 	}
-	return client, nil
+	return client, tokenResource, nil
 }
 
 func (o *HookOptions) createSCMClient(token string) (*scm.Client, string, string, error) {

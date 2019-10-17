@@ -8,9 +8,10 @@ require (
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79
 	github.com/hashicorp/golang-lru v0.5.3 // indirect
-	github.com/jenkins-x/go-scm v1.5.44
+	github.com/jenkins-x/go-scm v1.5.45
 	github.com/palantir/go-baseapp v0.0.0-20191009233133-803ee9113316
 	github.com/palantir/go-githubapp v0.0.0-20190814164913-895ae14a6109
+	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.8.1
 	github.com/rcrowley/go-metrics v0.0.0-20190826022208-cac0b30c2563 // indirect
 	github.com/rs/zerolog v1.15.0

@@ -8,18 +8,8 @@ import (
 
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
 	"github.com/jenkins-x/go-scm/scm"
+	"github.com/patrickmn/go-cache"
 	"github.com/sirupsen/logrus"
-)
-
-const (
-	// SetupPath URL path for the HTTP endpoint for the setup page
-	SetupPath = "/setup"
-	// HookPath URL path for the HTTP endpoint for handling webhooks
-	HookPath = "/hook"
-	// HealthPath is the URL path for the HTTP endpoint that returns health status.
-	HealthPath = "/health"
-	// ReadyPath URL path for the HTTP endpoint that returns ready status.
-	ReadyPath = "/ready"
 )
 
 type HookOptions struct {
@@ -27,15 +17,19 @@ type HookOptions struct {
 	Path           string
 	Version        string
 	PrivateKeyFile string
+	tokenCache     *cache.Cache
 }
 
 // NewHook create a new hook handler
 func NewHook(privateKeyFile string) *HookOptions {
+	tokenCache := cache.New(tokenCacheExpiration, tokenCacheExpiration)
+
 	return &HookOptions{
 		Path:           HookPath,
 		Port:           flags.HttpPort.Value(),
 		Version:        "TODO",
 		PrivateKeyFile: privateKeyFile,
+		tokenCache:     tokenCache,
 	}
 }
 

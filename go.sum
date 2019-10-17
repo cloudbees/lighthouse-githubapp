@@ -71,6 +71,8 @@ github.com/jenkins-x/go-scm v1.5.43 h1:0kYIVnSDQ/rVxbf9BdD1mxhxXh24QCr4tqxyyndES
 github.com/jenkins-x/go-scm v1.5.43/go.mod h1:MgGRkJScE/rJ30J/bXYqduN5sDPZqZFITJopsnZmTOw=
 github.com/jenkins-x/go-scm v1.5.44 h1:x1TBYGxOWR6ZqiQKBIKGMgiIRUHadQChLiSQ5yR2Xag=
 github.com/jenkins-x/go-scm v1.5.44/go.mod h1:MgGRkJScE/rJ30J/bXYqduN5sDPZqZFITJopsnZmTOw=
+github.com/jenkins-x/go-scm v1.5.45 h1:VNGMoaD+PubfA0gDFKC0ilMncSztT4xJCQR0I0SwpuA=
+github.com/jenkins-x/go-scm v1.5.45/go.mod h1:MgGRkJScE/rJ30J/bXYqduN5sDPZqZFITJopsnZmTOw=
 github.com/jonboulle/clockwork v0.1.0/go.mod h1:Ii8DK3G1RaLaWxj9trq07+26W01tbo22gdxWY5EU2bo=
 github.com/json-iterator/go v1.1.6/go.mod h1:+SdeFBvtyEkXs7REEP0seUULqWtbJapLOCVDaaPEHmU=
 github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7VTCxuUUipMqKk8s4w=
@@ -98,6 +100,8 @@ github.com/palantir/go-baseapp v0.0.0-20191009233133-803ee9113316 h1:eBZSS2YfVj5
 github.com/palantir/go-baseapp v0.0.0-20191009233133-803ee9113316/go.mod h1:tflQ4JA/PNb9xPyPgUupnfJg+sBdHcxuzAE0lkGPjbI=
 github.com/palantir/go-githubapp v0.0.0-20190814164913-895ae14a6109 h1:D8Nqsp7TZiRkeyy++BTvqaJza5+mW6p93/52SMdxJF0=
 github.com/palantir/go-githubapp v0.0.0-20190814164913-895ae14a6109/go.mod h1:uZIoNfgr21uavtnudWm7FMvDZ5u+bHI1JHfZ1hXodDs=
+github.com/patrickmn/go-cache v2.1.0+incompatible h1:HRMgzkcYKYpi3C8ajMPV8OFXaaRUnok+kx1WdO15EQc=
+github.com/patrickmn/go-cache v2.1.0+incompatible/go.mod h1:3Qf8kWWT7OJRJbdiICTKqZju1ZixQ/KpMGzzAfe6+WQ=
 github.com/pelletier/go-toml v1.2.0 h1:T5zMGML61Wp+FlcbWjRDT7yAxhJNAiPPLOFECq181zc=
 github.com/pelletier/go-toml v1.2.0/go.mod h1:5z9KED0ma1S8pY6P1sdut58dfprrGBbd/94hg7ilaic=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
