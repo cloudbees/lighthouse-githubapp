@@ -1,0 +1,7 @@
+apiVersion: v1
+description: A Helm chart for Kubernetes
+icon: https://www.cloudbees.com/sites/default/files/cloudbees-infinity-branding-element.png
+maintainers:
+  - name: CloudBees
+name: preview
+version: 0.1.0-SNAPSHOT
