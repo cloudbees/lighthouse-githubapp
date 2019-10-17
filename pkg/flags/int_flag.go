@@ -40,7 +40,7 @@ func (f *IntFlag) Value() int {
 			var err error
 			f.value, err = strconv.Atoi(text)
 			if err != nil {
-				logrus.Warnf("environment variable %s has value %s for an int flag which could not be parsed: %s", f.envVar,text, err.Error())
+				logrus.Warnf("environment variable %s has value %s for an int flag which could not be parsed: %s", f.envVar, text, err.Error())
 			}
 		}
 	}

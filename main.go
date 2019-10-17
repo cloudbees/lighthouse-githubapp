@@ -5,15 +5,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/cloudbees/lighthouse-githubapp/flags"
+	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
+	"github.com/cloudbees/lighthouse-githubapp/pkg/hook"
 	"github.com/sirupsen/logrus"
-)
-
-const (
-	// HealthPath is the URL path for the HTTP endpoint that returns health status.
-	HealthPath = "/health"
-	// ReadyPath URL path for the HTTP endpoint that returns ready status.
-	ReadyPath = "/ready"
 )
 
 func main() {
@@ -32,22 +26,18 @@ func main() {
 		logrus.Fatalf("empty private key file %s", privateKeyFile, err)
 	}
 
-	o := Options{
+	mux := http.NewServeMux()
+
+	handler := hook.Options{
 		Path:           "/hook",
 		Port:           flags.HttpPort.Value(),
 		Version:        "todo",
 		PrivateKeyFile: privateKeyFile,
 	}
+	handler.Handle(mux)
 
-	mux := http.NewServeMux()
-	mux.Handle(HealthPath, http.HandlerFunc(o.health))
-	mux.Handle(ReadyPath, http.HandlerFunc(o.ready))
-
-	mux.Handle("/", http.HandlerFunc(o.defaultHandler))
-	mux.Handle(o.Path, http.HandlerFunc(o.handleWebHookRequests))
-
-	logrus.Infof("Lighthouse GitHub App is now listening on path %s and port %s for WebHooks", o.Path, o.Port)
-	err = http.ListenAndServe(":"+o.Port, mux)
+	logrus.Infof("Lighthouse GitHub App is now listening on path %s and port %s for WebHooks", handler.Path, handler.Port)
+	err = http.ListenAndServe(":"+handler.Port, mux)
 	logrus.Fatalf(err.Error())
 }
 
@@ -64,12 +54,4 @@ func CreateDefaultFormatter() logrus.Formatter {
 		jsonFormat.PrettyPrint = true
 	}
 	return jsonFormat
-}
-
-func responseHTTPError(w http.ResponseWriter, statusCode int, response string) {
-	logrus.WithFields(logrus.Fields{
-		"response":    response,
-		"status-code": statusCode,
-	}).Info(response)
-	http.Error(w, response, statusCode)
 }

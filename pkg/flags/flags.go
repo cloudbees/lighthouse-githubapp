@@ -4,9 +4,6 @@ var (
 	// GitHubAppID the ID of the GitHub App
 	GitHubAppID = NewIntFlag(0, "LHA_APP_ID")
 
-	// InstallationID the installation ID of the GitHub App
-	InstallationID = NewIntFlag(0, "LHA_INSTALLATION_ID")
-
 	// HmacToken the webhook secret
 	HmacToken = NewStringFlag("", "LHA_HMAC_TOKEN")
 

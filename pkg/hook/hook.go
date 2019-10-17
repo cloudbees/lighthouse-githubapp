@@ -1,4 +1,4 @@
-package main
+package hook
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/bradleyfalzon/ghinstallation"
-	"github.com/cloudbees/lighthouse-githubapp/flags"
+	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
 	"github.com/jenkins-x/go-scm/scm"
 	"github.com/jenkins-x/go-scm/scm/factory"
 	"github.com/jenkins-x/go-scm/scm/transport"
@@ -15,12 +15,18 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const (
+	// HealthPath is the URL path for the HTTP endpoint that returns health status.
+	HealthPath = "/health"
+	// ReadyPath URL path for the HTTP endpoint that returns ready status.
+	ReadyPath = "/ready"
+)
+
 type Options struct {
 	Port           string
 	Path           string
 	Version        string
 	PrivateKeyFile string
-	installationID int64
 }
 
 // health returns either HTTP 204 if the service is healthy, otherwise nothing ('cos it's dead).
@@ -106,6 +112,14 @@ func (o *Options) handleWebHookRequests(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	installRef := webhook.GetInstallationRef()
+	if installRef == nil || installRef.ID == 0 {
+		logrus.WithField("Hook", webhook).Error("no installation reference was passed for webhook")
+
+		responseHTTPError(w, http.StatusInternalServerError, "500 Internal Server Error: No installation in webhook")
+		return
+	}
+
 	repository := webhook.Repository()
 	fields := map[string]interface{}{
 		"Namespace": repository.Namespace,
@@ -117,7 +131,7 @@ func (o *Options) handleWebHookRequests(w http.ResponseWriter, r *http.Request) 
 		"CloneSSH":  repository.CloneSSH,
 	}
 
-	l := logrus.WithFields(logrus.Fields(fields))
+	l := logrus.WithFields(fields)
 
 	installHook, ok := webhook.(*scm.InstallationHook)
 	if ok {
@@ -262,97 +276,47 @@ func (o *Options) onIssueComment(log *logrus.Entry, hook *scm.IssueCommentHook) 
 	log.Infof("Issue Comment: %s by %s", hook.Comment.Body, hook.Comment.Author.Login)
 	author := hook.Comment.Author.Login
 	if author != flags.BotName.Value() {
-		// lets add a dummy comment...
 		ctx := context.Background()
-		scmClient, _, err := o.createAppsScmClient()
+		scmClient, err := o.getInstallScmClient(log, ctx, hook.GetInstallationRef())
 		if err != nil {
 			return err
-		}
-		installationID := o.installationID
-		if installationID <= 0 {
-			installationID = int64(flags.InstallationID.Value())
-		}
-		if installationID <= 0 {
-			return fmt.Errorf("missing $LHA_INSTALLATION_ID")
 		}
 
-		tokenResource, _, err := scmClient.Apps.CreateInstallationToken(ctx, int64(installationID))
+		prNumber := hook.Issue.Number
+		repo := hook.Repository().FullName
+		_, _, err = scmClient.PullRequests.CreateComment(ctx, repo, prNumber, &scm.CommentInput{
+			Body: "hello from GitHub App",
+		})
 		if err != nil {
-			log.WithError(err).Error("failed to create installation token")
+			log.WithError(err).Error("failed to comment on issue")
 			return err
 		} else {
-			if tokenResource != nil {
-				token := tokenResource.Token
-				log.Infof("got token %s", token)
-				client, _, _, err := o.createSCMClient(token)
-				if err != nil {
-					log.WithError(err).Error("failed to create real SCM client")
-					return err
-				} else {
-					prNumber := hook.Issue.Number
-					repo := hook.Repository().FullName
-					_, _, err = client.PullRequests.CreateComment(ctx, repo, prNumber, &scm.CommentInput{
-						Body: "hello from GitHub App",
-					})
-					if err != nil {
-						log.WithError(err).Error("failed to comment on issue")
-					} else {
-						log.Infof("added comment")
-					}
-				}
-			}
+			log.Infof("added comment")
 		}
 	}
 	return nil
 }
 
 func (o *Options) onPullRequestComment(log *logrus.Entry, hook *scm.IssueCommentHook) error {
-	log = log.WithField("InstallationID", o.installationID)
 	author := hook.Comment.Author.Login
 	log.Infof("PR Comment: %s by %s", hook.Comment.Body, author)
-
 	if author != flags.BotName.Value() {
-		// lets add a dummy comment...
 		ctx := context.Background()
-
-		scmClient, _, err := o.createAppsScmClient()
+		scmClient, err := o.getInstallScmClient(log, ctx, hook.GetInstallationRef())
 		if err != nil {
 			return err
 		}
 
-		installationID := o.installationID
-		if installationID <= 0 {
-			installationID = int64(flags.InstallationID.Value())
-		}
-		if installationID <= 0 {
-			return fmt.Errorf("missing $LHA_INSTALLATION_ID")
-		}
-
-		tokenResource, _, err := scmClient.Apps.CreateInstallationToken(ctx, int64(installationID))
+		prNumber := hook.Issue.Number
+		repo := hook.Repository().Namespace
+		_, _, err = scmClient.PullRequests.CreateComment(ctx, repo, prNumber, &scm.CommentInput{
+			Body: "hello from GitHub App",
+		})
 		if err != nil {
-			log.WithError(err).Error("failed to create installation token")
+			log.WithError(err).Error("failed to comment on issue")
 			return err
 		} else {
-			if tokenResource != nil {
-				token := tokenResource.Token
-				log.Infof("got token %s", token)
-				client, _, _, err := o.createSCMClient(token)
-				if err != nil {
-					log.WithError(err).Error("failed to create real SCM client")
-					return err
-				} else {
-					prNumber := hook.Issue.Number
-					repo := hook.Repository().Namespace
-					_, _, err = client.PullRequests.CreateComment(ctx, repo, prNumber, &scm.CommentInput{
-						Body: "hello from GitHub App",
-					})
-					if err != nil {
-						log.WithError(err).Error("failed to comment on issue")
-					} else {
-						log.Infof("added comment")
-					}
-				}
-			}
+			log.Infof("added comment")
 		}
 	}
 	return nil
@@ -371,7 +335,7 @@ func (o *Options) createAppsScmClient() (*scm.Client, int, error) {
 	logrus.Infof("using GitHub App ID %d", appID)
 	tr, err := ghinstallation.NewAppsTransportKeyFromFile(scmClient.Client.Transport, appID, o.PrivateKeyFile)
 	if err != nil {
-		return nil, appID, errors.Wrapf(err, "failed to create the Apps transport for %v and file %s", o.installationID, o.PrivateKeyFile)
+		return nil, appID, errors.Wrapf(err, "failed to create the Apps transport for AppID %v and file %s", appID, o.PrivateKeyFile)
 	}
 	scmClient.Client.Transport = tr
 	return scmClient, appID, err
@@ -389,9 +353,6 @@ func defaultScmTransport(scmClient *scm.Client) {
 func (o *Options) onInstallHook(log *logrus.Entry, hook *scm.InstallationHook) {
 	install := hook.Installation
 	id := install.ID
-	if id != 0 {
-		o.installationID = id
-	}
 	account := install.Account
 	fields := map[string]interface{}{
 		"Action":           hook.Action.String(),
@@ -402,4 +363,49 @@ func (o *Options) onInstallHook(log *logrus.Entry, hook *scm.InstallationHook) {
 	}
 	log.WithFields(fields).Infof("installHook")
 
+}
+
+func (o *Options) Handle(mux *http.ServeMux) {
+	mux.Handle(HealthPath, http.HandlerFunc(o.health))
+	mux.Handle(ReadyPath, http.HandlerFunc(o.ready))
+
+	mux.Handle("/", http.HandlerFunc(o.defaultHandler))
+	mux.Handle(o.Path, http.HandlerFunc(o.handleWebHookRequests))
+}
+
+func (o *Options) getInstallScmClient(log *logrus.Entry, ctx context.Context, ref *scm.InstallationRef) (*scm.Client, error) {
+	// TODO use cache...
+	if ref == nil || ref.ID == 0 {
+		return nil, fmt.Errorf("missing installation.ID on webhok")
+	}
+	appsClient, _, err := o.createAppsScmClient()
+	if err != nil {
+		return nil, err
+	}
+	tokenResource, _, err := appsClient.Apps.CreateInstallationToken(ctx, ref.ID)
+	if err != nil {
+		log.WithError(err).Error("failed to create installation token")
+		return nil, err
+	}
+	if tokenResource == nil {
+		return nil, fmt.Errorf("no token returned from CreateInstallationToken()")
+	}
+	token := tokenResource.Token
+	if token == "" {
+		return nil, fmt.Errorf("empty token returned from CreateInstallationToken()")
+	}
+	client, _, _, err := o.createSCMClient(token)
+	if err != nil {
+		log.WithError(err).Error("failed to create real SCM client")
+		return nil, err
+	}
+	return client, nil
+}
+
+func responseHTTPError(w http.ResponseWriter, statusCode int, response string) {
+	logrus.WithFields(logrus.Fields{
+		"response":    response,
+		"status-code": statusCode,
+	}).Info(response)
+	http.Error(w, response, statusCode)
 }
