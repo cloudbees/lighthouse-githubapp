@@ -39,6 +39,15 @@ func NewHook(privateKeyFile string) *HookOptions {
 	}
 }
 
+func (o *HookOptions) Handle(mux *http.ServeMux) {
+	mux.Handle(HealthPath, http.HandlerFunc(o.health))
+	mux.Handle(ReadyPath, http.HandlerFunc(o.ready))
+	mux.Handle(SetupPath, http.HandlerFunc(o.setup))
+
+	mux.Handle("/", http.HandlerFunc(o.defaultHandler))
+	mux.Handle(o.Path, http.HandlerFunc(o.handleWebHookRequests))
+}
+
 // health returns either HTTP 204 if the service is healthy, otherwise nothing ('cos it's dead).
 func (o *HookOptions) health(w http.ResponseWriter, r *http.Request) {
 	logrus.Debug("Health check")
@@ -52,6 +61,20 @@ func (o *HookOptions) ready(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
 	} else {
 		w.WriteHeader(http.StatusServiceUnavailable)
+	}
+}
+
+// setup handle the setup URL
+func (o *HookOptions) setup(w http.ResponseWriter, r *http.Request) {
+	logrus.Debug("setup")
+
+	action := r.URL.Query().Get("setup_action")
+	installationID := r.URL.Query().Get("installation_id")
+	message := fmt.Sprintf(`Welcome to the Jenkins X Bot for installation: %s action: %s`, installationID, action)
+
+	_, err := w.Write([]byte(message))
+	if err != nil {
+		logrus.Debugf("failed to write the setup: %v", err)
 	}
 }
 
@@ -163,14 +186,6 @@ func (o *HookOptions) onInstallHook(log *logrus.Entry, hook *scm.InstallationHoo
 	}
 	log.WithFields(fields).Infof("installHook")
 
-}
-
-func (o *HookOptions) Handle(mux *http.ServeMux) {
-	mux.Handle(HealthPath, http.HandlerFunc(o.health))
-	mux.Handle(ReadyPath, http.HandlerFunc(o.ready))
-
-	mux.Handle("/", http.HandlerFunc(o.defaultHandler))
-	mux.Handle(o.Path, http.HandlerFunc(o.handleWebHookRequests))
 }
 
 func responseHTTPError(w http.ResponseWriter, statusCode int, response string) {

@@ -16,7 +16,7 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 		o.getIndex(w, r)
 		return
 	}
-	logrus.Infof("about to parse webhook")
+	logrus.Debug("about to parse webhook")
 
 	scmClient, _, _, err := o.createSCMClient("")
 	if err != nil {
@@ -43,14 +43,6 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	installRef := webhook.GetInstallationRef()
-	if installRef == nil || installRef.ID == 0 {
-		logrus.WithField("Hook", webhook).Error("no installation reference was passed for webhook")
-
-		responseHTTPError(w, http.StatusInternalServerError, "500 Internal Server Error: No installation in webhook")
-		return
-	}
-
 	repository := webhook.Repository()
 	fields := map[string]interface{}{
 		"Namespace": repository.Namespace,
@@ -63,11 +55,18 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 	}
 
 	l := logrus.WithFields(fields)
-
 	installHook, ok := webhook.(*scm.InstallationHook)
 	if ok {
 		l.Info("invoking Installation handler")
 		o.onInstallHook(l, installHook)
+		return
+	}
+
+	installRef := webhook.GetInstallationRef()
+	if installRef == nil || installRef.ID == 0 {
+		logrus.WithField("Hook", webhook).Error("no installation reference was passed for webhook")
+
+		responseHTTPError(w, http.StatusInternalServerError, "500 Internal Server Error: No installation in webhook")
 		return
 	}
 
