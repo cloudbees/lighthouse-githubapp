@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
+	"github.com/cloudbees/lighthouse-githubapp/pkg/util"
 	"github.com/jenkins-x/go-scm/scm"
 	"github.com/patrickmn/go-cache"
 	"github.com/sirupsen/logrus"
@@ -18,6 +19,7 @@ type HookOptions struct {
 	Version        string
 	PrivateKeyFile string
 	tokenCache     *cache.Cache
+	tenantService  *TenantService
 }
 
 // NewHook create a new hook handler
@@ -30,6 +32,7 @@ func NewHook(privateKeyFile string) *HookOptions {
 		Version:        "TODO",
 		PrivateKeyFile: privateKeyFile,
 		tokenCache:     tokenCache,
+		tenantService:  &TenantService{},
 	}
 }
 
@@ -167,25 +170,67 @@ func (o *HookOptions) onPullRequestComment(log *logrus.Entry, hook *scm.IssueCom
 	return nil
 }
 
-func (o *HookOptions) onInstallHook(log *logrus.Entry, hook *scm.InstallationHook) {
+func (o *HookOptions) onInstallHook(log *logrus.Entry, hook *scm.InstallationHook) error {
 	install := hook.Installation
 	id := install.ID
-	account := install.Account
 	fields := map[string]interface{}{
-		"Action":           hook.Action.String(),
-		"InstallationID":   id,
-		"AccountID":        account.ID,
-		"AccountLogin":     account.Login,
-		"AccessTokensLink": install.AccessTokensLink,
+		"Action":         hook.Action.String(),
+		"InstallationID": id,
 	}
-	log.WithFields(fields).Infof("installHook")
+	log = log.WithFields(fields)
+	log.Infof("installHook")
 
+	// ets register / unregister repositories to the InstallationID
+	if hook.Action == scm.ActionCreate {
+		repos := []RepositoryInfo{}
+		for _, repo := range hook.Repos {
+			link := strings.TrimSuffix(repo.Link, "/")
+			link = strings.TrimSuffix(link, ".git")
+			if link == "" {
+				full := repo.FullName
+				if full != "" {
+					link = util.UrlJoin("https://github.com", full)
+				}
+			}
+			if link != "" {
+				repos = append(repos, RepositoryInfo{URL: link})
+			}
+		}
+		if len(repos) == 0 {
+
+		}
+		return o.tenantService.AppInstall(log, id, repos)
+	} else if hook.Action == scm.ActionDelete {
+		return o.tenantService.AppUnnstall(log, id)
+	} else {
+		log.Warnf("ignore unknown action")
+		return nil
+	}
 }
 
-func responseHTTPError(w http.ResponseWriter, statusCode int, response string) {
-	logrus.WithFields(logrus.Fields{
-		"response":    response,
-		"status-code": statusCode,
-	}).Info(response)
-	http.Error(w, response, statusCode)
+func (o *HookOptions) onGeneralHook(log *logrus.Entry, install *scm.InstallationRef, webhook scm.Webhook) error {
+	id := install.ID
+	fields := map[string]interface{}{
+		"InstallationID": id,
+	}
+	log = log.WithFields(fields)
+	log.Infof("onGeneralHook")
+
+	repo := webhook.Repository()
+	u := repo.Link
+	if u == "" {
+		log.WithField("Fullname", repo.FullName).Warnf("ignoring webhook as no repository URL for")
+		return nil
+	}
+	workspaces, err := o.tenantService.FindWorkspaces(id, u)
+	if err != nil {
+		return err
+	}
+
+	for _, ws := range workspaces {
+		log.WithFields(ws.LogFields()).Infof("got workspace")
+
+		// TODO now use it!
+	}
+	return nil
 }
