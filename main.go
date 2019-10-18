@@ -28,7 +28,11 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	handler := hook.NewHook(privateKeyFile)
+	handler, err := hook.NewHook(privateKeyFile)
+	if err != nil {
+		logrus.WithError(err).Fatalf("failed to create hook")
+	}
+
 	handler.Handle(mux)
 
 	logrus.Infof("Lighthouse GitHub App is now listening on path %s and port %s for WebHooks", handler.Path, handler.Port)

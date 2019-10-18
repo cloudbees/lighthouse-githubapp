@@ -6,6 +6,7 @@ require (
 	github.com/cloudbees/jx-tenant-service v0.0.82
 	github.com/golang/protobuf v1.3.1 // indirect
 	github.com/jenkins-x/go-scm v1.5.49
+	github.com/jenkins-x/jx v0.0.0-20191018175829-4badc08866cd
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.8.1
 	github.com/shurcooL/githubv4 v0.0.0-20191006152017-6d1ea27df521 // indirect

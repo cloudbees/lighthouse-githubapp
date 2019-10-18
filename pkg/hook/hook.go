@@ -2,36 +2,50 @@ package hook
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
 	"github.com/jenkins-x/go-scm/scm"
+	"github.com/jenkins-x/jx/pkg/jxfactory/connector"
+	"github.com/jenkins-x/jx/pkg/jxfactory/connector/provider"
 	"github.com/patrickmn/go-cache"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
 
 type HookOptions struct {
-	Port           string
-	Path           string
-	Version        string
-	PrivateKeyFile string
-	tokenCache     *cache.Cache
-	tenantService  *TenantService
+	Port             string
+	Path             string
+	Version          string
+	PrivateKeyFile   string
+	tokenCache       *cache.Cache
+	tenantService    *TenantService
+	clusterConnector connector.Client
 }
 
 // NewHook create a new hook handler
-func NewHook(privateKeyFile string) *HookOptions {
+func NewHook(privateKeyFile string) (*HookOptions, error) {
+	workDir, err := ioutil.TempDir("", "jx-connectors-")
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to create temp dir for jx connectors")
+	}
+
+	clusterConnector := provider.NewClient(workDir)
+
 	tokenCache := cache.New(tokenCacheExpiration, tokenCacheExpiration)
 	tenantService := NewTenantService("")
+
 	return &HookOptions{
-		Path:           HookPath,
-		Port:           flags.HttpPort.Value(),
-		Version:        "TODO",
-		PrivateKeyFile: privateKeyFile,
-		tokenCache:     tokenCache,
-		tenantService:  tenantService,
-	}
+		Path:             HookPath,
+		Port:             flags.HttpPort.Value(),
+		Version:          "TODO",
+		PrivateKeyFile:   privateKeyFile,
+		tokenCache:       tokenCache,
+		tenantService:    tenantService,
+		clusterConnector: clusterConnector,
+	}, nil
 }
 
 func (o *HookOptions) Handle(mux *http.ServeMux) {
@@ -177,10 +191,43 @@ func (o *HookOptions) onGeneralHook(log *logrus.Entry, install *scm.Installation
 	for _, ws := range workspaces {
 		log.WithFields(ws.LogFields()).Infof("got workspace")
 
-		// TODO now use it!
+		// TODO we could cache these factory/clients to speed things up
+		rc := &connector.RemoteConnector{GKE: &connector.GKEConnector{
+			Project: ws.Project,
+			Cluster: ws.Cluster,
+			Region:  ws.Region,
+			Zone:    ws.Zone,
+		}}
+		config, err := o.clusterConnector.Connect(rc)
+		if err != nil {
+			log.WithError(err).Error("failed to create rest config")
+			return err
+		}
+		f := connector.NewConfigClientFactory(ws.Project, config)
+
+		err = o.invokeRemoteLighthouse(log, webhook, f, ws.Namespace)
+		if err != nil {
+			log.WithError(err).Error("failed to invoke remote lighthouse")
+			return err
+		}
 	}
 	if len(workspaces) == 0 {
 		log.Warnf("no workspaces interested in repository")
 	}
+	return nil
+}
+
+func (o *HookOptions) invokeRemoteLighthouse(log *logrus.Entry, webhook scm.Webhook, factory *connector.ConfigClientFactory, ns string) error {
+	log.Info("invoking remote lighthouse")
+	kubeClient, err := factory.CreateKubeClient()
+	if err != nil {
+		return errors.Wrap(err, "failed to create remote kubeClient")
+	}
+	params := map[string]string{}
+	data, err := kubeClient.CoreV1().Services(ns).ProxyGet("http", "hook", "80", "/", params).DoRaw()
+	if err != nil {
+		return errors.Wrap(err, "failed to get hook")
+	}
+	log.Infof("got response from hook: %s", string(data))
 	return nil
 }
