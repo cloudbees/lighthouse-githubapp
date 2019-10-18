@@ -179,5 +179,8 @@ func (o *HookOptions) onGeneralHook(log *logrus.Entry, install *scm.Installation
 
 		// TODO now use it!
 	}
+	if len(workspaces) == 0 {
+		log.Warnf("no workspaces interested in repository")
+	}
 	return nil
 }

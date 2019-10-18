@@ -3,6 +3,7 @@ package hook
 import (
 	"context"
 
+	"github.com/cloudbees/jx-tenant-service/pkg/access"
 	"github.com/cloudbees/jx-tenant-service/pkg/client"
 	"github.com/cloudbees/jx-tenant-service/pkg/model"
 	"github.com/sirupsen/logrus"
@@ -50,17 +51,21 @@ func (t *TenantService) AppUnnstall(log *logrus.Entry, installationID int64) err
 	return nil
 }
 
-func (t *TenantService) FindWorkspaces(log *logrus.Entry, installationID int64, gitURL string) ([]WorkspaceAccess, error) {
+func (t *TenantService) FindWorkspaces(log *logrus.Entry, installationID int64, gitURL string) ([]*access.WorkspaceAccess, error) {
 	path := client.GetRepositoryWorkspacesWorkspacesPath()
 	ctx := context.Background()
 	installation := model.Int64ToA(installationID)
-	_, err := t.client.GetRepositoryWorkspacesWorkspaces(ctx, path, &gitURL, &installation)
+	resp, err := t.client.GetRepositoryWorkspacesWorkspaces(ctx, path, &gitURL, &installation)
 	if err != nil {
 		log.WithError(err).Error("failed to uninstall app")
 		return nil, err
 	}
-	// TODO how to get the data back?
-	return nil, nil
+	results, err := t.client.DecodeWorkspaceAccessCollection(resp)
+	if err != nil {
+		log.WithError(err).Error("failed to unmarshall the response")
+		return nil, err
+	}
+	return client.ToWorkspaceAccesses(results), nil
 }
 
 func installationPath(installationID int64) string {
