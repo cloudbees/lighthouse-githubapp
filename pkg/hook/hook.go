@@ -1,13 +1,11 @@
 package hook
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
-	"github.com/cloudbees/lighthouse-githubapp/pkg/util"
 	"github.com/jenkins-x/go-scm/scm"
 	"github.com/patrickmn/go-cache"
 	"github.com/sirupsen/logrus"
@@ -25,14 +23,14 @@ type HookOptions struct {
 // NewHook create a new hook handler
 func NewHook(privateKeyFile string) *HookOptions {
 	tokenCache := cache.New(tokenCacheExpiration, tokenCacheExpiration)
-
+	tenantService := NewTenantService("")
 	return &HookOptions{
 		Path:           HookPath,
 		Port:           flags.HttpPort.Value(),
 		Version:        "TODO",
 		PrivateKeyFile: privateKeyFile,
 		tokenCache:     tokenCache,
-		tenantService:  &TenantService{},
+		tenantService:  tenantService,
 	}
 }
 
@@ -108,98 +106,47 @@ func (o *HookOptions) isReady() bool {
 	return true
 }
 
-func (o *HookOptions) onPushHook(hook *scm.PushHook) {
-
-}
-
-func (o *HookOptions) onPullRequest(hook *scm.PushHook) {
-
-}
-
-func (o *HookOptions) onBranch(hook *scm.PushHook) {
-
-}
-
-func (o *HookOptions) onIssueComment(log *logrus.Entry, hook *scm.IssueCommentHook) error {
-	log.Infof("Issue Comment: %s by %s", hook.Comment.Body, hook.Comment.Author.Login)
-	author := hook.Comment.Author.Login
-	if author != flags.BotName.Value() {
-		ctx := context.Background()
-		scmClient, err := o.getInstallScmClient(log, ctx, hook.GetInstallationRef())
-		if err != nil {
-			return err
-		}
-
-		prNumber := hook.Issue.Number
-		repo := hook.Repository().FullName
-		_, _, err = scmClient.PullRequests.CreateComment(ctx, repo, prNumber, &scm.CommentInput{
-			Body: "hello from GitHub App",
-		})
-		if err != nil {
-			log.WithError(err).Error("failed to comment on issue")
-			return err
-		} else {
-			log.Infof("added comment")
-		}
-	}
-	return nil
-}
-
-func (o *HookOptions) onPullRequestComment(log *logrus.Entry, hook *scm.IssueCommentHook) error {
-	author := hook.Comment.Author.Login
-	log.Infof("PR Comment: %s by %s", hook.Comment.Body, author)
-	if author != flags.BotName.Value() {
-		ctx := context.Background()
-		scmClient, err := o.getInstallScmClient(log, ctx, hook.GetInstallationRef())
-		if err != nil {
-			return err
-		}
-
-		prNumber := hook.Issue.Number
-		repo := hook.Repository().Namespace
-		_, _, err = scmClient.PullRequests.CreateComment(ctx, repo, prNumber, &scm.CommentInput{
-			Body: "hello from GitHub App",
-		})
-		if err != nil {
-			log.WithError(err).Error("failed to comment on issue")
-			return err
-		} else {
-			log.Infof("added comment")
-		}
-	}
-	return nil
-}
-
 func (o *HookOptions) onInstallHook(log *logrus.Entry, hook *scm.InstallationHook) error {
 	install := hook.Installation
 	id := install.ID
 	fields := map[string]interface{}{
 		"Action":         hook.Action.String(),
 		"InstallationID": id,
+		"Function":       "onInstallHook",
 	}
 	log = log.WithFields(fields)
 	log.Infof("installHook")
 
 	// ets register / unregister repositories to the InstallationID
 	if hook.Action == scm.ActionCreate {
-		repos := []RepositoryInfo{}
-		for _, repo := range hook.Repos {
-			link := strings.TrimSuffix(repo.Link, "/")
-			link = strings.TrimSuffix(link, ".git")
-			if link == "" {
-				full := repo.FullName
-				if full != "" {
-					link = util.UrlJoin("https://github.com", full)
+		ownerURL := hook.Installation.Link
+		log = log.WithField("Owner", ownerURL)
+		if ownerURL == "" {
+			err := fmt.Errorf("missing ownerURL on install webhook")
+			log.Error(err.Error())
+			return err
+		}
+
+		/*
+			repos := []RepositoryInfo{}
+			for _, repo := range hook.Repos {
+				link := strings.TrimSuffix(repo.Link, "/")
+				link = strings.TrimSuffix(link, ".git")
+				if link == "" {
+					full := repo.FullName
+					if full != "" {
+						link = util.UrlJoin("https://github.com", full)
+					}
+				}
+				if link != "" {
+					repos = append(repos, RepositoryInfo{URL: link})
 				}
 			}
-			if link != "" {
-				repos = append(repos, RepositoryInfo{URL: link})
-			}
-		}
-		if len(repos) == 0 {
+			if len(repos) == 0 {
 
-		}
-		return o.tenantService.AppInstall(log, id, repos)
+			}
+		*/
+		return o.tenantService.AppInstall(log, id, ownerURL)
 	} else if hook.Action == scm.ActionDelete {
 		return o.tenantService.AppUnnstall(log, id)
 	} else {
@@ -210,19 +157,19 @@ func (o *HookOptions) onInstallHook(log *logrus.Entry, hook *scm.InstallationHoo
 
 func (o *HookOptions) onGeneralHook(log *logrus.Entry, install *scm.InstallationRef, webhook scm.Webhook) error {
 	id := install.ID
+	repo := webhook.Repository()
 	fields := map[string]interface{}{
 		"InstallationID": id,
+		"Fullname":       repo.FullName,
 	}
 	log = log.WithFields(fields)
-	log.Infof("onGeneralHook")
-
-	repo := webhook.Repository()
 	u := repo.Link
 	if u == "" {
-		log.WithField("Fullname", repo.FullName).Warnf("ignoring webhook as no repository URL for")
+		log.Warnf("ignoring webhook as no repository URL for")
 		return nil
 	}
-	workspaces, err := o.tenantService.FindWorkspaces(id, u)
+	log.Infof("onGeneralHook")
+	workspaces, err := o.tenantService.FindWorkspaces(log, id, u)
 	if err != nil {
 		return err
 	}
