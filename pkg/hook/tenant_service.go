@@ -5,6 +5,7 @@ import (
 
 	"github.com/cloudbees/jx-tenant-service/pkg/access"
 	"github.com/cloudbees/jx-tenant-service/pkg/client"
+	"github.com/cloudbees/jx-tenant-service/pkg/clientutils"
 	"github.com/cloudbees/jx-tenant-service/pkg/model"
 	"github.com/sirupsen/logrus"
 )
@@ -15,7 +16,7 @@ type TenantService struct {
 }
 
 func NewTenantService(host string) *TenantService {
-	c := client.NewClientForHost("")
+	c := clientutils.NewClientForHost("")
 	return &TenantService{
 		client: c,
 	}
@@ -65,7 +66,7 @@ func (t *TenantService) FindWorkspaces(log *logrus.Entry, installationID int64, 
 		log.WithError(err).Error("failed to unmarshall the response")
 		return nil, err
 	}
-	return client.ToWorkspaceAccesses(results), nil
+	return clientutils.ToWorkspaceAccesses(results), nil
 }
 
 func installationPath(installationID int64) string {
