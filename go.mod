@@ -5,7 +5,7 @@ require (
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/golang/protobuf v1.3.1 // indirect
-	github.com/jenkins-x/go-scm v1.5.46
+	github.com/jenkins-x/go-scm v1.5.48
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible

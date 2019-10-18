@@ -46,6 +46,7 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 	repository := webhook.Repository()
 	l := logrus.WithFields(map[string]interface{}{
 		"FullName": repository.FullName,
+		"Webhook":  webhook.Kind(),
 	})
 	installHook, ok := webhook.(*scm.InstallationHook)
 	if ok {
