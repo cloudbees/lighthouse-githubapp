@@ -9,7 +9,7 @@ else ifeq ($(OS),Linux)
 	sed -i -e "s/version:.*/version: $(PREVIEW_VERSION)/" Chart.yaml
 	sed -i -e "s/version:.*/version: $(PREVIEW_VERSION)/" ../*/Chart.yaml
 	sed -i -e "s|imagerepository:.*|imagerepository: $(DOCKER_REGISTRY)\/jenkins-x-infra\/lighthouse-githubapp|" values.yaml
-	sed -i -e "s/imagetag:.*/imagetag: $(PREVIEW_VERSION)/" values.yaml
+	sed -i -e "s/tag:.*/tag: $(PREVIEW_VERSION)/" values.yaml
 else
 	echo "platform $(OS) not supported to release from"
 	exit -1

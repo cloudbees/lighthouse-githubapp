@@ -25,7 +25,7 @@ spec:
           secretName: {{ template "fullname" . }}
       containers:
       - name: {{ .Chart.Name }}
-        image: "{{ .Values.image.imagerepository }}:{{ .Values.image.imagetag }}"
+        image: "{{ .Values.image.imagerepository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         volumeMounts:
         - mountPath: "/var/lighthouse-githubapp"
