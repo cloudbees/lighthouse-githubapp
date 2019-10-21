@@ -1,0 +1,7 @@
+dependencies:
+- host: github.com
+  owner: cloudbees
+  repo: jx-tenant-service
+  url: https://github.com/cloudbees/jx-tenant-service
+  version: 0.0.86
+  versionURL: https://github.com/cloudbees/jx-tenant-service/releases/tag/v0.0.86
