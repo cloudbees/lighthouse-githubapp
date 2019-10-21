@@ -217,7 +217,7 @@ func (o *HookOptions) onGeneralHook(log *logrus.Entry, install *scm.Installation
 		f := connector.NewConfigClientFactory(ws.Project, config)
 
 		// lets parse the Scheduler json
-		jsonText := ws.SchedulerJSON
+		jsonText := ws.JSON
 		if jsonText == "" {
 			log.Error("no Scheduler JSON")
 			continue

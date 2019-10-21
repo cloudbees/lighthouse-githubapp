@@ -3,16 +3,29 @@ module github.com/cloudbees/lighthouse-githubapp
 require (
 	github.com/bradleyfalzon/ghinstallation v0.1.2
 	github.com/cenkalti/backoff v2.2.1+incompatible
-	github.com/cloudbees/jx-tenant-service v0.0.82
-	github.com/golang/protobuf v1.3.1 // indirect
+	github.com/cloudbees/jx-tenant-service v0.0.84
+	github.com/davecgh/go-spew v1.1.1
+	github.com/ghodss/yaml v1.0.0
+	github.com/google/go-cmp v0.3.1
 	github.com/jenkins-x/go-scm v1.5.49
 	github.com/jenkins-x/jx v0.0.0-20191018175829-4badc08866cd
+	github.com/jenkins-x/lighthouse v0.0.209
 	github.com/patrickmn/go-cache v2.1.0+incompatible
+	github.com/pborman/uuid v1.2.0
 	github.com/pkg/errors v0.8.1
+	github.com/rollout/rox-go v0.0.0-20181220111955-29ddae74a8c4
+	github.com/satori/go.uuid v1.2.1-0.20180103174451-36e9d2ebbde5
 	github.com/shurcooL/githubv4 v0.0.0-20191006152017-6d1ea27df521 // indirect
 	github.com/sirupsen/logrus v1.4.2
-	github.com/stretchr/testify v1.3.0
+	github.com/stretchr/testify v1.4.0
+	github.com/tektoncd/pipeline v0.5.1
+	k8s.io/api v0.0.0-20190816222004-e3a6b8045b0b
+	k8s.io/apimachinery v0.0.0-20190816221834-a9f1d8a9c101
+	k8s.io/client-go v11.0.1-0.20190805182717-6502b5e7b1b5+incompatible
+	k8s.io/helm v2.7.2+incompatible
 )
+
+exclude github.com/jenkins-x/jx/pkg/prow v0.0.0-20191018175829-4badc08866cd
 
 replace github.com/golang/lint => golang.org/x/lint v0.0.0-20180702182130-06c8688daad7
 
