@@ -1,6 +1,8 @@
 package hook
 
 import (
+	"fmt"
+
 	"github.com/jenkins-x/jx/pkg/client/clientset/versioned"
 	"github.com/jenkins-x/jx/pkg/jxfactory"
 	"github.com/jenkins-x/jx/pkg/jxfactory/connector"
@@ -13,10 +15,11 @@ import (
 // TODO we should move this back into jenkins-x/jx repo!
 type factoryAdapter struct {
 	factory *connector.ConfigClientFactory
+	ns      string
 }
 
-func ToJXFactory(factory *connector.ConfigClientFactory) jxfactory.Factory {
-	return &factoryAdapter{factory}
+func ToJXFactory(factory *connector.ConfigClientFactory, ns string) jxfactory.Factory {
+	return &factoryAdapter{factory, ns}
 }
 
 func (f *factoryAdapter) WithBearerToken(token string) jxfactory.Factory {
@@ -28,21 +31,26 @@ func (f *factoryAdapter) ImpersonateUser(user string) jxfactory.Factory {
 }
 
 func (f *factoryAdapter) CreateKubeClient() (kubernetes.Interface, string, error) {
-	return f.CreateKubeClient()
+	client, err := f.factory.CreateKubeClient()
+	return client, f.ns, err
 }
 
 func (f *factoryAdapter) CreateKubeConfig() (*rest.Config, error) {
-	return f.CreateKubeConfig()
+	return nil, fmt.Errorf("TODO")
 }
 
 func (f *factoryAdapter) CreateJXClient() (versioned.Interface, string, error) {
-	return f.CreateJXClient()
+	client, err := f.factory.CreateJXClient()
+	return client, f.ns, err
 }
 
 func (f *factoryAdapter) CreateTektonClient() (tektonclient.Interface, string, error) {
-	return f.CreateTektonClient()
+	client, err := f.factory.CreateTektonClient()
+	return client, f.ns, err
 }
 
 func (f *factoryAdapter) KubeConfig() kube.Kuber {
-	return f.KubeConfig()
+	// TODO
+	return nil
+	//return f.factory.KubeConfig()
 }

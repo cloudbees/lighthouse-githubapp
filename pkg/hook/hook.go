@@ -290,7 +290,7 @@ func (o *HookOptions) invokeLighthouse(log *logrus.Entry, webhook scm.Webhook, f
 	}
 	err = o.updateProwConfiguration(log, webhook, server, scheduler, jxClient, ns)
 
-	localHook := lhwebhook.NewWebhook(ToJXFactory(factory), server)
+	localHook := lhwebhook.NewWebhook(ToJXFactory(factory, ns), server)
 
 	l, output, err := localHook.ProcessWebHook(webhook)
 	if err != nil {
@@ -316,6 +316,7 @@ func (o *HookOptions) updateProwConfiguration(log *logrus.Entry, webhook scm.Web
 				Repo: repo.Name,
 			},
 		}
+		sr.Spec.Scheduler.Name = scheduler.Name
 		srgs := &v1.SourceRepositoryGroupList{}
 		srs := &v1.SourceRepositoryList{
 			Items: []v1.SourceRepository{
