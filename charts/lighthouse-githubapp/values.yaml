@@ -3,8 +3,8 @@
 # Declare variables to be passed into your templates.
 replicaCount: 1
 image:
-  repository: gcr.io/jenkinsxio/lighthouse-githubapp
-  tag: dev
+  imagerepository: gcr.io/jenkinsxio/lighthouse-githubapp
+  imagetag: dev
   pullPolicy: IfNotPresent
 
 # define environment variables here as a map of key: value
