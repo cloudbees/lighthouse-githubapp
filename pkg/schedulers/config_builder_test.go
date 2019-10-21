@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/jenkins-x/jx/pkg/pipelinescheduler"
-	"github.com/jenkins-x/jx/pkg/pipelinescheduler/testhelpers"
+	"github.com/cloudbees/lighthouse-githubapp/pkg/schedulers"
+	"github.com/cloudbees/lighthouse-githubapp/pkg/schedulers/testhelpers"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/pborman/uuid"
@@ -16,22 +16,22 @@ import (
 func TestBuild(t *testing.T) {
 
 	org := uuid.New()
-	leaf1 := &pipelinescheduler.SchedulerLeaf{
+	leaf1 := &schedulers.SchedulerLeaf{
 		Org:           org,
 		Repo:          uuid.New(),
 		SchedulerSpec: testhelpers.CompleteScheduler(),
 	}
-	leaf2 := &pipelinescheduler.SchedulerLeaf{
+	leaf2 := &schedulers.SchedulerLeaf{
 		Org:           org,
 		Repo:          uuid.New(),
 		SchedulerSpec: testhelpers.CompleteScheduler(),
 	}
-	leaves := []*pipelinescheduler.SchedulerLeaf{
+	leaves := []*schedulers.SchedulerLeaf{
 		leaf1,
 		leaf2,
 	}
 	// TODO test plugins
-	cfg, _, err := pipelinescheduler.BuildProwConfig(leaves)
+	cfg, _, err := schedulers.BuildProwConfig(leaves)
 	assert.NoError(t, err)
 	assert.Len(t, cfg.Postsubmits, 2)
 	assert.Len(t, cfg.Presubmits, 2)

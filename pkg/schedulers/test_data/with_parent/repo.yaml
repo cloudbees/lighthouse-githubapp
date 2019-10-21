@@ -1,10 +1,10 @@
 postsubmits:
   entries:
-  - name: release
-    branches:
-      replace: true
-      entries:
-        - 2.x
+    - name: release
+      branches:
+        replace: true
+        entries:
+          - 2.x
 
 trigger:
   joinOrgUrl: http://org-url
@@ -12,4 +12,4 @@ trigger:
 
 plugins:
   entries:
-  - cat
+    - cat

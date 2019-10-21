@@ -7,8 +7,8 @@ import (
 
 	v1 "github.com/jenkins-x/jx/pkg/apis/jenkins.io/v1"
 
-	"github.com/jenkins-x/jx/pkg/pipelinescheduler"
-	"github.com/jenkins-x/jx/pkg/pipelinescheduler/testhelpers"
+	"github.com/cloudbees/lighthouse-githubapp/pkg/schedulers"
+	"github.com/cloudbees/lighthouse-githubapp/pkg/schedulers/testhelpers"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,7 +17,7 @@ func TestBuildWithEverythingInParent(t *testing.T) {
 		// Override nothing, everything comes from
 	}
 	parent := testhelpers.CompleteScheduler()
-	merged, err := pipelinescheduler.Build([]*v1.SchedulerSpec{parent, child})
+	merged, err := schedulers.Build([]*v1.SchedulerSpec{parent, child})
 	assert.NoError(t, err)
 	assert.Equal(t, parent, merged)
 }
@@ -26,7 +26,7 @@ func TestBuildWithEverythingInChild(t *testing.T) {
 	t.Parallel()
 	child := testhelpers.CompleteScheduler()
 	parent := testhelpers.CompleteScheduler()
-	merged, err := pipelinescheduler.Build([]*v1.SchedulerSpec{parent, child})
+	merged, err := schedulers.Build([]*v1.SchedulerSpec{parent, child})
 	assert.NoError(t, err)
 	assert.Equal(t, child, merged)
 }
@@ -36,7 +36,7 @@ func TestBuildWithSomePropertiesMergedLgtm(t *testing.T) {
 	child := testhelpers.CompleteScheduler()
 	child.LGTM.ReviewActsAsLgtm = nil
 	parent := testhelpers.CompleteScheduler()
-	merged, err := pipelinescheduler.Build([]*v1.SchedulerSpec{parent, child})
+	merged, err := schedulers.Build([]*v1.SchedulerSpec{parent, child})
 	assert.NoError(t, err)
 	assert.Equal(t, parent.LGTM.ReviewActsAsLgtm, merged.LGTM.ReviewActsAsLgtm)
 	assert.Equal(t, child.LGTM.StickyLgtmTeam, merged.LGTM.StickyLgtmTeam)
@@ -47,7 +47,7 @@ func TestBuildWithLgtmEmptyInChild(t *testing.T) {
 	child := testhelpers.CompleteScheduler()
 	child.LGTM = &v1.Lgtm{}
 	parent := testhelpers.CompleteScheduler()
-	merged, err := pipelinescheduler.Build([]*v1.SchedulerSpec{parent, child})
+	merged, err := schedulers.Build([]*v1.SchedulerSpec{parent, child})
 	assert.NoError(t, err)
 	assert.Equal(t, child.LGTM, merged.LGTM)
 }
@@ -58,7 +58,7 @@ func TestBuildWithSomePropertiesMergedMerger(t *testing.T) {
 	child.Merger.ContextPolicy = nil
 	child.Merger.MergeType = nil
 	parent := testhelpers.CompleteScheduler()
-	merged, err := pipelinescheduler.Build([]*v1.SchedulerSpec{parent, child})
+	merged, err := schedulers.Build([]*v1.SchedulerSpec{parent, child})
 	assert.NoError(t, err)
 	assert.Equal(t, parent.Merger.ContextPolicy, merged.Merger.ContextPolicy)
 	assert.Equal(t, parent.Merger.MergeType, merged.Merger.MergeType)
@@ -70,7 +70,7 @@ func TestBuildWithEmptyMerger(t *testing.T) {
 	child := testhelpers.CompleteScheduler()
 	child.Merger = &v1.Merger{}
 	parent := testhelpers.CompleteScheduler()
-	merged, err := pipelinescheduler.Build([]*v1.SchedulerSpec{parent, child})
+	merged, err := schedulers.Build([]*v1.SchedulerSpec{parent, child})
 	assert.NoError(t, err)
 	assert.Equal(t, parent.Merger, merged.Merger)
 }
@@ -89,7 +89,7 @@ func TestPostSubmitWithEmptyChildPostSubmit(t *testing.T) {
 		},
 	}
 
-	merged, err := pipelinescheduler.Build([]*v1.SchedulerSpec{parent, child})
+	merged, err := schedulers.Build([]*v1.SchedulerSpec{parent, child})
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(merged.Postsubmits.Items))
 	postSubmit := merged.Postsubmits.Items[0]
@@ -117,7 +117,7 @@ func TestPostSubmitMultipleChildrenWithSameNameFound(t *testing.T) {
 		},
 	}
 
-	merged, err := pipelinescheduler.Build([]*v1.SchedulerSpec{parent, child})
+	merged, err := schedulers.Build([]*v1.SchedulerSpec{parent, child})
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "more than one postsubmit with name")
 	assert.Nil(t, merged)
@@ -138,7 +138,7 @@ func TestPostSubmitWithMergedJobBaseLabels(t *testing.T) {
 		},
 	}
 
-	merged, err := pipelinescheduler.Build([]*v1.SchedulerSpec{parent, child})
+	merged, err := schedulers.Build([]*v1.SchedulerSpec{parent, child})
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(merged.Postsubmits.Items))
 	postSubmit := merged.Postsubmits.Items[0]
@@ -168,7 +168,7 @@ func TestPostSubmitWithNilJobBaseLabels(t *testing.T) {
 		},
 	}
 
-	merged, err := pipelinescheduler.Build([]*v1.SchedulerSpec{parent, child})
+	merged, err := schedulers.Build([]*v1.SchedulerSpec{parent, child})
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(merged.Postsubmits.Items))
 	postSubmit := merged.Postsubmits.Items[0]
@@ -190,7 +190,7 @@ func TestPostSubmitApplyBrancherWithEmptyChildPostSubmitBrancher(t *testing.T) {
 		},
 	}
 
-	merged, err := pipelinescheduler.Build([]*v1.SchedulerSpec{parent, child})
+	merged, err := schedulers.Build([]*v1.SchedulerSpec{parent, child})
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(merged.Postsubmits.Items))
 	assert.Equal(t, parent.Postsubmits.Items[0].Branches, merged.Postsubmits.Items[0].Brancher.Branches)
@@ -215,7 +215,7 @@ func TestPostSubmitApplyBrancherWithAppendingChildPostSubmitBrancher(t *testing.
 		},
 	}
 
-	merged, err := pipelinescheduler.Build([]*v1.SchedulerSpec{parent, child})
+	merged, err := schedulers.Build([]*v1.SchedulerSpec{parent, child})
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(merged.Postsubmits.Items))
 	assert.Equal(t, 2, len(merged.Postsubmits.Items[0].Brancher.Branches.Items))
@@ -240,7 +240,7 @@ func TestPreSubmitWithEmptyChildPreSubmit(t *testing.T) {
 		},
 	}
 
-	merged, err := pipelinescheduler.Build([]*v1.SchedulerSpec{parent, child})
+	merged, err := schedulers.Build([]*v1.SchedulerSpec{parent, child})
 	assert.NoError(t, err)
 	assert.Equal(t, 1, len(merged.Presubmits.Items))
 	preSubmit := merged.Presubmits.Items[0]
@@ -266,7 +266,7 @@ func TestPreSubmitApplyToQueryWithEmptyChildQuery(t *testing.T) {
 		},
 	}
 
-	merged, err := pipelinescheduler.Build([]*v1.SchedulerSpec{parent, child})
+	merged, err := schedulers.Build([]*v1.SchedulerSpec{parent, child})
 	assert.NoError(t, err)
 	preSubmit := merged.Presubmits.Items[0]
 	assert.True(t, len(preSubmit.Queries) == 1)
@@ -292,7 +292,7 @@ func TestPreSubmitApplyToProtectionPolicyWithAppendingChildPolicy(t *testing.T) 
 		},
 	}
 
-	merged, err := pipelinescheduler.Build([]*v1.SchedulerSpec{parent, child})
+	merged, err := schedulers.Build([]*v1.SchedulerSpec{parent, child})
 	assert.NoError(t, err)
 	assert.Equal(t, 2, len(merged.Presubmits.Items[0].Policy.Items))
 	var protectionPolicyKey string
@@ -320,7 +320,7 @@ func TestPreSubmitApplyToRepoContextPolicyWithEmptyChildRepoContextPolicy(t *tes
 		},
 	}
 
-	merged, err := pipelinescheduler.Build([]*v1.SchedulerSpec{parent, child})
+	merged, err := schedulers.Build([]*v1.SchedulerSpec{parent, child})
 	assert.NoError(t, err)
 	assert.Equal(t, parent.Presubmits.Items[0].ContextPolicy.Branches,
 		merged.Presubmits.Items[0].ContextPolicy.Branches)
@@ -349,7 +349,7 @@ func TestPreSubmitApplyToRepoContextPolicyWithAppendingChildRepoContextPolicy(t 
 		},
 	}
 
-	merged, err := pipelinescheduler.Build([]*v1.SchedulerSpec{parent, child})
+	merged, err := schedulers.Build([]*v1.SchedulerSpec{parent, child})
 	assert.NoError(t, err)
 	assert.NotEqual(t, parent.Presubmits.Items[0].ContextPolicy.Branches,
 		merged.Presubmits.Items[0].ContextPolicy.Branches)
@@ -375,7 +375,7 @@ func TestPreSubmitMultipleChildrenWithSameNameFound(t *testing.T) {
 		},
 	}
 
-	merged, err := pipelinescheduler.Build([]*v1.SchedulerSpec{parent, child})
+	merged, err := schedulers.Build([]*v1.SchedulerSpec{parent, child})
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "more than one presubmit with name ")
 	assert.Nil(t, merged)
