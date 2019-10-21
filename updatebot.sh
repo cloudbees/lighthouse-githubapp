@@ -1,2 +1,2 @@
 #!/bin/bash
-jx step create pr chart --name=lighthouse-githubapp --version="${VERSION}" --repo=https://github.com/arcalos-environments/environment-raccoonshimmer-dev.git
+jx promote -b --all-auto --timeout 1h --version ${VERSION}
