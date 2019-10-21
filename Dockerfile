@@ -1,15 +1,8 @@
-FROM golang:1.13.1
+FROM alpine:3.10
+RUN apk add --update --no-cache ca-certificates git
 
-WORKDIR /app
-
-COPY go.mod go.sum ./
-
-RUN go mod download
-
-COPY . .
-
-RUN go build -o main .
+COPY ./build/lighthouse-githubapp-linux-amd64 /lighthouse
 
 EXPOSE 8080
 
-CMD ["./main"]
+CMD ["./lighthouse"]

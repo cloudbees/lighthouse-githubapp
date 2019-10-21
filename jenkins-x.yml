@@ -10,6 +10,18 @@ pipelineConfig:
           image: gcr.io/kaniko-project/executor:9912ccbf8d22bbafbf971124600fbb0b13b9cbd6
         stages:
           - name: release
+            options:
+              volumes:
+                - name: netrc
+                  secret:
+                    secretName: jx-netrc
+                    items:
+                      - key: netrc
+                        path: .netrc
+              containerOptions:
+                volumeMounts:
+                  - mountPath: /secrets/netrc
+                    name: netrc
             environment:
               - name: GIT_COMMITTER_EMAIL
                 value: jenkins-x@googlegroups.com
@@ -21,10 +33,11 @@ pipelineConfig:
                 value: jenkins-x-bot
               - name: GOOGLE_APPLICATION_CREDENTIALS
                 value: /builder/home/kaniko-secret.json
-              - name: GOPROXY
+              - name: DISABLE_GOPROXY
                 value: http://jenkins-x-athens-proxy
+              - name: NETRC
+                value: /secrets/netrc/.netrc
             steps:
-
               - image: gcr.io/jenkinsxio/builder-go
                 command: make
                 args:
@@ -97,10 +110,23 @@ pipelineConfig:
             environment:
               - name: GOOGLE_APPLICATION_CREDENTIALS
                 value: /builder/home/kaniko-secret.json
-              - name: GOPROXY
+              - name: DISABLE_GOPROXY
                 value: http://jenkins-x-athens-proxy
+              - name: NETRC
+                value: /secrets/netrc/.netrc
+            options:
+              volumes:
+                - name: netrc
+                  secret:
+                    secretName: jx-netrc
+                    items:
+                      - key: netrc
+                        path: .netrc
+              containerOptions:
+                volumeMounts:
+                  - mountPath: /secrets/netrc
+                    name: netrc
             steps:
-
               - image: gcr.io/jenkinsxio/builder-go
                 command: make
                 args:

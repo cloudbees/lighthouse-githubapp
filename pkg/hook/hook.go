@@ -2,35 +2,61 @@ package hook
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
+	"github.com/cloudbees/lighthouse-githubapp/pkg/schedulers"
 	"github.com/jenkins-x/go-scm/scm"
+	v1 "github.com/jenkins-x/jx/pkg/apis/jenkins.io/v1"
+	"github.com/jenkins-x/jx/pkg/client/clientset/versioned"
+	"github.com/jenkins-x/jx/pkg/jxfactory/connector"
+	"github.com/jenkins-x/jx/pkg/jxfactory/connector/provider"
+	"github.com/jenkins-x/jx/pkg/kube"
+	"github.com/jenkins-x/lighthouse/pkg/prow/config"
+	"github.com/jenkins-x/lighthouse/pkg/prow/git"
+	lhhook "github.com/jenkins-x/lighthouse/pkg/prow/hook"
+	"github.com/jenkins-x/lighthouse/pkg/prow/plugins"
+	lhwebhook "github.com/jenkins-x/lighthouse/pkg/webhook"
 	"github.com/patrickmn/go-cache"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
 
 type HookOptions struct {
-	Port           string
-	Path           string
-	Version        string
-	PrivateKeyFile string
-	tokenCache     *cache.Cache
+	Port             string
+	Path             string
+	Version          string
+	PrivateKeyFile   string
+	tokenCache       *cache.Cache
+	tenantService    *TenantService
+	clusterConnector connector.Client
 }
 
 // NewHook create a new hook handler
-func NewHook(privateKeyFile string) *HookOptions {
+func NewHook(privateKeyFile string) (*HookOptions, error) {
+	workDir, err := ioutil.TempDir("", "jx-connectors-")
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to create temp dir for jx connectors")
+	}
+
+	clusterConnector := provider.NewClient(workDir)
+
 	tokenCache := cache.New(tokenCacheExpiration, tokenCacheExpiration)
+	tenantService := NewTenantService("")
 
 	return &HookOptions{
-		Path:           HookPath,
-		Port:           flags.HttpPort.Value(),
-		Version:        "TODO",
-		PrivateKeyFile: privateKeyFile,
-		tokenCache:     tokenCache,
-	}
+		Path:             HookPath,
+		Port:             flags.HttpPort.Value(),
+		Version:          "TODO",
+		PrivateKeyFile:   privateKeyFile,
+		tokenCache:       tokenCache,
+		tenantService:    tenantService,
+		clusterConnector: clusterConnector,
+	}, nil
 }
 
 func (o *HookOptions) Handle(mux *http.ServeMux) {
@@ -105,87 +131,208 @@ func (o *HookOptions) isReady() bool {
 	return true
 }
 
-func (o *HookOptions) onPushHook(hook *scm.PushHook) {
-
-}
-
-func (o *HookOptions) onPullRequest(hook *scm.PushHook) {
-
-}
-
-func (o *HookOptions) onBranch(hook *scm.PushHook) {
-
-}
-
-func (o *HookOptions) onIssueComment(log *logrus.Entry, hook *scm.IssueCommentHook) error {
-	log.Infof("Issue Comment: %s by %s", hook.Comment.Body, hook.Comment.Author.Login)
-	author := hook.Comment.Author.Login
-	if author != flags.BotName.Value() {
-		ctx := context.Background()
-		scmClient, err := o.getInstallScmClient(log, ctx, hook.GetInstallationRef())
-		if err != nil {
-			return err
-		}
-
-		prNumber := hook.Issue.Number
-		repo := hook.Repository().FullName
-		_, _, err = scmClient.PullRequests.CreateComment(ctx, repo, prNumber, &scm.CommentInput{
-			Body: "hello from GitHub App",
-		})
-		if err != nil {
-			log.WithError(err).Error("failed to comment on issue")
-			return err
-		} else {
-			log.Infof("added comment")
-		}
-	}
-	return nil
-}
-
-func (o *HookOptions) onPullRequestComment(log *logrus.Entry, hook *scm.IssueCommentHook) error {
-	author := hook.Comment.Author.Login
-	log.Infof("PR Comment: %s by %s", hook.Comment.Body, author)
-	if author != flags.BotName.Value() {
-		ctx := context.Background()
-		scmClient, err := o.getInstallScmClient(log, ctx, hook.GetInstallationRef())
-		if err != nil {
-			return err
-		}
-
-		prNumber := hook.Issue.Number
-		repo := hook.Repository().Namespace
-		_, _, err = scmClient.PullRequests.CreateComment(ctx, repo, prNumber, &scm.CommentInput{
-			Body: "hello from GitHub App",
-		})
-		if err != nil {
-			log.WithError(err).Error("failed to comment on issue")
-			return err
-		} else {
-			log.Infof("added comment")
-		}
-	}
-	return nil
-}
-
-func (o *HookOptions) onInstallHook(log *logrus.Entry, hook *scm.InstallationHook) {
+func (o *HookOptions) onInstallHook(log *logrus.Entry, hook *scm.InstallationHook) error {
 	install := hook.Installation
 	id := install.ID
-	account := install.Account
 	fields := map[string]interface{}{
-		"Action":           hook.Action.String(),
-		"InstallationID":   id,
-		"AccountID":        account.ID,
-		"AccountLogin":     account.Login,
-		"AccessTokensLink": install.AccessTokensLink,
+		"Action":         hook.Action.String(),
+		"InstallationID": id,
+		"Function":       "onInstallHook",
 	}
-	log.WithFields(fields).Infof("installHook")
+	log = log.WithFields(fields)
+	log.Infof("installHook")
 
+	// ets register / unregister repositories to the InstallationID
+	if hook.Action == scm.ActionCreate {
+		ownerURL := hook.Installation.Link
+		log = log.WithField("Owner", ownerURL)
+		if ownerURL == "" {
+			err := fmt.Errorf("missing ownerURL on install webhook")
+			log.Error(err.Error())
+			return err
+		}
+
+		/*
+			repos := []RepositoryInfo{}
+			for _, repo := range hook.Repos {
+				link := strings.TrimSuffix(repo.Link, "/")
+				link = strings.TrimSuffix(link, ".git")
+				if link == "" {
+					full := repo.FullName
+					if full != "" {
+						link = util.UrlJoin("https://github.com", full)
+					}
+				}
+				if link != "" {
+					repos = append(repos, RepositoryInfo{URL: link})
+				}
+			}
+			if len(repos) == 0 {
+
+			}
+		*/
+		return o.tenantService.AppInstall(log, id, ownerURL)
+	} else if hook.Action == scm.ActionDelete {
+		return o.tenantService.AppUnnstall(log, id)
+	} else {
+		log.Warnf("ignore unknown action")
+		return nil
+	}
 }
 
-func responseHTTPError(w http.ResponseWriter, statusCode int, response string) {
-	logrus.WithFields(logrus.Fields{
-		"response":    response,
-		"status-code": statusCode,
-	}).Info(response)
-	http.Error(w, response, statusCode)
+func (o *HookOptions) onGeneralHook(log *logrus.Entry, install *scm.InstallationRef, webhook scm.Webhook) error {
+	id := install.ID
+	repo := webhook.Repository()
+	fields := map[string]interface{}{
+		"InstallationID": id,
+		"Fullname":       repo.FullName,
+	}
+	log = log.WithFields(fields)
+	u := repo.Link
+	if u == "" {
+		log.Warnf("ignoring webhook as no repository URL for")
+		return nil
+	}
+	log.Infof("onGeneralHook")
+	workspaces, err := o.tenantService.FindWorkspaces(log, id, u)
+	if err != nil {
+		return err
+	}
+
+	for _, ws := range workspaces {
+		log.WithFields(ws.LogFields()).Infof("got workspace")
+
+		// TODO we could cache these factory/clients to speed things up
+		rc := &connector.RemoteConnector{GKE: &connector.GKEConnector{
+			Project: ws.Project,
+			Cluster: ws.Cluster,
+			Region:  ws.Region,
+			Zone:    ws.Zone,
+		}}
+		config, err := o.clusterConnector.Connect(rc)
+		if err != nil {
+			log.WithError(err).Error("failed to create rest config")
+			return err
+		}
+		f := connector.NewConfigClientFactory(ws.Project, config)
+
+		// lets parse the Scheduler json
+		jsonText := ws.JSON
+		if jsonText == "" {
+			log.Error("no Scheduler JSON")
+			continue
+		}
+		scheduler := &v1.Scheduler{}
+		err = json.Unmarshal([]byte(jsonText), scheduler)
+		if err != nil {
+			log.WithError(err).Error("failed to parse Scheduler JSON")
+			continue
+		}
+		err = o.invokeLighthouse(log, webhook, f, ws.Namespace, scheduler, install)
+		if err != nil {
+			log.WithError(err).Error("failed to invoke remote lighthouse")
+			return err
+		}
+	}
+	if len(workspaces) == 0 {
+		log.Warnf("no workspaces interested in repository")
+	}
+	return nil
+}
+
+func (o *HookOptions) invokeRemoteLighthouseViaProxy(log *logrus.Entry, webhook scm.Webhook, factory *connector.ConfigClientFactory, ns string) error {
+	log.Info("invoking remote lighthouse")
+	kubeClient, err := factory.CreateKubeClient()
+	if err != nil {
+		return errors.Wrap(err, "failed to create remote kubeClient")
+	}
+	params := map[string]string{}
+	data, err := kubeClient.CoreV1().Services(ns).ProxyGet("http", "hook", "80", "/", params).DoRaw()
+	if err != nil {
+		return errors.Wrap(err, "failed to get hook")
+	}
+	log.Infof("got response from hook: %s", string(data))
+	return nil
+}
+
+func (o *HookOptions) invokeLighthouse(log *logrus.Entry, webhook scm.Webhook, factory *connector.ConfigClientFactory, ns string, scheduler *v1.Scheduler, installRef *scm.InstallationRef) error {
+	log.Info("invoking lighthouse")
+
+	serverURL := webhook.Repository().Link
+	kubeClient, err := factory.CreateKubeClient()
+	if err != nil {
+		log.WithError(err).Errorf("failed to create KubeClient")
+		return err
+	}
+	jxClient, err := factory.CreateJXClient()
+	if err != nil {
+		log.WithError(err).Errorf("failed to create JXClient")
+		return err
+	}
+
+	gitClient, _ := git.NewClient(serverURL, flags.GitKind.Value())
+
+	ctx := context.Background()
+	scmClient, tokenResource, err := o.getInstallScmClient(log, ctx, installRef)
+	botUser := flags.BotName.Value()
+	gitClient.SetCredentials(botUser, func() []byte {
+		return []byte(tokenResource.Token)
+	})
+	server := &lhhook.Server{
+		ClientAgent: &plugins.ClientAgent{
+			BotName:          botUser,
+			GitHubClient:     scmClient,
+			KubernetesClient: kubeClient,
+			GitClient:        gitClient,
+		},
+		Plugins:     &plugins.ConfigAgent{},
+		ConfigAgent: &config.Agent{},
+	}
+	err = o.updateProwConfiguration(log, webhook, server, scheduler, jxClient, ns)
+
+	localHook := lhwebhook.NewWebhook(ToJXFactory(factory, ns), server)
+
+	l, output, err := localHook.ProcessWebHook(webhook)
+	if err != nil {
+		err = errors.Wrap(err, "failed to process webhook")
+		l.WithError(err).Error("failed to process webhook")
+		return err
+	}
+	l.Infof(output)
+	return nil
+}
+
+func (o *HookOptions) updateProwConfiguration(log *logrus.Entry, webhook scm.Webhook, server *lhhook.Server, scheduler *v1.Scheduler, jxClient versioned.Interface, ns string) error {
+	devEnv := kube.CreateDefaultDevEnvironment(ns)
+	fn := func(versioned.Interface, string) (map[string]*v1.Scheduler, *v1.SourceRepositoryGroupList, *v1.SourceRepositoryList, error) {
+		m := map[string]*v1.Scheduler{
+			scheduler.Name: scheduler,
+		}
+		repo := webhook.Repository()
+		sr := v1.SourceRepository{
+			Spec: v1.SourceRepositorySpec{
+				URL:  repo.Link,
+				Org:  repo.Namespace,
+				Repo: repo.Name,
+			},
+		}
+		sr.Spec.Scheduler.Name = scheduler.Name
+		srgs := &v1.SourceRepositoryGroupList{}
+		srs := &v1.SourceRepositoryList{
+			Items: []v1.SourceRepository{
+				sr,
+			},
+		}
+		return m, srgs, srs, nil
+	}
+
+	prowConfig, prowPlugins, err := schedulers.GenerateProw(false, false, jxClient, ns, "default", devEnv, fn)
+	if err != nil {
+		err = errors.Wrap(err, "failed to generate prow config")
+		log.WithError(err)
+		return err
+	}
+	server.ConfigAgent.Set(prowConfig)
+	server.Plugins.Set(prowPlugins)
+	return nil
 }

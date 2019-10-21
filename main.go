@@ -23,12 +23,16 @@ func main() {
 		logrus.Fatalf("could not read private key file %s: %s", privateKeyFile, err)
 	}
 	if len(privateKey) == 0 {
-		logrus.Fatalf("empty private key file %s", privateKeyFile, err)
+		logrus.Fatalf("empty private key file %s: %s", privateKeyFile, err)
 	}
 
 	mux := http.NewServeMux()
 
-	handler := hook.NewHook(privateKeyFile)
+	handler, err := hook.NewHook(privateKeyFile)
+	if err != nil {
+		logrus.WithError(err).Fatalf("failed to create hook")
+	}
+
 	handler.Handle(mux)
 
 	logrus.Infof("Lighthouse GitHub App is now listening on path %s and port %s for WebHooks", handler.Path, handler.Port)
