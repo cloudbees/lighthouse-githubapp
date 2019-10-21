@@ -18,7 +18,7 @@ cleanup:
 preview:
   image:
     imagerepository:
-    imagetag:
+    tag:
     pullPolicy: IfNotPresent
   cert: vault:tekton-weasel/preview/jx-github-app:cert
   id: vault:tekton-weasel/preview/jx-github-app:id
