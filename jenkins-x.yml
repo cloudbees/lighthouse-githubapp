@@ -20,7 +20,7 @@ pipelineConfig:
                         path: .netrc
               containerOptions:
                 volumeMounts:
-                  - mountPath: /workspace/netrc
+                  - mountPath: /secrets/netrc
                     name: netrc
             environment:
               - name: GIT_COMMITTER_EMAIL
@@ -36,7 +36,7 @@ pipelineConfig:
               - name: DISABLE_GOPROXY
                 value: http://jenkins-x-athens-proxy
               - name: NETRC
-                value: /workspace/netrc/.netrc
+                value: /secrets/netrc/.netrc
             steps:
               - image: gcr.io/jenkinsxio/builder-go
                 command: make
@@ -112,8 +112,21 @@ pipelineConfig:
                 value: /builder/home/kaniko-secret.json
               - name: DISABLE_GOPROXY
                 value: http://jenkins-x-athens-proxy
+              - name: NETRC
+                value: /secrets/netrc/.netrc
+            options:
+              volumes:
+                - name: netrc
+                  secret:
+                    secretName: jx-netrc
+                    items:
+                      - key: netrc
+                        path: .netrc
+              containerOptions:
+                volumeMounts:
+                  - mountPath: /secrets/netrc
+                    name: netrc
             steps:
-
               - image: gcr.io/jenkinsxio/builder-go
                 command: make
                 args:
