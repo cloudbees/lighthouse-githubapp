@@ -3,16 +3,12 @@ package schedulers
 import (
 	"strings"
 
-	jenkinsio "github.com/jenkins-x/jx/pkg/apis/jenkins.io"
 	jenkinsv1 "github.com/jenkins-x/jx/pkg/apis/jenkins.io/v1"
-	"github.com/jenkins-x/jx/pkg/gits"
-	"github.com/jenkins-x/jx/pkg/log"
 	"github.com/jenkins-x/jx/pkg/util"
 
 	"github.com/jenkins-x/lighthouse/pkg/prow/plugins"
 
 	"github.com/jenkins-x/lighthouse/pkg/prow/config"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 const (
@@ -21,124 +17,6 @@ const (
 	// DefaultMergeType is the default merge type
 	DefaultMergeType = "merge"
 )
-
-// BuildSchedulers turns prow config in to schedulers
-func BuildSchedulers(prowConfig *config.Config, pluginConfig *plugins.Configuration) ([]*jenkinsv1.SourceRepositoryGroup, []*jenkinsv1.SourceRepository, map[string]*jenkinsv1.SourceRepository, map[string]*jenkinsv1.Scheduler, error) {
-	log.Logger().Info("Building scheduler resources from prow config")
-	sourceRepos := make(map[string]*jenkinsv1.SourceRepository, 0)
-	if prowConfig.Presubmits != nil {
-		for repo := range prowConfig.Presubmits {
-			orgRepo := strings.Split(repo, "/")
-			sourceRepos[repo] = buildSourceRepo(orgRepo[0], orgRepo[1])
-		}
-	}
-	if prowConfig.Postsubmits != nil {
-		for repo := range prowConfig.Postsubmits {
-			orgRepo := strings.Split(repo, "/")
-			if _, ok := sourceRepos[repo]; !ok {
-				sourceRepos[repo] = buildSourceRepo(orgRepo[0], orgRepo[1])
-			}
-		}
-	}
-	schedulers := make(map[string]*jenkinsv1.Scheduler, 0)
-	sourceRepoSlice := make([]*jenkinsv1.SourceRepository, 0, len(sourceRepos))
-	for sourceRepoName, sourceRepo := range sourceRepos {
-		scheduler, err := buildScheduler(sourceRepoName, prowConfig, pluginConfig)
-		if err == nil {
-			sourceRepo.Spec.Scheduler = jenkinsv1.ResourceReference{
-				Name: scheduler.Name,
-				Kind: "Scheduler",
-			}
-			schedulers[scheduler.Name] = scheduler
-			sourceRepoSlice = append(sourceRepoSlice, sourceRepo)
-		}
-	}
-	defaultScheduler := buildDefaultScheduler(prowConfig)
-	if defaultScheduler != nil {
-		schedulers[defaultScheduler.Name] = defaultScheduler
-	}
-	// TODO Dedupe in to source repo groups
-	return nil, sourceRepoSlice, sourceRepos, schedulers, nil
-}
-
-func buildSourceRepo(org string, repo string) *jenkinsv1.SourceRepository {
-	return &jenkinsv1.SourceRepository{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "SourceRepository",
-			APIVersion: jenkinsio.GroupName + "/" + jenkinsio.Version,
-		},
-		Spec: jenkinsv1.SourceRepositorySpec{
-			Org:          org,
-			Repo:         repo,
-			Provider:     gits.GitHubURL,
-			ProviderName: gits.KindGitHub,
-		},
-	}
-}
-
-func buildScheduler(repo string, prowConfig *config.Config, pluginConfig *plugins.Configuration) (*jenkinsv1.Scheduler, error) {
-	scheduler := &jenkinsv1.Scheduler{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "Scheduler",
-			APIVersion: jenkinsio.GroupName + "/" + jenkinsio.Version,
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name: strings.Replace(repo, "/", "-", -1) + "-scheduler",
-		},
-		Spec: jenkinsv1.SchedulerSpec{
-			ScehdulerAgent:  buildSchedulerAgent(),
-			Policy:          buildSchedulerGlobalProtectionPolicy(prowConfig),
-			Presubmits:      buildSchedulerPresubmits(repo, prowConfig),
-			Postsubmits:     buildSchedulerPostsubmits(repo, prowConfig),
-			Trigger:         buildSchedulerTrigger(repo, pluginConfig),
-			Approve:         buildSchedulerApprove(repo, pluginConfig),
-			LGTM:            buildSchedulerLGTM(repo, pluginConfig),
-			ExternalPlugins: buildSchedulerExternalPlugins(repo, pluginConfig),
-			Merger:          buildSchedulerMerger(repo, prowConfig),
-			Plugins:         buildSchedulerPlugins(repo, pluginConfig),
-			ConfigUpdater:   buildSchedulerConfigUpdater(repo, pluginConfig),
-			Welcome:         buildSchedulerWelcome(pluginConfig),
-		},
-	}
-	return scheduler, nil
-}
-
-func buildDefaultScheduler(prowConfig *config.Config) *jenkinsv1.Scheduler {
-	scheduler := &jenkinsv1.Scheduler{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "Scheduler",
-			APIVersion: jenkinsio.GroupName + "/" + jenkinsio.Version,
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name: "default-scheduler",
-		},
-		Spec: jenkinsv1.SchedulerSpec{
-			Periodics:   buildSchedulerPeriodics(prowConfig),
-			Attachments: buildSchedulerAttachments(prowConfig),
-		},
-	}
-	return scheduler
-}
-
-func buildSchedulerAttachments(configuration *config.Config) []*jenkinsv1.Attachment {
-	attachments := make([]*jenkinsv1.Attachment, 0)
-	jobURLPrefix := configuration.Plank.JobURLPrefix
-	if jobURLPrefix != "" {
-		attachments = buildSchedulerAttachment("jobURLPrefix", jobURLPrefix, attachments)
-	}
-	jobURLTemplate := configuration.Plank.JobURLTemplateString
-	if jobURLTemplate != "" {
-		attachments = buildSchedulerAttachment("jobURLTemplate", jobURLTemplate, attachments)
-	}
-	reportTemplate := configuration.Plank.ReportTemplateString
-	if reportTemplate != "" {
-		attachments = buildSchedulerAttachment("reportTemplate", reportTemplate, attachments)
-	}
-	if len(attachments) > 0 {
-		return attachments
-	}
-	return nil
-}
 
 func buildSchedulerAttachment(name string, value string, attachments []*jenkinsv1.Attachment) []*jenkinsv1.Attachment {
 	return append(attachments, &jenkinsv1.Attachment{

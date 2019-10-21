@@ -332,40 +332,6 @@ func (o *HookOptions) updateProwConfiguration(log *logrus.Entry, webhook scm.Web
 		log.WithError(err)
 		return err
 	}
-
-	/*
-		configJson, err := json.Marshal(prowConfig)
-		if err != nil {
-			err = errors.Wrapf(err, "failed to marshal prow config")
-			log.WithField("ProwConfig", prowConfig).WithError(err)
-			return err
-		}
-		pluginsJson, err := json.Marshal(prowPlugins)
-		if err != nil {
-			err = errors.Wrapf(err, "failed to marshal prow plugins")
-			log.WithField("ProwPlugins", prowPlugins).WithError(err)
-			return err
-		}
-
-		// lets marshal to yaml and then unmarshal to handle jx using Prow source not lighthouse...
-		lhConfig := &config.Config{}
-		lhPlugins := &plugins.Configuration{}
-
-		err = json.Unmarshal(configJson, lhConfig)
-		if err != nil {
-			err = errors.Wrapf(err, "failed to unmarshal prow config")
-			log.WithField("ProwConfig", string(configJson)).WithError(err)
-			return err
-		}
-		err = json.Unmarshal(pluginsJson, lhPlugins)
-		if err != nil {
-			err = errors.Wrapf(err, "failed to unmarshal prow plugins")
-			log.WithField("ProwPlugins", string(pluginsJson)).WithError(err)
-			return err
-		}
-		*
-	*/
-
 	server.ConfigAgent.Set(prowConfig)
 	server.Plugins.Set(prowPlugins)
 	return nil
