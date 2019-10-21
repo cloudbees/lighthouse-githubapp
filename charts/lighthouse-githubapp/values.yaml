@@ -46,6 +46,6 @@ readinessProbe:
 tenantService:
   url: https://jx-tenant-service-jx-staging.jenkins-x.live
 
-cert: vault:tekton-weasel/jx-github-app:cert
-id: vault:tekton-weasel/jx-github-app:id
-secret: vault:tekton-weasel/jx-github-app:secret
+cert: vault:lh-github-app:cert
+id: vault:lh-github-app:id
+secret: vault:lh-github-app:secret
