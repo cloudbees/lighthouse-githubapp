@@ -43,9 +43,9 @@ func defaultScmTransport(scmClient *scm.Client) {
 	}
 }
 
-func (o *HookOptions) getInstallScmClient(log *logrus.Entry, ctx context.Context, ref *scm.InstallationRef) (*scm.Client, error) {
+func (o *HookOptions) getInstallScmClient(log *logrus.Entry, ctx context.Context, ref *scm.InstallationRef) (*scm.Client, *scm.InstallationToken, error) {
 	if ref == nil || ref.ID == 0 {
-		return nil, fmt.Errorf("missing installation.ID on webhok")
+		return nil, nil, fmt.Errorf("missing installation.ID on webhok")
 	}
 	key := fmt.Sprintf("%v", ref.ID)
 	item, ok := o.tokenCache.Get(key)
@@ -57,7 +57,7 @@ func (o *HookOptions) getInstallScmClient(log *logrus.Entry, ctx context.Context
 				expires := tokenResource.ExpiresAt
 				if expires == nil || time.Now().Before(expires.Add(tokenCacheExpireDelta)) {
 					scmClient, _, _, err := o.createSCMClient(token)
-					return scmClient, err
+					return scmClient, tokenResource, err
 				}
 			}
 		}
@@ -65,7 +65,7 @@ func (o *HookOptions) getInstallScmClient(log *logrus.Entry, ctx context.Context
 	log.WithField("InstallationID", ref.ID).Infof("requesting new installation token")
 	scmClient, tokenResource, err := o.createInstallScmClient(log, ctx, ref)
 	if err != nil {
-		return scmClient, err
+		return scmClient, tokenResource, err
 	}
 	if tokenResource != nil && tokenResource.Token != "" {
 		duration := tokenCacheExpiration
@@ -74,7 +74,7 @@ func (o *HookOptions) getInstallScmClient(log *logrus.Entry, ctx context.Context
 		}
 		o.tokenCache.Set(key, tokenResource, duration)
 	}
-	return scmClient, err
+	return scmClient, tokenResource, err
 }
 
 func (o *HookOptions) createInstallScmClient(log *logrus.Entry, ctx context.Context, ref *scm.InstallationRef) (*scm.Client, *scm.InstallationToken, error) {
