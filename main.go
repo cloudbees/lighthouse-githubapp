@@ -23,7 +23,7 @@ func main() {
 		logrus.Fatalf("could not read private key file %s: %s", privateKeyFile, err)
 	}
 	if len(privateKey) == 0 {
-		logrus.Fatalf("empty private key file %s", privateKeyFile, err)
+		logrus.Fatalf("empty private key file %s: %s", privateKeyFile, err)
 	}
 
 	mux := http.NewServeMux()
