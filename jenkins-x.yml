@@ -21,7 +21,7 @@ pipelineConfig:
                 value: jenkins-x-bot
               - name: GOOGLE_APPLICATION_CREDENTIALS
                 value: /builder/home/kaniko-secret.json
-              - name: GOPROXY
+              - name: DISABLE_GOPROXY
                 value: http://jenkins-x-athens-proxy
             steps:
 
@@ -97,7 +97,7 @@ pipelineConfig:
             environment:
               - name: GOOGLE_APPLICATION_CREDENTIALS
                 value: /builder/home/kaniko-secret.json
-              - name: GOPROXY
+              - name: DISABLE_GOPROXY
                 value: http://jenkins-x-athens-proxy
             steps:
 
