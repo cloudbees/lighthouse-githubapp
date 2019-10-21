@@ -4,7 +4,7 @@
 replicaCount: 1
 image:
   imagerepository: gcr.io/jenkinsxio/lighthouse-githubapp
-  imagetag: dev
+  imagetag: <VERSION>
   pullPolicy: IfNotPresent
 
 # define environment variables here as a map of key: value
