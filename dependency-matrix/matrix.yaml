@@ -3,5 +3,5 @@ dependencies:
   owner: cloudbees
   repo: jx-tenant-service
   url: https://github.com/cloudbees/jx-tenant-service
-  version: 0.0.93
-  versionURL: https://github.com/cloudbees/jx-tenant-service/releases/tag/v0.0.93
+  version: 0.0.94
+  versionURL: https://github.com/cloudbees/jx-tenant-service/releases/tag/v0.0.94
