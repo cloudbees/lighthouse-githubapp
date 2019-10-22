@@ -19,30 +19,15 @@ spec:
 {{ toYaml .Values.podAnnotations | indent 8 }}
 {{- end }}
     spec:
-      volumes:
-      - name: private-key
-        secret:
-          secretName: {{ template "fullname" . }}
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.imagerepository }}:{{ .Values.image.imagetag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        volumeMounts:
-        - mountPath: "/var/lighthouse-githubapp"
-          name: private-key
-          readOnly: true
         env:
         - name: JX_DEBUG
           value: "{{ .Values.debug }}"
         - name: TENANT_SERVICE_URL
           value: {{.Values.tenantService.url}}
-        - name: LHA_PRIVATE_KEY_FILE
-          value: "/var/lighthouse-githubapp/cert"
-        - name: LHA_APP_ID
-          valueFrom:
-            secretKeyRef:
-              name: {{ template "fullname" . }}
-              key: id
         - name: LHA_HMAC_TOKEN
           valueFrom:
             secretKeyRef:

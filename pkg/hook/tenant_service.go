@@ -2,11 +2,14 @@ package hook
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/cloudbees/jx-tenant-service/pkg/access"
 	"github.com/cloudbees/jx-tenant-service/pkg/client"
 	"github.com/cloudbees/jx-tenant-service/pkg/clientutils"
+	"github.com/cloudbees/jx-tenant-service/pkg/domain"
 	"github.com/cloudbees/jx-tenant-service/pkg/model"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -67,6 +70,36 @@ func (t *TenantService) FindWorkspaces(log *logrus.Entry, installationID int64, 
 		return nil, err
 	}
 	return clientutils.ToWorkspaceAccesses(results), nil
+}
+
+// GetGithubAppToken returns the github app token for the installation
+func (t *TenantService) GetGithubAppToken(log *logrus.Entry, installationID int64) (*domain.InstallationToken, error) {
+	installation := model.Int64ToA(installationID)
+	path := client.GetGithubAppTokenWorkspacesPath(installation)
+	ctx := context.Background()
+	resp, err := t.client.GetGithubAppTokenWorkspaces(ctx, path)
+	if err != nil {
+		err = errors.Wrapf(err, "failed to get GitHub App token")
+		log.WithError(err).Error(err.Error())
+		return nil, err
+	}
+	gitToken, err := t.client.DecodeGitToken(resp)
+	if err != nil {
+		err = errors.Wrapf(err, "failed to unmarshall the response")
+		log.WithError(err).Error(err.Error())
+		return nil, err
+	}
+	if gitToken == nil {
+		err = fmt.Errorf("no GitHub App token returned")
+		log.WithError(err).Error(err.Error())
+		return nil, err
+	}
+	if gitToken.Token == nil || *gitToken.Token == "" {
+		err = fmt.Errorf("empty GitHub App token returned")
+		log.WithError(err).Error(err.Error())
+		return nil, err
+	}
+	return clientutils.ToInstallationToken(gitToken), nil
 }
 
 func installationPath(installationID int64) string {

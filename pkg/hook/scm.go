@@ -6,7 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/bradleyfalzon/ghinstallation"
+	"github.com/cloudbees/jx-tenant-service/pkg/domain"
+	"github.com/cloudbees/jx-tenant-service/pkg/model"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
 	"github.com/jenkins-x/go-scm/scm"
 	"github.com/jenkins-x/go-scm/scm/factory"
@@ -14,25 +15,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
-
-func (o *HookOptions) createAppsScmClient() (*scm.Client, int, error) {
-	scmClient, _, _, err := o.createSCMClient("")
-	if err != nil {
-		return nil, 0, errors.Wrap(err, "failed to create ScmClient")
-	}
-	defaultScmTransport(scmClient)
-	appID := flags.GitHubAppID.Value()
-	if err != nil {
-		return nil, appID, fmt.Errorf("missing $LHA_APP_ID")
-	}
-	logrus.Infof("using GitHub App ID %d", appID)
-	tr, err := ghinstallation.NewAppsTransportKeyFromFile(scmClient.Client.Transport, appID, o.PrivateKeyFile)
-	if err != nil {
-		return nil, appID, errors.Wrapf(err, "failed to create the Apps transport for AppID %v and file %s", appID, o.PrivateKeyFile)
-	}
-	scmClient.Client.Transport = tr
-	return scmClient, appID, err
-}
 
 func defaultScmTransport(scmClient *scm.Client) {
 	if scmClient.Client == nil {
@@ -43,29 +25,29 @@ func defaultScmTransport(scmClient *scm.Client) {
 	}
 }
 
-func (o *HookOptions) getInstallScmClient(log *logrus.Entry, ctx context.Context, ref *scm.InstallationRef) (*scm.Client, *scm.InstallationToken, error) {
+func (o *HookOptions) getInstallScmClient(log *logrus.Entry, ctx context.Context, ref *scm.InstallationRef) (*scm.Client, *domain.InstallationToken, error) {
 	if ref == nil || ref.ID == 0 {
 		return nil, nil, fmt.Errorf("missing installation.ID on webhok")
 	}
-	key := fmt.Sprintf("%v", ref.ID)
+	key := model.Int64ToA(ref.ID)
 	item, ok := o.tokenCache.Get(key)
 	if ok {
-		tokenResource, ok := item.(*scm.InstallationToken)
+		tokenResource, ok := item.(*domain.InstallationToken)
 		if ok && tokenResource != nil {
 			token := tokenResource.Token
 			if token != "" {
 				expires := tokenResource.ExpiresAt
 				if expires == nil || time.Now().Before(expires.Add(tokenCacheExpireDelta)) {
-					scmClient, _, _, err := o.createSCMClient(token)
+					scmClient, err := o.createInstallScmClient(log, ctx, tokenResource)
 					return scmClient, tokenResource, err
 				}
 			}
 		}
 	}
-	log.WithField("InstallationID", ref.ID).Infof("requesting new installation token")
-	scmClient, tokenResource, err := o.createInstallScmClient(log, ctx, ref)
+
+	tokenResource, err := o.tenantService.GetGithubAppToken(log, ref.ID)
 	if err != nil {
-		return scmClient, tokenResource, err
+		return nil, tokenResource, errors.Wrapf(err, "failed to get the GitHub App token for installation %s", key)
 	}
 	if tokenResource != nil && tokenResource.Token != "" {
 		duration := tokenCacheExpiration
@@ -74,32 +56,27 @@ func (o *HookOptions) getInstallScmClient(log *logrus.Entry, ctx context.Context
 		}
 		o.tokenCache.Set(key, tokenResource, duration)
 	}
+	scmClient, err := o.createInstallScmClient(log, ctx, tokenResource)
+	if err != nil {
+		return scmClient, tokenResource, err
+	}
 	return scmClient, tokenResource, err
 }
 
-func (o *HookOptions) createInstallScmClient(log *logrus.Entry, ctx context.Context, ref *scm.InstallationRef) (*scm.Client, *scm.InstallationToken, error) {
-	appsClient, _, err := o.createAppsScmClient()
-	if err != nil {
-		return nil, nil, err
-	}
-	tokenResource, _, err := appsClient.Apps.CreateInstallationToken(ctx, ref.ID)
-	if err != nil {
-		log.WithError(err).Error("failed to create installation token")
-		return nil, tokenResource, err
-	}
+func (o *HookOptions) createInstallScmClient(log *logrus.Entry, ctx context.Context, tokenResource *domain.InstallationToken) (*scm.Client, error) {
 	if tokenResource == nil {
-		return nil, tokenResource, fmt.Errorf("no token returned from CreateInstallationToken()")
+		return nil, fmt.Errorf("no GitHub App token returned")
 	}
 	token := tokenResource.Token
 	if token == "" {
-		return nil, tokenResource, fmt.Errorf("empty token returned from CreateInstallationToken()")
+		return nil, fmt.Errorf("empty GitHub App token returned")
 	}
 	client, _, _, err := o.createSCMClient(token)
 	if err != nil {
 		log.WithError(err).Error("failed to create real SCM client")
-		return nil, tokenResource, err
+		return nil, err
 	}
-	return client, tokenResource, nil
+	return client, nil
 }
 
 func (o *HookOptions) createSCMClient(token string) (*scm.Client, string, string, error) {
