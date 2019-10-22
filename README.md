@@ -4,6 +4,11 @@ This is a multi-tenant version of [Lighthouse](https://github.com/jenkins-x/ligh
 
 ### How it works
 
+Here is a [diagram](https://whimsical.com/48NiENaA7vYCu8bUtgUfh8) of how it works:
+
+![Overview](docs/images/app.png)
+
+
 You can think of the Lighthouse GitHub App as like the regular Lighthouse - it handles webhooks from github, labels/comments on PRs and triggers pipelines - only it runs in a shared tenant rather than in each consumers cluster.
 
 When the github app is installed to a github user/organisation all github webhooks for all repositories are sent to this HTTP endpoint.
