@@ -16,7 +16,7 @@ Then for each webhook we:
 * for each Workspace + Scheduler:
   * connect to the remote Workspace project (for `KubeClient` / `JXClient` / `TektonClient` etc)
   * turn the `Scheduler` JSON into a lighthouse Prow `configs` and `plugins` configuration object
-  * invoke the lighthouse webhook function [ProcessWebhook()]() to either comment on the PR or create a new pipeline in the tenant cluster via the metapipeline client.
+  * invoke the lighthouse webhook function [ProcessWebhook()](https://github.com/jenkins-x/lighthouse/blob/master/pkg/webhook/webhook.go#L233) to either comment on the PR or create a new pipeline in the tenant cluster via the metapipeline client.
 
 
 ### Environment variables
