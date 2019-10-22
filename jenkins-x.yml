@@ -95,6 +95,17 @@ pipelineConfig:
                   - helm
                   - release
 
+              - image: gcr.io/jenkinsxio/builder-jx
+                dir: /workspace/source/charts/lighthouse-githubapp
+                command: jx
+                args:
+                  - step
+                  - wait
+                  - for
+                  - artifact
+                  - --artifact-url
+                  - https://storage.googleapis.com/chartmuseum.jenkins-x.io/charts/lighthouse-githubapp-$VERSION.tgz
+
               - image: gcr.io/jenkinsxio/builder-go
                 command: ./updatebot.sh
                 name: updatebot
