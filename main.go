@@ -1,11 +1,9 @@
 package main
 
 import (
-	"io/ioutil"
 	"net/http"
 	"os"
 
-	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/hook"
 	"github.com/sirupsen/logrus"
 )
@@ -13,22 +11,9 @@ import (
 func main() {
 	logrus.SetFormatter(CreateDefaultFormatter())
 
-	privateKeyFile := flags.AppPrivateKeyFile.Value()
-	if privateKeyFile == "" {
-		logrus.Fatalf("missing private key file environment variable $LHA_PRIVATE_KEY_FILE")
-	}
-
-	privateKey, err := ioutil.ReadFile(privateKeyFile)
-	if err != nil {
-		logrus.Fatalf("could not read private key file %s: %s", privateKeyFile, err)
-	}
-	if len(privateKey) == 0 {
-		logrus.Fatalf("empty private key file %s: %s", privateKeyFile, err)
-	}
-
 	mux := http.NewServeMux()
 
-	handler, err := hook.NewHook(privateKeyFile)
+	handler, err := hook.NewHook()
 	if err != nil {
 		logrus.WithError(err).Fatalf("failed to create hook")
 	}
