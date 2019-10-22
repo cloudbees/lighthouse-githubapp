@@ -146,6 +146,8 @@ github.com/cloudbees/jx-tenant-service v0.0.85 h1:K7WVwHgEe9RuczpSttZwrKCK+ZDS7u
 github.com/cloudbees/jx-tenant-service v0.0.85/go.mod h1:sy5JkkY1MVH56AbtMLajYrAzL4EAE0G9pOD1ZtPZPLI=
 github.com/cloudbees/jx-tenant-service v0.0.86 h1:NLAGm/k2t/uHK3rG/3nRPvKWEYaBt017uelLEujkg+k=
 github.com/cloudbees/jx-tenant-service v0.0.86/go.mod h1:sy5JkkY1MVH56AbtMLajYrAzL4EAE0G9pOD1ZtPZPLI=
+github.com/cloudbees/jx-tenant-service v0.0.92 h1:u8GILkp7242ZqGV1xXnuteIKY9fN9o0OBWPEd2jhMPw=
+github.com/cloudbees/jx-tenant-service v0.0.92/go.mod h1:E9VYzXiQ2/NUtDcAa3unqKoVwhrfeccuOfTtLAqb10Q=
 github.com/cockroachdb/cmux v0.0.0-20170110192607-30d10be49292/go.mod h1:qRiX68mZX1lGBkTWyp3CLcenw9I94W2dLeRvMzcn9N4=
 github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd/go.mod h1:sE/e/2PUdi/liOCUjSTXgM1o87ZssimdTWN964YiIeI=
 github.com/codeship/codeship-go v0.0.0-20180717142545-7793ca823354/go.mod h1:cQ+OMEXZoX6vJ+FQ5L/RJidQuAdmEBIi3zDOLi5Cq0U=

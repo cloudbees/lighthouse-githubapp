@@ -46,6 +46,4 @@ readinessProbe:
 tenantService:
   url: https://jx-tenant-service-jx-staging.jenkins-x.live
 
-cert: vault:lh-github-app:cert
-id: vault:lh-github-app:id
 secret: vault:lh-github-app:secret

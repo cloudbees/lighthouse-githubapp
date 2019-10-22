@@ -1,14 +1,8 @@
 package flags
 
 var (
-	// GitHubAppID the ID of the GitHub App
-	GitHubAppID = NewIntFlag(0, "LHA_APP_ID")
-
 	// HmacToken the webhook secret
 	HmacToken = NewStringFlag("", "LHA_HMAC_TOKEN")
-
-	// AppPrivateKeyFile the file name for the private key
-	AppPrivateKeyFile = NewStringFlag("", "LHA_PRIVATE_KEY_FILE")
 
 	// BotName name of the bot
 	BotName = NewStringFlag("jenkins-x-bot", "BOT_NAME")

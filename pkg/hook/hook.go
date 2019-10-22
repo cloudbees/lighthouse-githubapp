@@ -30,14 +30,13 @@ type HookOptions struct {
 	Port             string
 	Path             string
 	Version          string
-	PrivateKeyFile   string
 	tokenCache       *cache.Cache
 	tenantService    *TenantService
 	clusterConnector connector.Client
 }
 
 // NewHook create a new hook handler
-func NewHook(privateKeyFile string) (*HookOptions, error) {
+func NewHook() (*HookOptions, error) {
 	workDir, err := ioutil.TempDir("", "jx-connectors-")
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to create temp dir for jx connectors")
@@ -52,7 +51,6 @@ func NewHook(privateKeyFile string) (*HookOptions, error) {
 		Path:             HookPath,
 		Port:             flags.HttpPort.Value(),
 		Version:          "TODO",
-		PrivateKeyFile:   privateKeyFile,
 		tokenCache:       tokenCache,
 		tenantService:    tenantService,
 		clusterConnector: clusterConnector,
