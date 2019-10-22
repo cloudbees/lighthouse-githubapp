@@ -4,9 +4,11 @@ This is a multi-tenant version of [Lighthouse](https://github.com/jenkins-x/ligh
 
 ### How it works
 
+You can think of the Lighthouse GitHub App as like the regular Lighthouse - it handles webhooks from github, labels/comments on PRs and triggers pipelines - only it runs in a shared tenant rather than in each consumers cluster.
+
 When the github app is installed to a github user/organisation all github webhooks for all repositories are sent to this HTTP endpoint.
 
-Internally this service then queries the [jx-tenant-service]()'s REST API to query the workspaces and Scheduler JSON for the webhooks git URL.
+Internally this service then queries the [jx-tenant-service](https://github.com/cloudbees/jx-tenant-service)'s REST API to query the workspaces and Scheduler JSON for the webhooks git URL.
 
 Then for each webhook we:
 
