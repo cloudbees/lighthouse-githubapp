@@ -1,5 +1,5 @@
-FROM alpine:3.10
-RUN apk add --update --no-cache ca-certificates git
+FROM gcr.io/jenkinsxio/builder-go:2.0.902-250
+#RUN apk add --update --no-cache ca-certificates git
 
 COPY ./build/lighthouse-githubapp-linux-amd64 /lighthouse
 
