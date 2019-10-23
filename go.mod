@@ -8,8 +8,8 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.3.1
 	github.com/jenkins-x/go-scm v1.5.49
-	github.com/jenkins-x/jx v0.0.0-20191018175829-4badc08866cd
-	github.com/jenkins-x/lighthouse v0.0.209
+	github.com/jenkins-x/jx v0.0.0-20191022080909-31fac5d262ee
+	github.com/jenkins-x/lighthouse v0.0.212
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pborman/uuid v1.2.0
 	github.com/pkg/errors v0.8.1
