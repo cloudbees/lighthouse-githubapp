@@ -106,6 +106,17 @@ pipelineConfig:
                   - --artifact-url
                   - https://storage.googleapis.com/chartmuseum.jenkins-x.io/charts/lighthouse-githubapp-$VERSION.tgz
 
+              - image: gcr.io/jenkinsxio/builder-jx:2.0.902-250  # tag 2.0.902-250 build not yet finished
+                dir: /workspace/source/charts/lighthouse-githubapp
+                command: jx
+                args:
+                  - step
+                  - wait-for-chart
+                  - --chart-name
+                  - "lighthouse-githubapp"
+                  - --chart-version
+                  - "$VERSION"
+
               - image: gcr.io/jenkinsxio/builder-go
                 command: ./updatebot.sh
                 name: updatebot
