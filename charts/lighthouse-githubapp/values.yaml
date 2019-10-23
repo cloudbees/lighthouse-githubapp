@@ -47,3 +47,5 @@ tenantService:
   url: https://jx-tenant-service-jx-staging.jenkins-x.live
 
 secret: vault:lh-github-app:secret
+saasSA: vault:tekton-weasel/jx-tenant-service-saas-sa:json
+

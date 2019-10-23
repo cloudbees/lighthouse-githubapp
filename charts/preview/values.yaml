@@ -23,4 +23,5 @@ preview:
   cert: vault:tekton-weasel/preview/jx-github-app:cert
   id: vault:tekton-weasel/preview/jx-github-app:id
   secret: vault:tekton-weasel/preview/jx-github-app:secret
+  saasSA: vault:tekton-weasel/preview/jx-tenant-service-saas-sa:json
   debug: true

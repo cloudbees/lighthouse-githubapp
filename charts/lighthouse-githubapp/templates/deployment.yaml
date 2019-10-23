@@ -19,15 +19,28 @@ spec:
 {{ toYaml .Values.podAnnotations | indent 8 }}
 {{- end }}
     spec:
+      volumes:
+        - name: secret-saas
+          secret:
+            secretName: {{ template "fullname" . }}-saas
+            items:
+            - key: service-account
+              path: service-account.key.json
+              mode: 256
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.imagerepository }}:{{ .Values.image.imagetag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        volumeMounts:
+        - mountPath: /secrets/saas
+          name: secret-saas
         env:
         - name: JX_DEBUG
           value: "{{ .Values.debug }}"
         - name: TENANT_SERVICE_URL
           value: {{.Values.tenantService.url}}
+        - name: CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE
+          value: "/secrets/saas/service-account.key.json"
         - name: LHA_HMAC_TOKEN
           valueFrom:
             secretKeyRef:

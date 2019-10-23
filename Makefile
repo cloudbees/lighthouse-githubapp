@@ -16,9 +16,7 @@ GO_VERSION := $(shell $(GO) version | sed -e 's/^[^0-9.]*\([0-9.]*\).*/\1/')
 #PACKAGE_DIRS := pkg cmd
 PACKAGE_DIRS := $(shell $(GO) list ./... | grep -v /vendor/ | grep -v e2e)
 PEGOMOCK_PACKAGE := github.com/petergtz/pegomock
-#GO_DEPENDENCIES := cmd/*/*.go cmd/*/*/*.go pkg/*/*.go pkg/*/*/*.go pkg/*//*/*/*.go
-#GO_DEPENDENCIES := pkg/*/*.go pkg/*/*/*.go pkg/*//*/*/*.go
-GO_DEPENDENCIES := $(call rwildcard,pkg/,*.go) $(call rwildcard,cmd/jx/,*.go)
+GO_DEPENDENCIES := $(call rwildcard,pkg/,*.go)
 
 REV        := $(shell git rev-parse --short HEAD 2> /dev/null || echo 'unknown')
 SHA1       := $(shell git rev-parse HEAD 2> /dev/null || echo 'unknow')
