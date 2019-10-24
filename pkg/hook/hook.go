@@ -276,6 +276,8 @@ func (o *HookOptions) invokeLighthouse(log *logrus.Entry, webhook scm.Webhook, f
 	gitClient.SetCredentials(botUser, func() []byte {
 		return []byte(tokenResource.Token)
 	})
+	clientFactory := ToJXFactory(factory, ns)
+
 	server := &lhhook.Server{
 		ClientAgent: &plugins.ClientAgent{
 			BotName:          botUser,
@@ -283,12 +285,13 @@ func (o *HookOptions) invokeLighthouse(log *logrus.Entry, webhook scm.Webhook, f
 			KubernetesClient: kubeClient,
 			GitClient:        gitClient,
 		},
-		Plugins:     &plugins.ConfigAgent{},
-		ConfigAgent: &config.Agent{},
+		ClientFactory: clientFactory,
+		Plugins:       &plugins.ConfigAgent{},
+		ConfigAgent:   &config.Agent{},
 	}
 	err = o.updateProwConfiguration(log, webhook, server, scheduler, jxClient, ns)
 
-	localHook := lhwebhook.NewWebhook(ToJXFactory(factory, ns), server)
+	localHook := lhwebhook.NewWebhook(clientFactory, server)
 
 	l, output, err := localHook.ProcessWebHook(webhook)
 	if err != nil {
