@@ -1,4 +1,4 @@
-package hook
+package connectors
 
 import (
 	"fmt"
@@ -19,7 +19,8 @@ type factoryAdapter struct {
 }
 
 func ToJXFactory(factory *connector.ConfigClientFactory, ns string) jxfactory.Factory {
-	return &factoryAdapter{factory, ns}
+	baseFactory := &factoryAdapter{factory, ns}
+	return NewCachingFactory(baseFactory, ns)
 }
 
 func (f *factoryAdapter) WithBearerToken(token string) jxfactory.Factory {

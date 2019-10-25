@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
+	"github.com/cloudbees/lighthouse-githubapp/pkg/hook/connectors"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/schedulers"
 	"github.com/jenkins-x/go-scm/scm"
 	v1 "github.com/jenkins-x/jx/pkg/apis/jenkins.io/v1"
@@ -253,20 +254,22 @@ func (o *HookOptions) invokeRemoteLighthouseViaProxy(log *logrus.Entry, webhook 
 	return nil
 }
 
-func (o *HookOptions) invokeLighthouse(log *logrus.Entry, webhook scm.Webhook, factory *connector.ConfigClientFactory, ns string, scheduler *v1.Scheduler, installRef *scm.InstallationRef) error {
+func (o *HookOptions) invokeLighthouse(log *logrus.Entry, webhook scm.Webhook, f *connector.ConfigClientFactory, ns string, scheduler *v1.Scheduler, installRef *scm.InstallationRef) error {
 	log.Info("invoking lighthouse")
 
-	serverURL := webhook.Repository().Link
-	kubeClient, err := factory.CreateKubeClient()
+	clientFactory := connectors.ToJXFactory(f, ns)
+	kubeClient, _, err := clientFactory.CreateKubeClient()
 	if err != nil {
 		log.WithError(err).Errorf("failed to create KubeClient")
 		return err
 	}
-	jxClient, err := factory.CreateJXClient()
+	jxClient, _, err := clientFactory.CreateJXClient()
 	if err != nil {
 		log.WithError(err).Errorf("failed to create JXClient")
 		return err
 	}
+
+	serverURL := webhook.Repository().Link
 
 	gitClient, _ := git.NewClient(serverURL, flags.GitKind.Value())
 
@@ -276,7 +279,6 @@ func (o *HookOptions) invokeLighthouse(log *logrus.Entry, webhook scm.Webhook, f
 	gitClient.SetCredentials(botUser, func() []byte {
 		return []byte(tokenResource.Token)
 	})
-	clientFactory := ToJXFactory(factory, ns)
 
 	server := &lhhook.Server{
 		ClientAgent: &plugins.ClientAgent{
@@ -293,10 +295,12 @@ func (o *HookOptions) invokeLighthouse(log *logrus.Entry, webhook scm.Webhook, f
 
 	localHook := lhwebhook.NewWebhook(clientFactory, server)
 
+	log.Info("about to invoke lighthouse")
+
 	l, output, err := localHook.ProcessWebHook(webhook)
 	if err != nil {
 		err = errors.Wrap(err, "failed to process webhook")
-		l.WithError(err).Error("failed to process webhook")
+		l.WithError(err).Error(err.Error())
 		return err
 	}
 	l.Infof(output)
