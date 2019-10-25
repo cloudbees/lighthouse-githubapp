@@ -3,13 +3,14 @@ module github.com/cloudbees/lighthouse-githubapp
 require (
 	github.com/bradleyfalzon/ghinstallation v0.1.2
 	github.com/cenkalti/backoff v2.2.1+incompatible
-	github.com/cloudbees/jx-tenant-service v0.0.92
+	github.com/cloudbees/jx-tenant-service v0.0.102
 	github.com/davecgh/go-spew v1.1.1
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.3.1
+	github.com/heptio/sonobuoy v0.16.0
 	github.com/jenkins-x/go-scm v1.5.49
-	github.com/jenkins-x/jx v0.0.0-20191022080909-31fac5d262ee
-	github.com/jenkins-x/lighthouse v0.0.212
+	github.com/jenkins-x/jx v0.0.0-20191025120753-fd3ecdbac500
+	github.com/jenkins-x/lighthouse v0.0.221
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pborman/uuid v1.2.0
 	github.com/pkg/errors v0.8.1
@@ -18,6 +19,7 @@ require (
 	github.com/sirupsen/logrus v1.4.2
 	github.com/stretchr/testify v1.4.0
 	github.com/tektoncd/pipeline v0.5.1
+	k8s.io/apiextensions-apiserver v0.0.0-20190820064606-e49a3471dba5
 	k8s.io/apimachinery v0.0.0-20190816221834-a9f1d8a9c101
 	k8s.io/client-go v11.0.1-0.20190805182717-6502b5e7b1b5+incompatible
 )
