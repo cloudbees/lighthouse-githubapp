@@ -1,14 +1,13 @@
 module github.com/cloudbees/lighthouse-githubapp
 
 require (
-	github.com/bradleyfalzon/ghinstallation v0.1.2
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cloudbees/jx-tenant-service v2.0.916
 	github.com/davecgh/go-spew v1.1.1
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.3.1
 	github.com/heptio/sonobuoy v0.16.0
-	github.com/jenkins-x/go-scm v1.5.49
+	github.com/jenkins-x/go-scm v1.5.50
 	github.com/jenkins-x/jx v0.0.0-20191025120753-fd3ecdbac500
 	github.com/jenkins-x/lighthouse v0.0.221
 	github.com/patrickmn/go-cache v2.1.0+incompatible
