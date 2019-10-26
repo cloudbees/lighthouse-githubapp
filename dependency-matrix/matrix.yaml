@@ -5,3 +5,9 @@ dependencies:
   url: https://github.com/cloudbees/jx-tenant-service
   version: 0.0.106
   versionURL: https://github.com/cloudbees/jx-tenant-service/releases/tag/v0.0.106
+- host: github.com
+  owner: jenkins-x
+  repo: go-scm
+  url: https://github.com/jenkins-x/go-scm
+  version: 1.5.52
+  versionURL: ""
