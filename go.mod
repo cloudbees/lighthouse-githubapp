@@ -8,8 +8,8 @@ require (
 	github.com/google/go-cmp v0.3.1
 	github.com/heptio/sonobuoy v0.16.0
 	github.com/jenkins-x/go-scm v1.5.53
-	github.com/jenkins-x/jx v0.0.0-20191028114547-dfa711b18461
-	github.com/jenkins-x/lighthouse v0.0.232
+	github.com/jenkins-x/jx v0.0.0-20191028180918-2346eaf503ed
+	github.com/jenkins-x/lighthouse v0.0.234
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pborman/uuid v1.2.0
 	github.com/pkg/errors v0.8.1

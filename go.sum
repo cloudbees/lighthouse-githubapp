@@ -16,11 +16,13 @@ contrib.go.opencensus.io/exporter/stackdriver v0.9.1/go.mod h1:hNe5qQofPbg6bLQY5
 contrib.go.opencensus.io/integrations/ocsql v0.1.2/go.mod h1:8DsSdjz3F+APR+0z0WkU1aRorQCFfRxvqjUUPMbF3fE=
 github.com/Azure/azure-pipeline-go v0.0.0-20180507050906-098e490af5dc/go.mod h1:XA1kFWRVhSK+KNFiOhfv83Fv8L9achrP7OxIzeTn1Yg=
 github.com/Azure/azure-pipeline-go v0.1.8/go.mod h1:XA1kFWRVhSK+KNFiOhfv83Fv8L9achrP7OxIzeTn1Yg=
+github.com/Azure/azure-pipeline-go v0.1.9 h1:u7JFb9fFTE6Y/j8ae2VK33ePrRqJqoCM/IWkQdAZ+rg=
 github.com/Azure/azure-pipeline-go v0.1.9/go.mod h1:XA1kFWRVhSK+KNFiOhfv83Fv8L9achrP7OxIzeTn1Yg=
 github.com/Azure/azure-sdk-for-go v21.1.0+incompatible h1:43w4ZSx8u8wh5tgs1P+hO5Dgjh5bhP0qAlEnCdAuMQA=
 github.com/Azure/azure-sdk-for-go v21.1.0+incompatible/go.mod h1:9XXNKU+eRnpl9moKnB4QOLf1HestfXbmab5FXxiDBjc=
 github.com/Azure/azure-storage-blob-go v0.0.0-20180507052152-66ba96e49ebb/go.mod h1:x2mtS6O3mnMEZOJp7d7oldh8IvatBrMfReiyQ+cKgKY=
 github.com/Azure/azure-storage-blob-go v0.0.0-20181023070848-cf01652132cc/go.mod h1:oGfmITT1V6x//CswqY2gtAHND+xIP64/qL7a5QJix0Y=
+github.com/Azure/azure-storage-blob-go v0.0.0-20190123011202-457680cc0804 h1:QjGHsWFbJyl312t0BtgkmZy2TTYA++FF0UakGbr3ZhQ=
 github.com/Azure/azure-storage-blob-go v0.0.0-20190123011202-457680cc0804/go.mod h1:oGfmITT1V6x//CswqY2gtAHND+xIP64/qL7a5QJix0Y=
 github.com/Azure/draft v0.15.0 h1:9GVmAwNxusaU1FIsoIBFWYT9ivnHwOYD2Q6O5cJjl7E=
 github.com/Azure/draft v0.15.0/go.mod h1:zz7LXil5dfY7p0jR0+BFjSwYz8aIigRjYR4GQwaNGE0=
@@ -142,8 +144,8 @@ github.com/chromedp/chromedp v0.1.1/go.mod h1:KKKRCns4HLd/N5oQR+vX13dV/U7U3+QeWF
 github.com/circonus-labs/circonus-gometrics v2.3.1+incompatible/go.mod h1:nmEj6Dob7S7YxXgwXpfOuvO54S+tGdZdw9fuRZt25Ag=
 github.com/circonus-labs/circonusllhist v0.1.3/go.mod h1:kMXHVDlOchFAehlya5ePtbp5jckzBHf4XRpQvBOLI+I=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
-github.com/cloudbees/jx-tenant-service v0.0.122 h1:kAWKRSjpvYYe8US9hloTh0fTKxkUYxjHxndgS//Jucg=
-github.com/cloudbees/jx-tenant-service v0.0.122/go.mod h1:qhkzhDF38h8J+v4YB5K+nW2qiq45vLLI121swKh+jQI=
+github.com/cloudbees/jx-tenant-service v0.0.123 h1:xj7/9oMz+RYDCCpB1UmFE3PkP8AQH7VGFWTJ2UmPOAk=
+github.com/cloudbees/jx-tenant-service v0.0.123/go.mod h1:qhkzhDF38h8J+v4YB5K+nW2qiq45vLLI121swKh+jQI=
 github.com/cockroachdb/cmux v0.0.0-20170110192607-30d10be49292/go.mod h1:qRiX68mZX1lGBkTWyp3CLcenw9I94W2dLeRvMzcn9N4=
 github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd/go.mod h1:sE/e/2PUdi/liOCUjSTXgM1o87ZssimdTWN964YiIeI=
 github.com/codeship/codeship-go v0.0.0-20180717142545-7793ca823354/go.mod h1:cQ+OMEXZoX6vJ+FQ5L/RJidQuAdmEBIi3zDOLi5Cq0U=
@@ -180,6 +182,7 @@ github.com/dimfeld/httptreemux v5.0.1+incompatible h1:Qj3gVcDNoOthBAqftuD596rm4w
 github.com/dimfeld/httptreemux v5.0.1+incompatible/go.mod h1:rbUlSV+CCpv/SuqUTP/8Bk2O3LyUV436/yaRGkhP6Z0=
 github.com/disintegration/imaging v1.4.2/go.mod h1:9B/deIUIrliYkyMTuXJd6OUFLcrZ2tf+3Qlwnaf/CjU=
 github.com/djherbis/atime v1.0.0/go.mod h1:5W+KBIuTwVGcqjIfaTwt+KSYX1o6uep8dtevevQP/f8=
+github.com/dnaeon/go-vcr v1.0.1 h1:r8L/HqC0Hje5AXMu1ooW8oyQyOFv4GxqpL0nRP7SLLY=
 github.com/dnaeon/go-vcr v1.0.1/go.mod h1:aBB1+wY4s93YsC3HHjMBMrwTj2R9FHDzUr9KyGc8n1E=
 github.com/docker/distribution v0.0.0-20170726174610-edc3ab29cdff/go.mod h1:J2gT2udsDAN96Uj4KfcMRqY0/ypR+oyYUYmja8H+y+w=
 github.com/docker/docker v0.0.0-20171206114025-5e5fadb3c020 h1:aiKCZxnxoraZKXbM2zJj0ZI1n8eamkdK7zNxP7jlbII=
@@ -333,6 +336,7 @@ github.com/google/uuid v1.0.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+
 github.com/google/uuid v1.1.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/google/uuid v1.1.1 h1:Gkbcsh/GbpXz7lPftLA3P6TYMwjCLYm83jiFQZF/3gY=
 github.com/google/uuid v1.1.1/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/google/wire v0.2.0 h1:l8O+yxT6Kx49nR2KzotgPOQpHFcIvpDY0rGzlCZ1wIE=
 github.com/google/wire v0.2.0/go.mod h1:ptBl5bWD3nzmJHVNwYHV3v4wdtKzBMlU2YbtKQCG9GI=
 github.com/googleapis/gax-go v2.0.0+incompatible h1:j0GKcs05QVmm7yesiZq2+9cxHkNK9YM6zKx4D2qucQU=
 github.com/googleapis/gax-go v2.0.0+incompatible/go.mod h1:SFVmujtThgffbyetf+mdk2eWhX2bMyUtNHzFKcPA9HY=
@@ -448,8 +452,10 @@ github.com/jenkins-x/golang-jenkins v0.0.0-20180919102630-65b83ad42314 h1:kyBMx/
 github.com/jenkins-x/golang-jenkins v0.0.0-20180919102630-65b83ad42314/go.mod h1:C6j5HgwlHGjRU27W4XCs6jXksqYFo8OdBu+p44jqQeM=
 github.com/jenkins-x/jx v0.0.0-20191028114547-dfa711b18461 h1:gAOHpok5fFMPuOr6qJWpztKlyn0ZSK6nhu02MhZhf30=
 github.com/jenkins-x/jx v0.0.0-20191028114547-dfa711b18461/go.mod h1:djeQXwXePlaicWCrD91Vasj3opugQzEhAUPXDzCejqg=
-github.com/jenkins-x/lighthouse v0.0.232 h1:61s+k2RLqjTmvAbbuAbQ+gkun2Vlf2/8QfHfQU9LZ0I=
-github.com/jenkins-x/lighthouse v0.0.232/go.mod h1:DCEakk78poBSgvhxBnr0HFQrH87VAT17ZMeeZha+Phs=
+github.com/jenkins-x/jx v0.0.0-20191028180918-2346eaf503ed h1:N27TC8nyHSSPdxpewQPQcYzMrktPHnJJvWNpS8YVQdg=
+github.com/jenkins-x/jx v0.0.0-20191028180918-2346eaf503ed/go.mod h1:djeQXwXePlaicWCrD91Vasj3opugQzEhAUPXDzCejqg=
+github.com/jenkins-x/lighthouse v0.0.234 h1:nxU2r4WNLN5HT18tmpYKpJb/+NAIZnK4AZznwNVF7vs=
+github.com/jenkins-x/lighthouse v0.0.234/go.mod h1:vWn/0u0gVAsQSfTKBO7tQtIDXp62NfauSL8RoeTz0kU=
 github.com/jenkins-x/sonobuoy v0.11.7-0.20190318120422-253758214767 h1:lKtC9uHyWi8wd+EUch3Pfzk3/8XSJvYRJhvk9dK4YKY=
 github.com/jenkins-x/sonobuoy v0.11.7-0.20190318120422-253758214767/go.mod h1:UR3AoCKJHHKi2AoOWeFbZcMKyd5LqQkdCRgwqZkX/io=
 github.com/jetstack/cert-manager v0.5.2 h1:qs74mdAprZ5kcCYF3arzmEAZtbt+9HneldSJrk21tKs=
