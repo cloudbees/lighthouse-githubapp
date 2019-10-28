@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/cloudbees/jx-tenant-service/pkg/gcloudhelpers"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/hook/connectors"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/schedulers"
@@ -199,21 +200,19 @@ func (o *HookOptions) onGeneralHook(log *logrus.Entry, install *scm.Installation
 	}
 
 	for _, ws := range workspaces {
-		log.WithFields(ws.LogFields()).Infof("got workspace")
+		log := log.WithFields(ws.LogFields())
+		log.Infof("got workspace")
 
-		// TODO we could cache these factory/clients to speed things up
-		rc := &connector.RemoteConnector{GKE: &connector.GKEConnector{
-			Project: ws.Project,
-			Cluster: ws.Cluster,
-			Region:  ws.Region,
-			Zone:    ws.Zone,
-		}}
-		config, err := o.clusterConnector.Connect(rc)
-		if err != nil {
-			log.WithError(err).Error("failed to create rest config")
-			return err
+		kubeConfig := ws.KubeConfig
+		if kubeConfig == "" {
+			log.Error("no KubeConfig for workspace")
+			continue
 		}
-		f := connector.NewConfigClientFactory(ws.Project, config)
+		f, err := gcloudhelpers.CreateFactoryFromKubeConfig(kubeConfig)
+		if err != nil {
+			log.WithError(err).Error("failed to create remote client factory")
+			continue
+		}
 
 		// lets parse the Scheduler json
 		jsonText := ws.JSON
