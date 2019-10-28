@@ -144,6 +144,8 @@ github.com/circonus-labs/circonusllhist v0.1.3/go.mod h1:kMXHVDlOchFAehlya5ePtbp
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
 github.com/cloudbees/jx-tenant-service v0.0.113 h1:8jOAo2zg9aFzl+1pTSubpDxDXL9HEPekOAVBQnD4d3I=
 github.com/cloudbees/jx-tenant-service v0.0.113/go.mod h1:5S3qNtFziyuUTWRaeNa79M8I4IO9mPYPJAkzNs890O0=
+github.com/cloudbees/jx-tenant-service v0.0.118 h1:Ry+B6DlUI0UDswOnkCEqQ6kye0h+ei7F6h2Za29YnhM=
+github.com/cloudbees/jx-tenant-service v0.0.118/go.mod h1:lxjQMQdwjxhJ2ymt0e6AhlscTzsc7jXw4isQYa8BxE0=
 github.com/cockroachdb/cmux v0.0.0-20170110192607-30d10be49292/go.mod h1:qRiX68mZX1lGBkTWyp3CLcenw9I94W2dLeRvMzcn9N4=
 github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd/go.mod h1:sE/e/2PUdi/liOCUjSTXgM1o87ZssimdTWN964YiIeI=
 github.com/codeship/codeship-go v0.0.0-20180717142545-7793ca823354/go.mod h1:cQ+OMEXZoX6vJ+FQ5L/RJidQuAdmEBIi3zDOLi5Cq0U=
@@ -453,6 +455,8 @@ github.com/jenkins-x/jx v0.0.0-20191025120753-fd3ecdbac500 h1:9m7uzwqfX2vJFDu18L
 github.com/jenkins-x/jx v0.0.0-20191025120753-fd3ecdbac500/go.mod h1:djeQXwXePlaicWCrD91Vasj3opugQzEhAUPXDzCejqg=
 github.com/jenkins-x/jx v0.0.0-20191025135546-1d501d3b563c h1:2hqVHHsvzXNHJClCeSUIHlwOtVaMRo0FzXeZKcD1T8w=
 github.com/jenkins-x/jx v0.0.0-20191025135546-1d501d3b563c/go.mod h1:djeQXwXePlaicWCrD91Vasj3opugQzEhAUPXDzCejqg=
+github.com/jenkins-x/jx v0.0.0-20191027093642-5555816bd5bf h1:Tan6bFV09M+4ztP9ObuyI0tA2hGhVlOWADShDbUTXNs=
+github.com/jenkins-x/jx v0.0.0-20191027093642-5555816bd5bf/go.mod h1:djeQXwXePlaicWCrD91Vasj3opugQzEhAUPXDzCejqg=
 github.com/jenkins-x/lighthouse v0.0.221 h1:FTelpZhM9/jMSKmSQBXO24jl0gW1P+Qe604Sy5Fqccs=
 github.com/jenkins-x/lighthouse v0.0.221/go.mod h1:Go/zTxvBvEPBHTt1Vygmz40BS03rEdqIGhLEJFNcW8o=
 github.com/jenkins-x/sonobuoy v0.11.7-0.20190318120422-253758214767 h1:lKtC9uHyWi8wd+EUch3Pfzk3/8XSJvYRJhvk9dK4YKY=
@@ -589,6 +593,7 @@ github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3Rllmb
 github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
 github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32 h1:W6apQkHrMkS0Muv8G/TipAy/FJl/rCYT0+EuS8+Z0z4=
 github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32/go.mod h1:9wM+0iRr9ahx58uYLpLIr5fm8diHn0JbqRycJi6w0Ms=
+github.com/newrelic/go-agent v2.15.0+incompatible/go.mod h1:a8Fv1b/fYhFSReoTU6HDkTYIMZeSVNffmoS726Y0LzQ=
 github.com/nlopes/slack v0.0.0-20180721202243-347a74b1ea30/go.mod h1:jVI4BBK3lSktibKahxBF74txcK2vyvkza1z/+rRnVAM=
 github.com/nwaples/rardecode v1.0.0/go.mod h1:5DzqNKiOdpKKBH87u8VlvAnPZMXcGRhxWkRpHbbfGS0=
 github.com/o1egl/gormrus v0.0.0-20190416211302-fde1f6a23457 h1:BCQNA6YVZgT9OkOa3SGm/+JlXsZpQbb8jL650p3ZEQE=

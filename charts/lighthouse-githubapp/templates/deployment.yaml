@@ -41,6 +41,8 @@ spec:
           value: {{.Values.tenantService.url}}
         - name: CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE
           value: "/secrets/saas/service-account.key.json"
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: "/secrets/saas/service-account.key.json"
         - name: LHA_HMAC_TOKEN
           valueFrom:
             secretKeyRef:
