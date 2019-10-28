@@ -2,7 +2,7 @@ module github.com/cloudbees/lighthouse-githubapp
 
 require (
 	github.com/cenkalti/backoff v2.2.1+incompatible
-	github.com/cloudbees/jx-tenant-service v0.0.120
+	github.com/cloudbees/jx-tenant-service v0.0.121
 	github.com/davecgh/go-spew v1.1.1
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.3.1
