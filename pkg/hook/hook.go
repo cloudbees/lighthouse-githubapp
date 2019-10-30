@@ -297,9 +297,10 @@ func (o *HookOptions) invokeLighthouse(log *logrus.Entry, webhook scm.Webhook, f
 			GitClient:          gitClient,
 			MetapipelineClient: metapipelineClient,
 		},
-		ClientFactory: clientFactory,
-		Plugins:       &plugins.ConfigAgent{},
-		ConfigAgent:   &config.Agent{},
+		ClientFactory:      clientFactory,
+		MetapipelineClient: metapipelineClient,
+		Plugins:            &plugins.ConfigAgent{},
+		ConfigAgent:        &config.Agent{},
 	}
 	err = o.updateProwConfiguration(log, webhook, server, scheduler, jxClient, ns)
 	if err != nil {
