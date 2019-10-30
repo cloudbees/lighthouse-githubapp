@@ -18,6 +18,7 @@ import (
 	"github.com/jenkins-x/jx/pkg/jxfactory/connector"
 	"github.com/jenkins-x/jx/pkg/jxfactory/connector/provider"
 	"github.com/jenkins-x/jx/pkg/kube"
+	"github.com/jenkins-x/lighthouse/pkg/plumber"
 	"github.com/jenkins-x/lighthouse/pkg/prow/config"
 	"github.com/jenkins-x/lighthouse/pkg/prow/git"
 	lhhook "github.com/jenkins-x/lighthouse/pkg/prow/hook"
@@ -259,12 +260,14 @@ func (o *HookOptions) invokeLighthouse(log *logrus.Entry, webhook scm.Webhook, f
 	clientFactory := connectors.ToJXFactory(f, ns)
 	kubeClient, _, err := clientFactory.CreateKubeClient()
 	if err != nil {
-		log.WithError(err).Errorf("failed to create KubeClient")
+		err = errors.Wrap(err, "failed to create KubeClient")
+		log.Error(err.Error())
 		return err
 	}
 	jxClient, _, err := clientFactory.CreateJXClient()
 	if err != nil {
-		log.WithError(err).Errorf("failed to create JXClient")
+		err = errors.Wrap(err, "failed to create JXClient")
+		log.Error(err.Error())
 		return err
 	}
 
@@ -279,18 +282,31 @@ func (o *HookOptions) invokeLighthouse(log *logrus.Entry, webhook scm.Webhook, f
 		return []byte(tokenResource.Token)
 	})
 
+	metapipelineClient, err := plumber.NewMetaPipelineClient(clientFactory)
+	if err != nil {
+		err = errors.Wrap(err, "failed to create Metapipeline Client")
+		log.Error(err.Error())
+		return err
+	}
+
 	server := &lhhook.Server{
 		ClientAgent: &plugins.ClientAgent{
-			BotName:          botUser,
-			GitHubClient:     scmClient,
-			KubernetesClient: kubeClient,
-			GitClient:        gitClient,
+			BotName:            botUser,
+			GitHubClient:       scmClient,
+			KubernetesClient:   kubeClient,
+			GitClient:          gitClient,
+			MetapipelineClient: metapipelineClient,
 		},
 		ClientFactory: clientFactory,
 		Plugins:       &plugins.ConfigAgent{},
 		ConfigAgent:   &config.Agent{},
 	}
 	err = o.updateProwConfiguration(log, webhook, server, scheduler, jxClient, ns)
+	if err != nil {
+		err = errors.Wrap(err, "failed to update prow configuration")
+		log.Error(err.Error())
+		return err
+	}
 
 	localHook := lhwebhook.NewWebhook(clientFactory, server)
 
