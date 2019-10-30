@@ -4,11 +4,18 @@ import (
 	"net/http"
 	"os"
 
+	stackdriver "github.com/TV4/logrus-stackdriver-formatter"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/hook"
+	"github.com/cloudbees/lighthouse-githubapp/pkg/version"
 	"github.com/sirupsen/logrus"
 )
 
 func main() {
+	logrus.SetFormatter(stackdriver.NewFormatter(
+		stackdriver.WithService("lighthouse-githubapp"),
+		stackdriver.WithVersion(*version.GetBuildVersion()),
+	))
+
 	logrus.SetFormatter(CreateDefaultFormatter())
 
 	mux := http.NewServeMux()
