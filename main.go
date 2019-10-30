@@ -15,8 +15,6 @@ func main() {
 		stackdriver.WithVersion(*version.GetBuildVersion()),
 	))
 
-	logrus.SetFormatter(CreateDefaultFormatter())
-
 	mux := http.NewServeMux()
 
 	handler, err := hook.NewHook()
