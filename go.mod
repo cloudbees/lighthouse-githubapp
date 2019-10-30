@@ -4,7 +4,7 @@ require (
 	github.com/TV4/logrus-stackdriver-formatter v0.1.0
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/cenkalti/backoff v2.2.1+incompatible
-	github.com/cloudbees/jx-tenant-service v0.0.139
+	github.com/cloudbees/jx-tenant-service v0.0.140
 	github.com/davecgh/go-spew v1.1.1
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.3.1
