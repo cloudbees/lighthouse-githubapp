@@ -1,6 +1,8 @@
 module github.com/cloudbees/lighthouse-githubapp
 
 require (
+	github.com/TV4/logrus-stackdriver-formatter v0.1.0
+	github.com/blang/semver v3.5.1+incompatible
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cloudbees/jx-tenant-service v0.0.138
 	github.com/davecgh/go-spew v1.1.1
