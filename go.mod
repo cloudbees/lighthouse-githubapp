@@ -4,12 +4,12 @@ require (
 	github.com/TV4/logrus-stackdriver-formatter v0.1.0
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/cenkalti/backoff v2.2.1+incompatible
-	github.com/cloudbees/jx-tenant-service v0.0.150
+	github.com/cloudbees/jx-tenant-service v0.0.152
 	github.com/davecgh/go-spew v1.1.1
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.3.1
 	github.com/heptio/sonobuoy v0.16.0
-	github.com/jenkins-x/go-scm v1.5.53
+	github.com/jenkins-x/go-scm v1.5.55
 	github.com/jenkins-x/jx v0.0.0-20191031123119-79feabc147a4
 	github.com/jenkins-x/lighthouse v0.0.245
 	github.com/patrickmn/go-cache v2.1.0+incompatible
