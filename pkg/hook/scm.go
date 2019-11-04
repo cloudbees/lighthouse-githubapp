@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/bradleyfalzon/ghinstallation"
 	"github.com/cloudbees/jx-tenant-service/pkg/domain"
 	"github.com/cloudbees/jx-tenant-service/pkg/model"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
@@ -103,4 +104,35 @@ func (o *HookOptions) createSCMClient(token string) (*scm.Client, string, string
 	}
 	client.Client.Transport = tr
 	return client, serverURL, token, err
+}
+
+// creates a client for using go-scm using the App's ID and private key
+func (o *HookOptions) createAppsScmClient() (*scm.Client, int, error) {
+	privateKeyFile := flags.AppPrivateKeyFile.Value()
+	if privateKeyFile == "" {
+		logrus.Fatalf("missing private key file environment variable $GITHUB_APP_PRIVATE_KEY_FILE")
+	}
+	appID := flags.GitHubAppID.Value()
+	if appID == 0 {
+		logrus.Fatalf("missing private key file environment variable GITHUB_APP_ID")
+	}
+	kind := flags.GitKind.Value()
+	serverURL := flags.GitServer.Value()
+	scmClient, err := factory.NewClient(kind, serverURL, "")
+	if err != nil {
+		return scmClient, appID, err
+	}
+
+	// add Apps installation token
+	defaultScmTransport(scmClient)
+	if err != nil {
+		return nil, appID, errors.Wrapf(err, "failed to create SCM transport")
+	}
+	logrus.Infof("using GitHub App ID %d", appID)
+	tr, err := ghinstallation.NewAppsTransportKeyFromFile(scmClient.Client.Transport, appID, privateKeyFile)
+	if err != nil {
+		return nil, appID, errors.Wrapf(err, "failed to create the Apps transport for AppID %v and file %s", appID, privateKeyFile)
+	}
+	scmClient.Client.Transport = tr
+	return scmClient, appID, err
 }

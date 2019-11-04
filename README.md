@@ -40,6 +40,6 @@ The following environment variables are required if you want to run this app loc
 
 Run
 
-    go build && ./lighthouse-githubapp
+    make build && ./build/lighthouse-githubapp
     
     

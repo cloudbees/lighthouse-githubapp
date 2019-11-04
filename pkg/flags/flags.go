@@ -1,6 +1,12 @@
 package flags
 
 var (
+	// GitHubAppID the ID of the GitHub App
+	GitHubAppID = NewIntFlag(0, "GITHUB_APP_ID")
+
+	// AppPrivateKeyFile the file name for the private key
+	AppPrivateKeyFile = NewStringFlag("", "GITHUB_APP_PRIVATE_KEY_FILE")
+
 	// HmacToken the webhook secret
 	HmacToken = NewStringFlag("", "LHA_HMAC_TOKEN")
 
