@@ -11,8 +11,8 @@ require (
 	github.com/google/go-cmp v0.3.1
 	github.com/heptio/sonobuoy v0.16.0
 	github.com/jenkins-x/go-scm v1.5.55
-	github.com/jenkins-x/jx v0.0.0-20191105095658-3fb88ecec51d
-	github.com/jenkins-x/lighthouse v0.0.257
+	github.com/jenkins-x/jx v0.0.0-20191105222252-a9dccf5130c2
+	github.com/jenkins-x/lighthouse v0.0.258
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pborman/uuid v1.2.0
 	github.com/pkg/errors v0.8.1
