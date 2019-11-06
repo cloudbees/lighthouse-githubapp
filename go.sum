@@ -456,8 +456,8 @@ github.com/jenkins-x/go-scm v1.5.58 h1:Q+ON4ja54d2ECLujQZ3ucTRPTXrNmoz4J99inP4B/
 github.com/jenkins-x/go-scm v1.5.58/go.mod h1:MgGRkJScE/rJ30J/bXYqduN5sDPZqZFITJopsnZmTOw=
 github.com/jenkins-x/golang-jenkins v0.0.0-20180919102630-65b83ad42314 h1:kyBMx/ucSV92S+umX/V6DDaPNynlFFOM9MGJWApltoU=
 github.com/jenkins-x/golang-jenkins v0.0.0-20180919102630-65b83ad42314/go.mod h1:C6j5HgwlHGjRU27W4XCs6jXksqYFo8OdBu+p44jqQeM=
-github.com/jenkins-x/jx v0.0.0-20191106083024-1f6fbacb1953 h1:dNudAQ2QewtxwFhRDyAPfGJn0fxoCdRbFSEx5bkdVeU=
-github.com/jenkins-x/jx v0.0.0-20191106083024-1f6fbacb1953/go.mod h1:4wk6+6T4pHd/gY3a+vwnTThCWSOHl0TCixVz7FUI+Uo=
+github.com/jenkins-x/jx v0.0.0-20191105231630-4b3a26fb65d8 h1:GRvckPFRGfbTThzBtmyBijzNZfVVrmuljK0KIyjerSA=
+github.com/jenkins-x/jx v0.0.0-20191105231630-4b3a26fb65d8/go.mod h1:4wk6+6T4pHd/gY3a+vwnTThCWSOHl0TCixVz7FUI+Uo=
 github.com/jenkins-x/jx v0.0.0-20191106101713-c51fd6d76c8d h1:jD9pl90B/SOV7pIoOlah+zSKKSXhDfWGyO46EJyn4Gc=
 github.com/jenkins-x/jx v0.0.0-20191106101713-c51fd6d76c8d/go.mod h1:4wk6+6T4pHd/gY3a+vwnTThCWSOHl0TCixVz7FUI+Uo=
 github.com/jenkins-x/lighthouse v0.0.262 h1:e9A9x+nmgV+0i/KzInTZy5v9cJE40XFK5mzOdofSSvg=
