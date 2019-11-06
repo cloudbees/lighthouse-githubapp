@@ -1,4 +1,4 @@
-FROM gcr.io/jenkinsxio/builder-go:2.0.958-298
+FROM gcr.io/jenkinsxio/builder-go:2.0.959-299
 
 COPY ./build/lighthouse-githubapp-linux-amd64 /lighthouse
 
