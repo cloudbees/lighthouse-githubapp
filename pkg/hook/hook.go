@@ -12,6 +12,7 @@ import (
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/hook/connectors"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/schedulers"
+	"github.com/gorilla/mux"
 	"github.com/jenkins-x/go-scm/scm"
 	v1 "github.com/jenkins-x/jx/pkg/apis/jenkins.io/v1"
 	"github.com/jenkins-x/jx/pkg/client/clientset/versioned"
@@ -35,6 +36,7 @@ type HookOptions struct {
 	Version          string
 	tokenCache       *cache.Cache
 	tenantService    *TenantService
+	githubApp		 *GithubApp
 	clusterConnector connector.Client
 }
 
@@ -49,6 +51,10 @@ func NewHook() (*HookOptions, error) {
 
 	tokenCache := cache.New(tokenCacheExpiration, tokenCacheExpiration)
 	tenantService := NewTenantService("")
+	githubApp, err := NewGithubApp()
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to create hook")
+	}
 
 	return &HookOptions{
 		Path:             HookPath,
@@ -56,11 +62,13 @@ func NewHook() (*HookOptions, error) {
 		Version:          "TODO",
 		tokenCache:       tokenCache,
 		tenantService:    tenantService,
+		githubApp:		  githubApp,
 		clusterConnector: clusterConnector,
 	}, nil
 }
 
-func (o *HookOptions) Handle(mux *http.ServeMux) {
+func (o *HookOptions) Handle(mux *mux.Router) {
+	mux.Handle(GithubAppPath, http.HandlerFunc(o.githubApp.handleInstalledRequests))
 	mux.Handle(HealthPath, http.HandlerFunc(o.health))
 	mux.Handle(ReadyPath, http.HandlerFunc(o.ready))
 	mux.Handle(SetupPath, http.HandlerFunc(o.setup))

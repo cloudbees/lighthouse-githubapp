@@ -41,9 +41,9 @@ spec:
         - mountPath: /secrets/saas
           name: secret-saas
         env:
-        - name: GITHUB_APP_PRIVATE_KEY_FILE
+        - name: LHA_PRIVATE_KEY_FILE
           value: "/secrets/githubapp-key/cert"
-        - name: GITHUB_APP_ID
+        - name: LHA_APP_ID
           valueFrom:
             secretKeyRef:
               name: {{ template "fullname" . }}

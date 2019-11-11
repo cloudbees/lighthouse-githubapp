@@ -12,6 +12,9 @@ const (
 	// ReadyPath URL path for the HTTP endpoint that returns ready status.
 	ReadyPath = "/ready"
 
+	// GithubApp path query endpoint to determine if repository is installed for a github app
+	GithubAppPath = "/installed/{owner}/{repository}"
+
 	// tokenCacheExpiration how long should the tokens be cached for
 	tokenCacheExpiration = time.Hour - time.Minute
 
