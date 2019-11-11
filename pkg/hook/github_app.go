@@ -46,7 +46,7 @@ func (o *GithubApp) handleInstalledRequests(w http.ResponseWriter, r *http.Reque
 
 	logrus.Debugf("request received for owner %s and repository %s", owner, repository)
 	installation, response, err := o.findRepositoryInstallation(owner, repository)
-	if response == nil && err != nil {
+	if o.hasErrored(response, err) {
 		logrus.Errorf("error from repository installation %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -55,7 +55,7 @@ func (o *GithubApp) handleInstalledRequests(w http.ResponseWriter, r *http.Reque
 	if response.Status == 404 {
 		logrus.Debugf("didn't find the installation via the repository trying organisation")
 		installation, response, err = o.scmClient.Apps.GetOrganisationInstallation(o.ctx, owner)
-		if response == nil && err != nil {
+		if o.hasErrored(response, err) {
 			logrus.Errorf("error from repository installation %v", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -64,7 +64,7 @@ func (o *GithubApp) handleInstalledRequests(w http.ResponseWriter, r *http.Reque
 		if response.Status == 404 {
 			logrus.Debugf("didn't find the installation via the organisation trying the user account")
 			installation, response, err = o.scmClient.Apps.GetUserInstallation(o.ctx, owner)
-			if response == nil && err != nil {
+			if o.hasErrored(response, err) {
 				logrus.Errorf("error from repository installation %v", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
@@ -107,6 +107,21 @@ func (o *GithubApp) handleInstalledRequests(w http.ResponseWriter, r *http.Reque
 	}
 }
 
+
+func (o *GithubApp) hasErrored(response *scm.Response, err error) bool {
+	if err != nil {
+		logrus.Debugf("Determine if error is an issue %v", err)
+		if response == nil {
+			return true
+		} else if response.Status == 200 || response.Status == 404 {
+			return false
+		} else {
+			return true
+		}
+	}
+	logrus.Debugf("Response received from github api %v", response)
+	return false
+}
 
 func (o *GithubApp) findRepositoryInstallation(owner string, repository string) (*scm.Installation, *scm.Response, error) {
 	fullName := owner + "/" + repository
