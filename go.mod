@@ -9,10 +9,9 @@ require (
 	github.com/davecgh/go-spew v1.1.1
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.3.1
-	github.com/google/go-github v17.0.0+incompatible
 	github.com/gorilla/mux v1.6.2
 	github.com/heptio/sonobuoy v0.16.0
-	github.com/jenkins-x/go-scm v1.5.59
+	github.com/jenkins-x/go-scm v1.5.60
 	github.com/jenkins-x/jx v0.0.0-20191110072919-e09b32a469dd
 	github.com/jenkins-x/lighthouse v0.0.275
 	github.com/patrickmn/go-cache v2.1.0+incompatible
