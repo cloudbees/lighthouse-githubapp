@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/TV4/logrus-stackdriver-formatter"
+	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/hook"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/version"
 	"github.com/gorilla/mux"
@@ -14,6 +15,9 @@ func main() {
 		stackdriver.WithService("lighthouse-githubapp"),
 		stackdriver.WithVersion(*version.GetBuildVersion()),
 	))
+	if flags.DebugLogging.Value() {
+		logrus.SetLevel(logrus.DebugLevel)
+	}
 
 	router := mux.NewRouter()
 

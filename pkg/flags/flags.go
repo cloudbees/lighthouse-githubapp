@@ -24,4 +24,7 @@ var (
 
 	// GitToken the git token
 	GitToken = NewStringFlag("", "LHA_GIT_TOKEN")
+
+	// DebugLogging should we use debug level logging
+	DebugLogging = NewBoolFlag(false, "DEBUG_LOGGING")
 )

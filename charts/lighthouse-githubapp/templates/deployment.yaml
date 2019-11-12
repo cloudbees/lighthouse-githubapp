@@ -50,6 +50,8 @@ spec:
               key: id
         - name: JX_DEBUG
           value: "{{ .Values.debug }}"
+        - name: DEBUG_LOGGING
+          value: "{{ .Values.debug }}"
         - name: TENANT_SERVICE_URL
           value: {{.Values.tenantService.url}}
         - name: CLOUDSDK_AUTH_CREDENTIAL_FILE_OVERRIDE
