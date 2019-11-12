@@ -1,7 +1,8 @@
 apiVersion: v1
+appVersion: 0.0.160
 description: A Helm chart for Cloudbees lighthouse-githubapp
-name: lighthouse-githubapp
 icon: https://www.cloudbees.com/sites/default/files/cloudbees-infinity-branding-element.png
 maintainers:
-  - name: CloudBees
-version: 0.1.0
+- name: CloudBees
+name: lighthouse-githubapp
+version: 0.0.160
