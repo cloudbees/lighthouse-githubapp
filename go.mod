@@ -13,7 +13,7 @@ require (
 	github.com/heptio/sonobuoy v0.16.0
 	github.com/jenkins-x/go-scm v1.5.63
 	github.com/jenkins-x/jx v0.0.0-20191111145052-deb5e26f3d09
-	github.com/jenkins-x/lighthouse v0.0.292
+	github.com/jenkins-x/lighthouse v0.0.277
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pborman/uuid v1.2.0
 	github.com/pkg/errors v0.8.1
