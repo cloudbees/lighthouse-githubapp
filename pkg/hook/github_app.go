@@ -12,8 +12,7 @@ import (
 )
 
 type GithubApp struct {
-	ctx       context.Context
-	scmClient *scm.Client
+	ctx context.Context
 }
 
 type GithubAppResponse struct {
@@ -24,15 +23,10 @@ type GithubAppResponse struct {
 
 func NewGithubApp() (*GithubApp, error) {
 	ctx := context.Background()
-	scmClient, _, err := createAppsScmClient()
-	if err != nil {
-		logrus.Errorf("error creating Apps SCM client %v", err)
-		return nil, err
-	}
+
 	logrus.Info("Initializing Github App")
 	return &GithubApp{
 		ctx,
-		scmClient,
 	}, nil
 }
 
@@ -45,8 +39,18 @@ func (o *GithubApp) handleInstalledRequests(w http.ResponseWriter, r *http.Reque
 
 	l.Debugf("request received for owner %s and repository %s", owner, repository)
 
+	scmClient, _, err := createAppsScmClient()
+	if err != nil {
+		logrus.Errorf("error creating Apps SCM client %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	githubAppResponse := &GithubAppResponse{}
-	installation, response, err := o.scmClient.Apps.GetRepositoryInstallation(o.ctx, owner+"/"+repository)
+
+	logrus.Debugf("request received for owner %s and repository %s", owner, repository)
+	installation, response, err := o.findRepositoryInstallation(scmClient, owner, repository)
+
 	if o.hasErrored(response, err) {
 		l.Errorf("error from repository installation %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -55,7 +59,7 @@ func (o *GithubApp) handleInstalledRequests(w http.ResponseWriter, r *http.Reque
 
 	if response.Status == 404 {
 		l.Debugf("didn't find the installation via the repository trying organisation")
-		installation, response, err = o.scmClient.Apps.GetOrganisationInstallation(o.ctx, owner)
+		installation, response, err = scmClient.Apps.GetOrganisationInstallation(o.ctx, owner)
 		if o.hasErrored(response, err) {
 			l.Errorf("error from repository installation %v", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -63,8 +67,8 @@ func (o *GithubApp) handleInstalledRequests(w http.ResponseWriter, r *http.Reque
 		}
 
 		if response.Status == 404 {
-			l.Debugf("didn't find the installation via the organisation trying the user account")
-			installation, response, err = o.scmClient.Apps.GetUserInstallation(o.ctx, owner)
+			logrus.Debugf("didn't find the installation via the organisation trying the user account")
+			installation, response, err = scmClient.Apps.GetUserInstallation(o.ctx, owner)
 			if o.hasErrored(response, err) {
 				l.Errorf("error from repository installation %v", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -126,7 +130,7 @@ func (o *GithubApp) hasErrored(response *scm.Response, err error) bool {
 	return false
 }
 
-func (o *GithubApp) findRepositoryInstallation(owner string, repository string) (*scm.Installation, *scm.Response, error) {
+func (o *GithubApp) findRepositoryInstallation(scmClient *scm.Client, owner string, repository string) (*scm.Installation, *scm.Response, error) {
 	fullName := owner + "/" + repository
-	return o.scmClient.Apps.GetRepositoryInstallation(o.ctx, fullName)
+	return scmClient.Apps.GetRepositoryInstallation(o.ctx, fullName)
 }
