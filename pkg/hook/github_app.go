@@ -3,17 +3,17 @@ package hook
 import (
 	"context"
 	"encoding/json"
+	"net/http"
+	"strconv"
+
 	"github.com/gorilla/mux"
 	"github.com/jenkins-x/go-scm/scm"
 	"github.com/sirupsen/logrus"
-	"net/http"
-	"strconv"
 )
 
 type GithubApp struct {
-	ctx context.Context
+	ctx       context.Context
 	scmClient *scm.Client
-
 }
 
 type GithubAppResponse struct {
@@ -22,7 +22,7 @@ type GithubAppResponse struct {
 	URL          string
 }
 
-func NewGithubApp() (*GithubApp, error)  {
+func NewGithubApp() (*GithubApp, error) {
 	ctx := context.Background()
 	scmClient, _, err := createAppsScmClient()
 	if err != nil {
@@ -41,37 +41,38 @@ func (o *GithubApp) handleInstalledRequests(w http.ResponseWriter, r *http.Reque
 	vars := mux.Vars(r)
 	owner := vars["owner"]
 	repository := vars["repository"]
+	l := logrus.WithField("Repository", repository).WithField("Owner", owner)
+
+	l.Debugf("request received for owner %s and repository %s", owner, repository)
 
 	githubAppResponse := &GithubAppResponse{}
-
-	logrus.Debugf("request received for owner %s and repository %s", owner, repository)
-	installation, response, err := o.findRepositoryInstallation(owner, repository)
+	installation, response, err := o.scmClient.Apps.GetRepositoryInstallation(o.ctx, owner+"/"+repository)
 	if o.hasErrored(response, err) {
-		logrus.Errorf("error from repository installation %v", err)
+		l.Errorf("error from repository installation %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	if response.Status == 404 {
-		logrus.Debugf("didn't find the installation via the repository trying organisation")
+		l.Debugf("didn't find the installation via the repository trying organisation")
 		installation, response, err = o.scmClient.Apps.GetOrganisationInstallation(o.ctx, owner)
 		if o.hasErrored(response, err) {
-			logrus.Errorf("error from repository installation %v", err)
+			l.Errorf("error from repository installation %v", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
 		if response.Status == 404 {
-			logrus.Debugf("didn't find the installation via the organisation trying the user account")
+			l.Debugf("didn't find the installation via the organisation trying the user account")
 			installation, response, err = o.scmClient.Apps.GetUserInstallation(o.ctx, owner)
 			if o.hasErrored(response, err) {
-				logrus.Errorf("error from repository installation %v", err)
+				l.Errorf("error from repository installation %v", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 
 			if response.Status == 404 {
-				logrus.Debugf("didn't find the installation via the user account - github app not installed")
+				l.Debugf("didn't find the installation via the user account - github app not installed")
 				githubAppResponse.Installed = false
 				githubAppResponse.AccessToRepo = false
 				githubAppResponse.URL = "https://github.com/apps/jenkins-x/installations/new"
@@ -95,18 +96,17 @@ func (o *GithubApp) handleInstalledRequests(w http.ResponseWriter, r *http.Reque
 
 	res, err := json.Marshal(githubAppResponse)
 	if err != nil {
-		logrus.Errorf("failed to marshall struct to json: %v", err)
+		l.Errorf("failed to marshall struct to json: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	_, err = w.Write([]byte(res))
 	if err != nil {
-		logrus.Errorf("failed to write the message: %v", err)
+		l.Errorf("failed to write the message: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
-
 
 func (o *GithubApp) hasErrored(response *scm.Response, err error) bool {
 	if err != nil {
