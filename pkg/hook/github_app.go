@@ -48,6 +48,7 @@ func (o *GithubApp) handleInstalledRequests(w http.ResponseWriter, r *http.Reque
 
 	githubAppResponse := &GithubAppResponse{}
 
+	logrus.Debugf("request received for owner %s and repository %s", owner, repository)
 	installation, response, err := o.findRepositoryInstallation(scmClient, owner, repository)
 
 	if o.hasErrored(response, err) {
