@@ -146,8 +146,8 @@ github.com/chromedp/chromedp v0.1.1/go.mod h1:KKKRCns4HLd/N5oQR+vX13dV/U7U3+QeWF
 github.com/circonus-labs/circonus-gometrics v2.3.1+incompatible/go.mod h1:nmEj6Dob7S7YxXgwXpfOuvO54S+tGdZdw9fuRZt25Ag=
 github.com/circonus-labs/circonusllhist v0.1.3/go.mod h1:kMXHVDlOchFAehlya5ePtbp5jckzBHf4XRpQvBOLI+I=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
-github.com/cloudbees/jx-tenant-service v0.0.256 h1:Ql2RjZ6OB0nFBN9TUeM6lCd1zAgz7KWKTbX0fqky+68=
-github.com/cloudbees/jx-tenant-service v0.0.256/go.mod h1:Yn2as1HGyakgAxiIM4BWFf3GNmxt7uSukG6Hbz7hATY=
+github.com/cloudbees/jx-tenant-service v0.0.212 h1:8FFwJE7DNp1LDiGREpjtznLk1MJw29pIjyKs9sMmdFM=
+github.com/cloudbees/jx-tenant-service v0.0.212/go.mod h1:t6vqvP8RZyinauihEGrUYFW/3VQHIFbwzIUbI8o4erI=
 github.com/cockroachdb/cmux v0.0.0-20170110192607-30d10be49292/go.mod h1:qRiX68mZX1lGBkTWyp3CLcenw9I94W2dLeRvMzcn9N4=
 github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd/go.mod h1:sE/e/2PUdi/liOCUjSTXgM1o87ZssimdTWN964YiIeI=
 github.com/codeship/codeship-go v0.0.0-20180717142545-7793ca823354/go.mod h1:cQ+OMEXZoX6vJ+FQ5L/RJidQuAdmEBIi3zDOLi5Cq0U=
