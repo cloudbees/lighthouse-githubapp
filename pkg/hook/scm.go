@@ -109,6 +109,7 @@ func (o *HookOptions) createSCMClient(token string) (*scm.Client, string, string
 
 // creates a client for using go-scm using the App's ID and private key
 func createAppsScmClient() (*scm.Client, int, error){
+	logrus.Debugf("createAppsScmClient")
 	privateKeyFile := flags.AppPrivateKeyFile.Value()
 	if privateKeyFile == "" {
 		logrus.Errorf("missing private key file environment variable LHA_PRIVATE_KEY_FILE")
@@ -123,6 +124,7 @@ func createAppsScmClient() (*scm.Client, int, error){
 	serverURL := flags.GitServer.Value()
 	scmClient, err := factory.NewClient(kind, serverURL, "")
 	if err != nil {
+		logrus.Errorf("failed to create scm apps client %v", err)
 		return scmClient, appID, err
 	}
 
@@ -134,6 +136,7 @@ func createAppsScmClient() (*scm.Client, int, error){
 	logrus.Infof("using GitHub App ID %d", appID)
 	tr, err := ghinstallation.NewAppsTransportKeyFromFile(scmClient.Client.Transport, appID, privateKeyFile)
 	if err != nil {
+		logrus.Errorf("failed to create transport %v", err)
 		return nil, appID, errors.Wrapf(err, "failed to create the Apps transport for AppID %v and file %s", appID, privateKeyFile)
 	}
 	scmClient.Client.Transport = tr
