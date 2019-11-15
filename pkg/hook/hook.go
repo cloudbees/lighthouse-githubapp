@@ -36,7 +36,7 @@ type HookOptions struct {
 	Version          string
 	tokenCache       *cache.Cache
 	tenantService    *TenantService
-	githubApp		 *GithubApp
+	githubApp        *GithubApp
 	clusterConnector connector.Client
 }
 
@@ -62,7 +62,7 @@ func NewHook() (*HookOptions, error) {
 		Version:          "TODO",
 		tokenCache:       tokenCache,
 		tenantService:    tenantService,
-		githubApp:		  githubApp,
+		githubApp:        githubApp,
 		clusterConnector: clusterConnector,
 	}, nil
 }
