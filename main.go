@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/TV4/logrus-stackdriver-formatter"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/hook"
@@ -8,6 +9,10 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 func main() {
@@ -30,6 +35,19 @@ func main() {
 
 	logrus.Infof("Lighthouse GitHub App is now listening on path %s and port %s for WebHooks", handler.Path, handler.Port)
 	http.Handle("/", router)
-	err = http.ListenAndServe(":"+handler.Port, router)
+	server := &http.Server{Addr: ":" + handler.Port, Handler: router}
+
+	// Shutdown gracefully on SIGTERM or SIGINT
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-sig
+		logrus.Info("lighthouse github app is shutting down...")
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
+		defer cancel()
+		server.Shutdown(ctx)
+	}()
+
+	err = server.ListenAndServe()
 	logrus.Fatalf(err.Error())
 }

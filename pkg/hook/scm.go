@@ -17,7 +17,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type Scm struct { }
+type Scm struct{}
 
 func defaultScmTransport(scmClient *scm.Client) {
 	if scmClient.Client == nil {
@@ -108,17 +108,17 @@ func (o *HookOptions) createSCMClient(token string) (*scm.Client, string, string
 }
 
 // creates a client for using go-scm using the App's ID and private key
-func createAppsScmClient() (*scm.Client, int, error){
+func createAppsScmClient() (*scm.Client, int, error) {
 	logrus.Debugf("createAppsScmClient")
 	privateKeyFile := flags.AppPrivateKeyFile.Value()
 	if privateKeyFile == "" {
 		logrus.Errorf("missing private key file environment variable LHA_PRIVATE_KEY_FILE")
-		return  nil, 0, errors.New("Missing Github APP Private key")
+		return nil, 0, errors.New("Missing Github APP Private key")
 	}
 	appID := flags.GitHubAppID.Value()
 	if appID == 0 {
 		logrus.Errorf("missing environment variable LHA_APP_ID")
-		return  nil, 0, errors.New("Missing Github APP ID")
+		return nil, 0, errors.New("Missing Github APP ID")
 	}
 	kind := flags.GitKind.Value()
 	serverURL := flags.GitServer.Value()
