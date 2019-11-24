@@ -68,6 +68,7 @@ pipelineConfig:
                 args:
                   - --dockerfile=Dockerfile
                   - --destination=gcr.io/jenkinsxio/lighthouse-githubapp:${inputs.params.version}
+                  - --build-arg=VERSION=${inputs.params.version}
                   - --context=/workspace/source
                   - --cache-repo=gcr.io/jenkinsxio/cache-lighthouse-githubapp
                   - --cache=true
@@ -179,6 +180,7 @@ pipelineConfig:
                 args:
                   - --dockerfile=Dockerfile
                   - --destination=gcr.io/jenkins-x-infra/lighthouse-githubapp:${inputs.params.version}
+                  - --build-arg=VERSION=${inputs.params.version}
                   - --context=/workspace/source
                   - --cache-repo=gcr.io/jenkins-x-infra/cache-lighthouse-githubapp
                   - --cache=true
