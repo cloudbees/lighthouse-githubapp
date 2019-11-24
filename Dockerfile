@@ -1,3 +1,7 @@
+ARG VERSION
+
+RUN echo "building image version $VERSION"
+
 FROM gcr.io/jenkinsxio/builder-go:2.0.976-312
 
 COPY ./build/lighthouse-githubapp-linux-amd64 /lighthouse
