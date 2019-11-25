@@ -174,7 +174,7 @@ release: check
 	gh-release checksums sha256
 	gh-release create cloudbees/lighthouse-githubapp $(VERSION) master $(VERSION)
 
-clean: clean-generated
+clean:
 	rm -rf build release
 
 linux:
