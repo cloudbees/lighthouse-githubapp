@@ -29,6 +29,9 @@ require (
 
 exclude github.com/jenkins-x/jx/pkg/prow v0.0.0-20191018175829-4badc08866cd
 
+// TODO temporary patch until we verify it works
+replace github.com/jenkins-x/lighthouse => github.com/jstrachan/lighthouse v0.0.0-20191125163409-860ccb20df82
+
 replace github.com/golang/lint => golang.org/x/lint v0.0.0-20180702182130-06c8688daad7
 
 replace github.com/heptio/sonobuoy => github.com/jenkins-x/sonobuoy v0.11.7-0.20190318120422-253758214767
