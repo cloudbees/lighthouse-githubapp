@@ -3,12 +3,10 @@ package hook
 import (
 	"context"
 	"encoding/json"
-	"net/http"
-	"strconv"
-
 	"github.com/gorilla/mux"
 	"github.com/jenkins-x/go-scm/scm"
 	"github.com/sirupsen/logrus"
+	"net/http"
 )
 
 type GithubApp struct {
@@ -82,14 +80,12 @@ func (o *GithubApp) handleInstalledRequests(w http.ResponseWriter, r *http.Reque
 			} else {
 				githubAppResponse.Installed = true
 				githubAppResponse.AccessToRepo = false
-				orgId := installation.ID
-				githubAppResponse.URL = "https://github.com/settings/installations/" + strconv.FormatInt(orgId, 10)
+				githubAppResponse.URL = installation.Link
 			}
 		} else {
 			githubAppResponse.Installed = true
 			githubAppResponse.AccessToRepo = false
-			orgId := installation.ID
-			githubAppResponse.URL = "https://github.com/settings/installations/" + strconv.FormatInt(orgId, 10)
+			githubAppResponse.URL = installation.Link
 		}
 	} else {
 		githubAppResponse.Installed = true
@@ -118,7 +114,7 @@ func (o *GithubApp) hasErrored(response *scm.Response, err error) bool {
 			logrus.Errorf("error response %v", err)
 			return true
 		} else if response.Status == 200 || response.Status == 404 {
-			logrus.Debugf("error is %v and response statis is %q", err, response.Status)
+			logrus.Debugf("error is %v and response status is %q", err, response.Status)
 			return false
 		} else {
 			logrus.Errorf("error response received status code %d with response %q", response.Status, response.Body)
