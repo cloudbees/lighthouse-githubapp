@@ -43,3 +43,27 @@ Run
     make build && ./build/lighthouse-githubapp
     
     
+### Debugging in Dev/Staging
+
+Ideally we would add support for [Stackdriver Debugging](https://cloud.google.com/debugger/) so we can easily debug stuff in production - however this is currently blocked on kaniko having issues building go source & crashing nodes. Until we figure that out, `telepresence` is a handy tool for debugging as its not always super easy to test out lighthouse-githubapp on a real cluster using real apps.    
+
+* install [telepresence](https://www.telepresence.io/reference/install)
+* connect to the Dev / Staging cluster where `lighthouse-githubapp` usually runs
+* copy the google service account JSON to the file `https://www.telepresence.io/reference/install` which is usually inside the secret `jenkins-x-lighthouse-githubapp-saas` 
+* start the debugger:
+
+```
+export BOT_NAME="jenkins-x[bot]"    
+telepresence --swap-deployment jenkins-x-lighthouse-githubapp --expose 8080 --run dlv --listen=:2345 --headless=true --api-version=2 exec `which lighthouse-githubapp`
+```
+
+* now run the debug in your IDE using the usual remote debug Go option in your IDE. In IDEA/Goland you need to setup a `Go Remote` using the same port above `2345`
+
+
+When you terminate the process/debug session `telepresence` will now switch back to the regular deployment again. You can force this to happen via:
+
+```
+sudo killall lighthouse-githubapp
+sudo killall dlv
+```   
+    
