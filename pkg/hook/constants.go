@@ -16,7 +16,7 @@ const (
 	GithubAppPath = "/installed/{owner}/{repository}"
 
 	// tokenCacheExpiration how long should the tokens be cached for
-	tokenCacheExpiration = time.Hour - time.Minute
+	tokenCacheExpiration = 10 * time.Minute
 
 	// tokenCacheExpireDelta the delta before the expire time when we re-request a token to ensure we don't get too close to the limit
 	tokenCacheExpireDelta = 2 * time.Minute
