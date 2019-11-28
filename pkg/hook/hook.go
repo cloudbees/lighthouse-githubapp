@@ -193,9 +193,13 @@ func (o *HookOptions) onInstallHook(log *logrus.Entry, hook *scm.InstallationHoo
 func (o *HookOptions) onGeneralHook(log *logrus.Entry, install *scm.InstallationRef, webhook scm.Webhook) error {
 	id := install.ID
 	repo := webhook.Repository()
+	// TODO this should be fixed in go-scm
+	if repo.FullName == "" {
+		repo.FullName = repo.Name + "/" + repo.Namespace
+	}
 	fields := map[string]interface{}{
 		"InstallationID": id,
-		"Fullname":       repo.FullName,
+		"FullName":       repo.FullName,
 	}
 	log = log.WithFields(fields)
 	u := repo.Link
