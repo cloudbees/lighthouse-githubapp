@@ -33,8 +33,8 @@ pipelineConfig:
                 value: jenkins-x-bot
               - name: GOOGLE_APPLICATION_CREDENTIALS
                 value: /builder/home/kaniko-secret.json
-              - name: DISABLE_GOPROXY
-                value: http://jenkins-x-athens-proxy
+              - name: GOPROXY
+                value: https://proxy.golang.org
               - name: NETRC
                 value: /secrets/netrc/.netrc
             steps:
@@ -132,8 +132,8 @@ pipelineConfig:
             environment:
               - name: GOOGLE_APPLICATION_CREDENTIALS
                 value: /builder/home/kaniko-secret.json
-              - name: DISABLE_GOPROXY
-                value: http://jenkins-x-athens-proxy
+              - name: GOPROXY
+                value: https://proxy.golang.org
               - name: NETRC
                 value: /secrets/netrc/.netrc
             options:
