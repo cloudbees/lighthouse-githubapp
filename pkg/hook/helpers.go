@@ -3,6 +3,7 @@ package hook
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/sirupsen/logrus"
 )
@@ -22,4 +23,9 @@ func responseHTTPError(w http.ResponseWriter, statusCode int, message string, ar
 		"status-code": statusCode,
 	}).Info(response)
 	http.Error(w, response, statusCode)
+}
+
+// ParseInt64 parses the int64 string or returns an error
+func ParseInt64(text string) (int64, error) {
+	return strconv.ParseInt(text, 10, 64)
 }

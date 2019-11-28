@@ -69,6 +69,7 @@ func NewHook() (*HookOptions, error) {
 
 func (o *HookOptions) Handle(mux *mux.Router) {
 	mux.Handle(GithubAppPath, http.HandlerFunc(o.githubApp.handleInstalledRequests))
+	mux.Handle(TestTokenPath, http.HandlerFunc(o.handleTokenValid))
 	mux.Handle(HealthPath, http.HandlerFunc(o.health))
 	mux.Handle(ReadyPath, http.HandlerFunc(o.ready))
 	mux.Handle(SetupPath, http.HandlerFunc(o.setup))
@@ -192,9 +193,13 @@ func (o *HookOptions) onInstallHook(log *logrus.Entry, hook *scm.InstallationHoo
 func (o *HookOptions) onGeneralHook(log *logrus.Entry, install *scm.InstallationRef, webhook scm.Webhook) error {
 	id := install.ID
 	repo := webhook.Repository()
+	// TODO this should be fixed in go-scm
+	if repo.FullName == "" {
+		repo.FullName = repo.Name + "/" + repo.Namespace
+	}
 	fields := map[string]interface{}{
 		"InstallationID": id,
-		"Fullname":       repo.FullName,
+		"FullName":       repo.FullName,
 	}
 	log = log.WithFields(fields)
 	u := repo.Link
@@ -235,6 +240,7 @@ func (o *HookOptions) onGeneralHook(log *logrus.Entry, install *scm.Installation
 			log.WithError(err).Error("failed to parse Scheduler JSON")
 			continue
 		}
+
 		err = o.invokeLighthouse(log, webhook, f, ws.Namespace, scheduler, install)
 		if err != nil {
 			log.WithError(err).Error("failed to invoke remote lighthouse")
@@ -285,6 +291,11 @@ func (o *HookOptions) invokeLighthouse(log *logrus.Entry, webhook scm.Webhook, f
 
 	ctx := context.Background()
 	scmClient, tokenResource, err := o.getInstallScmClient(log, ctx, installRef)
+
+	if webhook.Kind() == scm.WebhookKindPullRequest {
+		o.verifyScmClient(log, scmClient, webhook.Repository())
+	}
+
 	botUser := flags.BotName.Value()
 	gitClient.SetCredentials(botUser, func() []byte {
 		return []byte(tokenResource.Token)
@@ -364,4 +375,22 @@ func (o *HookOptions) updateProwConfiguration(log *logrus.Entry, webhook scm.Web
 	server.ConfigAgent.Set(prowConfig)
 	server.Plugins.Set(prowPlugins)
 	return nil
+}
+
+// verifyScmClient lets try verify the scm client on a webhook
+func (o *HookOptions) verifyScmClient(log *logrus.Entry, scmClient *scm.Client, repository scm.Repository) {
+	log = log.WithField("TestPR", fmt.Sprintf("%s #", verifyRepository, verifyPullRequest))
+	ctx := context.Background()
+	labels, _, err := scmClient.PullRequests.ListLabels(ctx, verifyRepository, verifyPullRequest, scm.ListOptions{Size: 100})
+	if err != nil {
+		log.WithError(err).Error("failed to list labels on PR")
+		return
+	}
+	buffer := strings.Builder{}
+	buffer.WriteString("Found labels: ")
+	for _, label := range labels {
+		buffer.WriteString(" ")
+		buffer.WriteString(label.Name)
+	}
+	log.Info(buffer.String())
 }

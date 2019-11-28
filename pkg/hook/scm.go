@@ -55,7 +55,11 @@ func (o *HookOptions) getInstallScmClient(log *logrus.Entry, ctx context.Context
 	if tokenResource != nil && tokenResource.Token != "" {
 		duration := tokenCacheExpiration
 		if tokenResource.ExpiresAt != nil {
-			duration = tokenResource.ExpiresAt.Sub(time.Now())
+			// lets use the lowest duration
+			expireDuration := tokenResource.ExpiresAt.Sub(time.Now())
+			if expireDuration < duration {
+				expireDuration = duration
+			}
 		}
 		o.tokenCache.Set(key, tokenResource, duration)
 	}
