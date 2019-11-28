@@ -455,10 +455,10 @@ github.com/jenkins-x/golang-jenkins v0.0.0-20180919102630-65b83ad42314 h1:kyBMx/
 github.com/jenkins-x/golang-jenkins v0.0.0-20180919102630-65b83ad42314/go.mod h1:C6j5HgwlHGjRU27W4XCs6jXksqYFo8OdBu+p44jqQeM=
 github.com/jenkins-x/jx v0.0.0-20191124082703-247c481ef5a8 h1:pRmXFS9eki2okLy49w1N0ZqLAYIrPqCQGIMYRuT2qjM=
 github.com/jenkins-x/jx v0.0.0-20191124082703-247c481ef5a8/go.mod h1:3AeNbBLtPJBHhyH46p1s2hHkvmKUqkSLkSOj/Lq/pqk=
-github.com/jenkins-x/jx v0.0.0-20191128140629-63fc5e4d18a5 h1:DJvz3sV31fR6TW7UHZSWqM3fpC6QqkYixRGakv13GvA=
-github.com/jenkins-x/jx v0.0.0-20191128140629-63fc5e4d18a5/go.mod h1:3AeNbBLtPJBHhyH46p1s2hHkvmKUqkSLkSOj/Lq/pqk=
-github.com/jenkins-x/lighthouse v0.0.318 h1:uyrZCGvMdAymXVd3/hjcmCSb+8K4jXdl3/Ng3/ighj4=
-github.com/jenkins-x/lighthouse v0.0.318/go.mod h1:NI2PCtCJMlEXVSf/bGsOtQLb55KLQo1InPxNLMGIIYQ=
+github.com/jenkins-x/jx v0.0.0-20191128150419-ba185ff8a6bd h1:/wL7xdyaNGjoI06DsVQ2vc7torylvh3F8IXWXhp8YZ0=
+github.com/jenkins-x/jx v0.0.0-20191128150419-ba185ff8a6bd/go.mod h1:3AeNbBLtPJBHhyH46p1s2hHkvmKUqkSLkSOj/Lq/pqk=
+github.com/jenkins-x/lighthouse v0.0.319 h1:ENLAoIpGuf7Gnm9l0VQ0oH/G0UIga0UT2FBMhghFf1I=
+github.com/jenkins-x/lighthouse v0.0.319/go.mod h1:Q46HS73ft4f7uVqeR005bgodFU37hzO9LvspObPiN/8=
 github.com/jenkins-x/sonobuoy v0.11.7-0.20190318120422-253758214767 h1:lKtC9uHyWi8wd+EUch3Pfzk3/8XSJvYRJhvk9dK4YKY=
 github.com/jenkins-x/sonobuoy v0.11.7-0.20190318120422-253758214767/go.mod h1:UR3AoCKJHHKi2AoOWeFbZcMKyd5LqQkdCRgwqZkX/io=
 github.com/jetstack/cert-manager v0.5.2 h1:qs74mdAprZ5kcCYF3arzmEAZtbt+9HneldSJrk21tKs=
