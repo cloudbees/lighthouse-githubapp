@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"strings"
 
@@ -17,7 +16,6 @@ import (
 	v1 "github.com/jenkins-x/jx/pkg/apis/jenkins.io/v1"
 	"github.com/jenkins-x/jx/pkg/client/clientset/versioned"
 	"github.com/jenkins-x/jx/pkg/jxfactory/connector"
-	"github.com/jenkins-x/jx/pkg/jxfactory/connector/provider"
 	"github.com/jenkins-x/jx/pkg/kube"
 	"github.com/jenkins-x/lighthouse/pkg/plumber"
 	"github.com/jenkins-x/lighthouse/pkg/prow/config"
@@ -31,24 +29,16 @@ import (
 )
 
 type HookOptions struct {
-	Port             string
-	Path             string
-	Version          string
-	tokenCache       *cache.Cache
-	tenantService    *TenantService
-	githubApp        *GithubApp
-	clusterConnector connector.Client
+	Port          string
+	Path          string
+	Version       string
+	tokenCache    *cache.Cache
+	tenantService *TenantService
+	githubApp     *GithubApp
 }
 
 // NewHook create a new hook handler
 func NewHook() (*HookOptions, error) {
-	workDir, err := ioutil.TempDir("", "jx-connectors-")
-	if err != nil {
-		return nil, errors.Wrapf(err, "failed to create temp dir for jx connectors")
-	}
-
-	clusterConnector := provider.NewClient(workDir)
-
 	tokenCache := cache.New(tokenCacheExpiration, tokenCacheExpiration)
 	tenantService := NewTenantService("")
 	githubApp, err := NewGithubApp()
@@ -57,13 +47,12 @@ func NewHook() (*HookOptions, error) {
 	}
 
 	return &HookOptions{
-		Path:             HookPath,
-		Port:             flags.HttpPort.Value(),
-		Version:          "TODO",
-		tokenCache:       tokenCache,
-		tenantService:    tenantService,
-		githubApp:        githubApp,
-		clusterConnector: clusterConnector,
+		Path:          HookPath,
+		Port:          flags.HttpPort.Value(),
+		Version:       "TODO",
+		tokenCache:    tokenCache,
+		tenantService: tenantService,
+		githubApp:     githubApp,
 	}, nil
 }
 
@@ -195,7 +184,7 @@ func (o *HookOptions) onGeneralHook(log *logrus.Entry, install *scm.Installation
 	repo := webhook.Repository()
 	// TODO this should be fixed in go-scm
 	if repo.FullName == "" {
-		repo.FullName = repo.Name + "/" + repo.Namespace
+		repo.FullName = repo.Namespace + "/" + repo.Name
 	}
 	fields := map[string]interface{}{
 		"InstallationID": id,
@@ -379,7 +368,7 @@ func (o *HookOptions) updateProwConfiguration(log *logrus.Entry, webhook scm.Web
 
 // verifyScmClient lets try verify the scm client on a webhook
 func (o *HookOptions) verifyScmClient(log *logrus.Entry, scmClient *scm.Client, repository scm.Repository) {
-	log = log.WithField("TestPR", fmt.Sprintf("%s #", verifyRepository, verifyPullRequest))
+	log = log.WithField("TestPR", fmt.Sprintf("%s #%d", verifyRepository, verifyPullRequest))
 	ctx := context.Background()
 	labels, _, err := scmClient.PullRequests.ListLabels(ctx, verifyRepository, verifyPullRequest, scm.ListOptions{Size: 100})
 	if err != nil {
