@@ -24,6 +24,8 @@ func main() {
 		logrus.SetLevel(logrus.DebugLevel)
 	}
 
+	logrus.Info("Lighthouse GitHub App is starting")
+
 	router := mux.NewRouter()
 
 	handler, err := hook.NewHook()
