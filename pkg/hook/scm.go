@@ -61,7 +61,9 @@ func (o *HookOptions) getInstallScmClient(log *logrus.Entry, ctx context.Context
 				duration = expireDuration
 			}
 		}
-		o.tokenCache.Set(key, tokenResource, duration)
+		if duration > 0 {
+			o.tokenCache.Set(key, tokenResource, duration)
+		}
 	}
 	scmClient, err := o.createInstallScmClient(log, ctx, tokenResource)
 	if err != nil {
