@@ -368,7 +368,7 @@ func (o *HookOptions) updateProwConfiguration(log *logrus.Entry, webhook scm.Web
 
 // verifyScmClient lets try verify the scm client on a webhook
 func (o *HookOptions) verifyScmClient(log *logrus.Entry, scmClient *scm.Client, repository scm.Repository) {
-	log = log.WithField("TestPR", fmt.Sprintf("%s #", verifyRepository, verifyPullRequest))
+	log = log.WithField("TestPR", fmt.Sprintf("%s #%d", verifyRepository, verifyPullRequest))
 	ctx := context.Background()
 	labels, _, err := scmClient.PullRequests.ListLabels(ctx, verifyRepository, verifyPullRequest, scm.ListOptions{Size: 100})
 	if err != nil {
