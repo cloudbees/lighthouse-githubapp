@@ -3,10 +3,13 @@ package hook
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/jenkins-x/go-scm/scm"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"os"
+	"strings"
 )
 
 type GithubApp struct {
@@ -76,7 +79,7 @@ func (o *GithubApp) handleInstalledRequests(w http.ResponseWriter, r *http.Reque
 				l.Debugf("didn't find the installation via the user account - github app not installed")
 				githubAppResponse.Installed = false
 				githubAppResponse.AccessToRepo = false
-				githubAppResponse.URL = "https://github.com/apps/jenkins-x/installations/new"
+				githubAppResponse.URL = o.getGitHubAppInstalltionURL()
 			} else {
 				githubAppResponse.Installed = true
 				githubAppResponse.AccessToRepo = false
@@ -128,4 +131,17 @@ func (o *GithubApp) hasErrored(response *scm.Response, err error) bool {
 func (o *GithubApp) findRepositoryInstallation(scmClient *scm.Client, owner string, repository string) (*scm.Installation, *scm.Response, error) {
 	fullName := owner + "/" + repository
 	return scmClient.Apps.GetRepositoryInstallation(o.ctx, fullName)
+}
+
+func (o *GithubApp) getGitHubAppInstalltionURL() string {
+	botEnvVar := os.Getenv("BOT_NAME")
+	if botEnvVar != "" {
+		botEnvVar = strings.ReplaceAll(botEnvVar, "[bot]", "")
+	}
+
+	if botEnvVar == "" {
+		botEnvVar = "jenkins-x"
+	}
+
+	return fmt.Sprint("https://github.com/apps/%s/installations/new", botEnvVar)
 }
