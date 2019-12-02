@@ -79,7 +79,7 @@ func (o *GithubApp) handleInstalledRequests(w http.ResponseWriter, r *http.Reque
 				l.Debugf("didn't find the installation via the user account - github app not installed")
 				githubAppResponse.Installed = false
 				githubAppResponse.AccessToRepo = false
-				githubAppResponse.URL = o.getGitHubAppInstalltionURL()
+				githubAppResponse.URL = getGitHubAppInstalltionURL()
 			} else {
 				githubAppResponse.Installed = true
 				githubAppResponse.AccessToRepo = false
@@ -133,7 +133,7 @@ func (o *GithubApp) findRepositoryInstallation(scmClient *scm.Client, owner stri
 	return scmClient.Apps.GetRepositoryInstallation(o.ctx, fullName)
 }
 
-func (o *GithubApp) getGitHubAppInstalltionURL() string {
+func getGitHubAppInstalltionURL() string {
 	botEnvVar := os.Getenv("BOT_NAME")
 	if botEnvVar != "" {
 		botEnvVar = strings.ReplaceAll(botEnvVar, "[bot]", "")
@@ -143,5 +143,5 @@ func (o *GithubApp) getGitHubAppInstalltionURL() string {
 		botEnvVar = "jenkins-x"
 	}
 
-	return fmt.Sprint("https://github.com/apps/%s/installations/new", botEnvVar)
+	return fmt.Sprintf("https://github.com/apps/%s/installations/new", botEnvVar)
 }
