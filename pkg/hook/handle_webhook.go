@@ -10,6 +10,7 @@ import (
 )
 
 func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Request) {
+
 	if r.Method != http.MethodPost {
 		// liveness probe etc
 		logrus.WithField("method", r.Method).Debug("invalid http method so returning index")

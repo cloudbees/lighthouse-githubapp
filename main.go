@@ -6,8 +6,9 @@ import (
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/hook"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/version"
-	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
+	muxtrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/gorilla/mux"
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 	"net/http"
 	"os"
 	"os/signal"
@@ -26,7 +27,12 @@ func main() {
 
 	logrus.Info("Lighthouse GitHub App is starting")
 
-	router := mux.NewRouter()
+	if flags.DataDogEnabled.Value() {
+		tracer.Start()
+		defer tracer.Stop()
+	}
+
+	router := muxtrace.NewRouter(muxtrace.WithServiceName("lighthouse-githubapp"))
 
 	handler, err := hook.NewHook()
 	if err != nil {

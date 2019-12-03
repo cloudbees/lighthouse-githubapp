@@ -11,7 +11,6 @@ import (
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/hook/connectors"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/schedulers"
-	"github.com/gorilla/mux"
 	"github.com/jenkins-x/go-scm/scm"
 	v1 "github.com/jenkins-x/jx/pkg/apis/jenkins.io/v1"
 	"github.com/jenkins-x/jx/pkg/client/clientset/versioned"
@@ -26,6 +25,7 @@ import (
 	"github.com/patrickmn/go-cache"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
+	muxtrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/gorilla/mux"
 )
 
 type HookOptions struct {
@@ -56,7 +56,7 @@ func NewHook() (*HookOptions, error) {
 	}, nil
 }
 
-func (o *HookOptions) Handle(mux *mux.Router) {
+func (o *HookOptions) Handle(mux *muxtrace.Router) {
 	mux.Handle(GithubAppPath, http.HandlerFunc(o.githubApp.handleInstalledRequests))
 	mux.Handle(TestTokenPath, http.HandlerFunc(o.handleTokenValid))
 	mux.Handle(HealthPath, http.HandlerFunc(o.health))

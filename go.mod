@@ -22,6 +22,7 @@ require (
 	github.com/sirupsen/logrus v1.4.2
 	github.com/stretchr/testify v1.4.0
 	github.com/tektoncd/pipeline v0.5.1
+	gopkg.in/DataDog/dd-trace-go.v1 v1.19.0
 	k8s.io/apiextensions-apiserver v0.0.0-20190820064606-e49a3471dba5
 	k8s.io/apimachinery v0.0.0-20190816221834-a9f1d8a9c101
 	k8s.io/client-go v11.0.1-0.20190805182717-6502b5e7b1b5+incompatible
