@@ -2,26 +2,26 @@ package hook
 
 import (
 	"fmt"
+	"github.com/cloudbees/lighthouse-githubapp/pkg/util"
 	"net/http"
 
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
 	"github.com/jenkins-x/go-scm/scm"
-	"github.com/sirupsen/logrus"
 )
 
 func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodPost {
 		// liveness probe etc
-		logrus.WithField("method", r.Method).Debug("invalid http method so returning index")
+		util.TraceLogger(r.Context()).WithField("method", r.Method).Debug("invalid http method so returning index")
 		o.getIndex(w, r)
 		return
 	}
-	logrus.Debug("about to parse webhook")
+	util.TraceLogger(r.Context()).Debug("about to parse webhook")
 
 	scmClient, _, _, err := o.createSCMClient("")
 	if err != nil {
-		logrus.Errorf("failed to create SCM scmClient: %s", err.Error())
+		util.TraceLogger(r.Context()).Errorf("failed to create SCM scmClient: %s", err.Error())
 		responseHTTPError(w, http.StatusInternalServerError, fmt.Sprintf("500 Internal Server Error: Failed to parse webhook: %s", err.Error()))
 		return
 	}
@@ -32,20 +32,20 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 
 	webhook, err := scmClient.Webhooks.Parse(r, secretFn)
 	if err != nil {
-		logrus.Errorf("failed to parse webhook: %s", err.Error())
+		util.TraceLogger(r.Context()).Errorf("failed to parse webhook: %s", err.Error())
 
 		responseHTTPError(w, http.StatusInternalServerError, fmt.Sprintf("500 Internal Server Error: Failed to parse webhook: %s", err.Error()))
 		return
 	}
 	if webhook == nil {
-		logrus.Error("no webhook was parsed")
+		util.TraceLogger(r.Context()).Error("no webhook was parsed")
 
 		responseHTTPError(w, http.StatusInternalServerError, "500 Internal Server Error: No webhook could be parsed")
 		return
 	}
 
 	repository := webhook.Repository()
-	l := logrus.WithFields(map[string]interface{}{
+	l := util.TraceLogger(r.Context()).WithFields(map[string]interface{}{
 		"FullName": repository.FullName,
 		"Webhook":  webhook.Kind(),
 	})
