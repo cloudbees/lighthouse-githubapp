@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/cloudbees/lighthouse-githubapp/pkg/util"
 	"net/http"
 	"strings"
 
@@ -11,7 +12,6 @@ import (
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/hook/connectors"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/schedulers"
-	"github.com/gorilla/mux"
 	"github.com/jenkins-x/go-scm/scm"
 	v1 "github.com/jenkins-x/jx/pkg/apis/jenkins.io/v1"
 	"github.com/jenkins-x/jx/pkg/client/clientset/versioned"
@@ -26,6 +26,7 @@ import (
 	"github.com/patrickmn/go-cache"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
+	muxtrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/gorilla/mux"
 )
 
 type HookOptions struct {
@@ -56,7 +57,7 @@ func NewHook() (*HookOptions, error) {
 	}, nil
 }
 
-func (o *HookOptions) Handle(mux *mux.Router) {
+func (o *HookOptions) Handle(mux *muxtrace.Router) {
 	mux.Handle(GithubAppPath, http.HandlerFunc(o.githubApp.handleInstalledRequests))
 	mux.Handle(TestTokenPath, http.HandlerFunc(o.handleTokenValid))
 	mux.Handle(HealthPath, http.HandlerFunc(o.health))
@@ -69,13 +70,13 @@ func (o *HookOptions) Handle(mux *mux.Router) {
 
 // health returns either HTTP 204 if the service is healthy, otherwise nothing ('cos it's dead).
 func (o *HookOptions) health(w http.ResponseWriter, r *http.Request) {
-	logrus.Debug("Health check")
+	util.TraceLogger(r.Context()).Info("Health check")
 	w.WriteHeader(http.StatusNoContent)
 }
 
 // ready returns either HTTP 204 if the service is ready to serve requests, otherwise HTTP 503.
 func (o *HookOptions) ready(w http.ResponseWriter, r *http.Request) {
-	logrus.Debug("Ready check")
+	util.TraceLogger(r.Context()).Debug("Ready check")
 	if o.isReady() {
 		w.WriteHeader(http.StatusNoContent)
 	} else {
@@ -85,7 +86,7 @@ func (o *HookOptions) ready(w http.ResponseWriter, r *http.Request) {
 
 // setup handle the setup URL
 func (o *HookOptions) setup(w http.ResponseWriter, r *http.Request) {
-	logrus.Debug("setup")
+	util.TraceLogger(r.Context()).Debug("setup")
 
 	action := r.URL.Query().Get("setup_action")
 	installationID := r.URL.Query().Get("installation_id")
@@ -93,7 +94,7 @@ func (o *HookOptions) setup(w http.ResponseWriter, r *http.Request) {
 
 	_, err := w.Write([]byte(message))
 	if err != nil {
-		logrus.Debugf("failed to write the setup: %v", err)
+		util.TraceLogger(r.Context()).Debugf("failed to write the setup: %v", err)
 	}
 }
 
@@ -113,7 +114,8 @@ func (o *HookOptions) defaultHandler(w http.ResponseWriter, r *http.Request) {
 
 // getIndex returns a simple home page
 func (o *HookOptions) getIndex(w http.ResponseWriter, r *http.Request) {
-	logrus.Debug("GET index")
+	l := util.TraceLogger(r.Context())
+	l.Debug("GET index")
 	message := fmt.Sprintf(`Hello from Jenkins X Lighthouse version: %s
 
 For more information see: https://github.com/jenkins-x/lighthouse
@@ -121,7 +123,7 @@ For more information see: https://github.com/jenkins-x/lighthouse
 
 	_, err := w.Write([]byte(message))
 	if err != nil {
-		logrus.Debugf("failed to write the index: %v", err)
+		l.Debugf("failed to write the index: %v", err)
 	}
 }
 

@@ -25,3 +25,6 @@ preview:
   secret: vault:tekton-weasel/preview/jx-github-app:secret
   saasSA: vault:tekton-weasel/preview/jx-tenant-service-saas-sa:json
   debug: true
+  datadog:
+    enabled: false
+    agentPort: 8126

@@ -11,6 +11,8 @@ spec:
   replicas: {{ .Values.replicaCount }}
   template:
     metadata:
+      annotations:
+        ad.datadoghq.com/{{ .Chart.Name }}.logs: '[{"source":"go","service":"lighthouse-githubapp"}]'
       labels:
         draft: {{ default "draft-app" .Values.draft }}
         app: {{ template "fullname" . }}
@@ -67,6 +69,14 @@ spec:
         - name: {{ $pkey }}
           value: {{ quote $pval }}
 {{- end }}
+        - name: DD_ENABLED
+          value: "{{ .Values.datadog.enabled }}"
+        - name: DD_AGENT_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: DD_TRACE_AGENT_PORT
+          value: "{{ .Values.datadog.agentPort }}"
         ports:
         - containerPort: {{ .Values.service.internalPort }}
         resources:

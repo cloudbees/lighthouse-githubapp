@@ -27,4 +27,7 @@ var (
 
 	// DebugLogging should we use debug level logging
 	DebugLogging = NewBoolFlag(false, "DEBUG_LOGGING")
+
+	// DataDogEnabled should we enable the Datadog tracing
+	DataDogEnabled = NewBoolFlag(false, "DD_ENABLED")
 )
