@@ -5,14 +5,14 @@ require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/bradleyfalzon/ghinstallation v0.1.2
 	github.com/cenkalti/backoff v2.2.1+incompatible
-	github.com/cloudbees/jx-tenant-service v0.0.281
+	github.com/cloudbees/jx-tenant-service v0.0.282
 	github.com/davecgh/go-spew v1.1.1
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.3.1
 	github.com/gorilla/mux v1.6.2
 	github.com/heptio/sonobuoy v0.16.0
 	github.com/jenkins-x/go-scm v1.5.65
-	github.com/jenkins-x/jx v0.0.0-20191203120520-4a41e9a4a284
+	github.com/jenkins-x/jx v0.0.0-20191205082448-1ef299d70077
 	github.com/jenkins-x/lighthouse v0.0.330
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pborman/uuid v1.2.0
