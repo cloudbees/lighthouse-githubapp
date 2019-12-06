@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/jenkins-x/go-scm/scm"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/gorilla/mux"
+	"github.com/jenkins-x/go-scm/scm"
+	"github.com/sirupsen/logrus"
 )
 
 type GithubApp struct {
@@ -20,6 +21,7 @@ type GithubAppResponse struct {
 	Installed    bool
 	AccessToRepo bool
 	URL          string
+	AppName      string
 }
 
 func NewGithubApp() (*GithubApp, error) {
@@ -80,20 +82,24 @@ func (o *GithubApp) handleInstalledRequests(w http.ResponseWriter, r *http.Reque
 				githubAppResponse.Installed = false
 				githubAppResponse.AccessToRepo = false
 				githubAppResponse.URL = getGitHubAppInstalltionURL()
+				githubAppResponse.AppName = getGitHubAppName()
 			} else {
 				githubAppResponse.Installed = true
 				githubAppResponse.AccessToRepo = false
 				githubAppResponse.URL = installation.Link
+				githubAppResponse.AppName = getGitHubAppName()
 			}
 		} else {
 			githubAppResponse.Installed = true
 			githubAppResponse.AccessToRepo = false
 			githubAppResponse.URL = installation.Link
+			githubAppResponse.AppName = getGitHubAppName()
 		}
 	} else {
 		githubAppResponse.Installed = true
 		githubAppResponse.AccessToRepo = true
 		githubAppResponse.URL = installation.Link
+		githubAppResponse.AppName = getGitHubAppName()
 	}
 
 	res, err := json.Marshal(githubAppResponse)
@@ -134,6 +140,10 @@ func (o *GithubApp) findRepositoryInstallation(scmClient *scm.Client, owner stri
 }
 
 func getGitHubAppInstalltionURL() string {
+	return fmt.Sprintf("https://github.com/apps/%s/installations/new", getBotName())
+}
+
+func getBotName() string {
 	botEnvVar := os.Getenv("BOT_NAME")
 	if botEnvVar != "" {
 		botEnvVar = strings.ReplaceAll(botEnvVar, "[bot]", "")
@@ -143,5 +153,11 @@ func getGitHubAppInstalltionURL() string {
 		botEnvVar = "jenkins-x"
 	}
 
-	return fmt.Sprintf("https://github.com/apps/%s/installations/new", botEnvVar)
+	return botEnvVar
+}
+
+func getGitHubAppName() string {
+	botName := strings.ReplaceAll(getBotName(), "-", " ")
+
+	return strings.Title(strings.ToLower(botName))
 }
