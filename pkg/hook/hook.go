@@ -323,7 +323,7 @@ func (o *HookOptions) invokeLighthouse(log *logrus.Entry, webhook scm.Webhook, f
 
 	log.Info("about to invoke lighthouse")
 
-	l, output, err := localHook.ProcessWebHook(webhook)
+	l, output, err := localHook.ProcessWebHook(log, webhook)
 	if err != nil {
 		err = errors.Wrap(err, "failed to process webhook")
 		l.WithError(err).Error(err.Error())
