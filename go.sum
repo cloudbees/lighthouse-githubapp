@@ -147,6 +147,8 @@ github.com/chromedp/chromedp v0.1.1/go.mod h1:KKKRCns4HLd/N5oQR+vX13dV/U7U3+QeWF
 github.com/circonus-labs/circonus-gometrics v2.3.1+incompatible/go.mod h1:nmEj6Dob7S7YxXgwXpfOuvO54S+tGdZdw9fuRZt25Ag=
 github.com/circonus-labs/circonusllhist v0.1.3/go.mod h1:kMXHVDlOchFAehlya5ePtbp5jckzBHf4XRpQvBOLI+I=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
+github.com/cloudbees/jx-tenant-service v0.0.270 h1:ck6zBdTWdxJ+ZtJxN5/Q/dO5EsqeEtJGmGt4caKILZg=
+github.com/cloudbees/jx-tenant-service v0.0.270/go.mod h1:AA05VAbdGC3PTI3LyYAJbOoFJEq1kyT8VfeOG9Vk3mQ=
 github.com/cloudbees/jx-tenant-service v0.0.291 h1:afOX1s7gAhAKI7wViutaEBEfVgf0jz5iV0wkM+oyreY=
 github.com/cloudbees/jx-tenant-service v0.0.291/go.mod h1:x02+yqt4o7FSUzgWtjOsOnpNM4mSNF+Y7zZByppwXCY=
 github.com/cockroachdb/cmux v0.0.0-20170110192607-30d10be49292/go.mod h1:qRiX68mZX1lGBkTWyp3CLcenw9I94W2dLeRvMzcn9N4=
@@ -454,10 +456,16 @@ github.com/jenkins-x/go-scm v1.5.65 h1:ieH+0JSWENObn1SDWFj2K40iV5Eia4aTl6W6bDdLw
 github.com/jenkins-x/go-scm v1.5.65/go.mod h1:MgGRkJScE/rJ30J/bXYqduN5sDPZqZFITJopsnZmTOw=
 github.com/jenkins-x/golang-jenkins v0.0.0-20180919102630-65b83ad42314 h1:kyBMx/ucSV92S+umX/V6DDaPNynlFFOM9MGJWApltoU=
 github.com/jenkins-x/golang-jenkins v0.0.0-20180919102630-65b83ad42314/go.mod h1:C6j5HgwlHGjRU27W4XCs6jXksqYFo8OdBu+p44jqQeM=
+github.com/jenkins-x/jx v0.0.0-20191201120736-3693720c4516 h1:gHh0KQIFe/e5PpLfPgjlSgfHVVPgVbeHYQzT6vmNu8g=
+github.com/jenkins-x/jx v0.0.0-20191201120736-3693720c4516/go.mod h1:3AeNbBLtPJBHhyH46p1s2hHkvmKUqkSLkSOj/Lq/pqk=
+github.com/jenkins-x/jx v0.0.0-20191206153325-7bde8a5b439a h1:i5ZK4a3s8zeU5Cl0TL2ZjQxhNlV/ODVkXGurvUM8xvg=
+github.com/jenkins-x/jx v0.0.0-20191206153325-7bde8a5b439a/go.mod h1:AuEkNUYKGGd9LFZJ7RLB7liqsDvjih5wnZr5JAAXRtA=
 github.com/jenkins-x/jx v0.0.0-20191209095948-9df637366bd6 h1:QeX6nRuzwDrpl6ZKTCtX1LfVfXhCeaUQPWVh6lHeajI=
 github.com/jenkins-x/jx v0.0.0-20191209095948-9df637366bd6/go.mod h1:AuEkNUYKGGd9LFZJ7RLB7liqsDvjih5wnZr5JAAXRtA=
-github.com/jenkins-x/lighthouse v0.0.339 h1:Ycu1DraqQb5F8VPAI5DouqHUld5YcTfn/CLpJ/r0TCY=
-github.com/jenkins-x/lighthouse v0.0.339/go.mod h1:4uyKvprFbkSqMw8/1xkmDe9A9unxy1tLC2DHliQTsAw=
+github.com/jenkins-x/lighthouse v0.0.325 h1:1ndz0elhwCYV0gbZxfBVEMMYZJvRwzLyth7RoUbyo/0=
+github.com/jenkins-x/lighthouse v0.0.325/go.mod h1:YdEOTmX0HxfrXFg6/iX7BUdrmEZB7UZWhHzNwrI5gCw=
+github.com/jenkins-x/lighthouse v0.0.340 h1:AUdLdE0LAJvpM2H8V+O6W5UfS9O88jSjyShK8BD+R2s=
+github.com/jenkins-x/lighthouse v0.0.340/go.mod h1:4uyKvprFbkSqMw8/1xkmDe9A9unxy1tLC2DHliQTsAw=
 github.com/jenkins-x/sonobuoy v0.11.7-0.20190318120422-253758214767 h1:lKtC9uHyWi8wd+EUch3Pfzk3/8XSJvYRJhvk9dK4YKY=
 github.com/jenkins-x/sonobuoy v0.11.7-0.20190318120422-253758214767/go.mod h1:UR3AoCKJHHKi2AoOWeFbZcMKyd5LqQkdCRgwqZkX/io=
 github.com/jetstack/cert-manager v0.5.2 h1:qs74mdAprZ5kcCYF3arzmEAZtbt+9HneldSJrk21tKs=
@@ -593,6 +601,7 @@ github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3Rllmb
 github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
 github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32 h1:W6apQkHrMkS0Muv8G/TipAy/FJl/rCYT0+EuS8+Z0z4=
 github.com/nbio/st v0.0.0-20140626010706-e9e8d9816f32/go.mod h1:9wM+0iRr9ahx58uYLpLIr5fm8diHn0JbqRycJi6w0Ms=
+github.com/newrelic/go-agent v2.15.0+incompatible/go.mod h1:a8Fv1b/fYhFSReoTU6HDkTYIMZeSVNffmoS726Y0LzQ=
 github.com/nlopes/slack v0.0.0-20180721202243-347a74b1ea30/go.mod h1:jVI4BBK3lSktibKahxBF74txcK2vyvkza1z/+rRnVAM=
 github.com/nwaples/rardecode v1.0.0/go.mod h1:5DzqNKiOdpKKBH87u8VlvAnPZMXcGRhxWkRpHbbfGS0=
 github.com/o1egl/gormrus v0.0.0-20190416211302-fde1f6a23457 h1:BCQNA6YVZgT9OkOa3SGm/+JlXsZpQbb8jL650p3ZEQE=
@@ -610,7 +619,6 @@ github.com/opencontainers/go-digest v1.0.0-rc1 h1:WzifXhOVOEOuFYOJAW6aQqW0TooG2i
 github.com/opencontainers/go-digest v1.0.0-rc1/go.mod h1:cMLVZDEM3+U2I4VmLI6N8jQYUd2OVphdqWwCJHrFt2s=
 github.com/opencontainers/image-spec v1.0.1 h1:JMemWkRwHx4Zj+fVxWoMCFm/8sYGGrUVojFA6h/TRcI=
 github.com/opencontainers/image-spec v1.0.1/go.mod h1:BtxoFyWECRxE4U/7sNtV5W15zMzWCbyJoFRP3s7yZA0=
-github.com/opentracing/opentracing-go v1.0.2 h1:3jA2P6O1F9UOrWVpwrIo17pu01KWvNWg4X946/Y5Zwg=
 github.com/opentracing/opentracing-go v1.0.2/go.mod h1:UkNAQd3GIcIGf0SeVgPpRdFStlNbqXla1AfSYxPUl2o=
 github.com/openzipkin/zipkin-go v0.1.1/go.mod h1:NtoC/o8u3JlF1lSlyPNswIbeQH9bJTmOf0Erfk+hxe8=
 github.com/openzipkin/zipkin-go v0.1.6/go.mod h1:QgAqvLzwWbR/WpD4A3cGpPtJrZXNIiJc5AZX7/PBEpw=
@@ -799,6 +807,8 @@ github.com/viniciuschiele/tarx v0.0.0-20151205142357-6e3da540444d h1:Z8Bp/K+wf1+
 github.com/viniciuschiele/tarx v0.0.0-20151205142357-6e3da540444d/go.mod h1:8uo3DXfN526YN7JjAp4JkOMm4foTW4vPzPHaAzb4xiY=
 github.com/wbrefvem/go-bitbucket v0.0.0-20190128183802-fc08fd046abb h1:KrmaSo+FHWBt1H652w/uerwzKvQqh4H7Jgyxm4hz2BQ=
 github.com/wbrefvem/go-bitbucket v0.0.0-20190128183802-fc08fd046abb/go.mod h1:Z91j2jYBApRjJ0zlXDCxPrrZR8ohkkd4g0n+Hqs1w0Q=
+github.com/xanzy/go-gitlab v0.0.0-20180814191223-f3bc634ab936 h1:sW9o8nzZskZn9WSsSzuXN2PJHOlSLkS4sAgz2VWF3Nc=
+github.com/xanzy/go-gitlab v0.0.0-20180814191223-f3bc634ab936/go.mod h1:CRKHkvFWNU6C3AEfqLWjnCNnAs4nj8Zk95rX2S3X6Mw=
 github.com/xanzy/go-gitlab v0.12.0 h1:rs40DfrKvJoIluarQJcFmOADVMlgFGDMXvnEeQpjqGg=
 github.com/xanzy/go-gitlab v0.12.0/go.mod h1:8zdQa/ri1dfn8eS3Ir1SyfvOKlw7WBJ8DVThkpGiXrs=
 github.com/xanzy/ssh-agent v0.2.0 h1:Adglfbi5p9Z0BmK2oKU9nTG+zKfniSfnaMYB+ULd+Ro=
