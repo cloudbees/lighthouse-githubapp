@@ -11,7 +11,7 @@ var (
 	HmacToken = NewStringFlag("", "LHA_HMAC_TOKEN")
 
 	// BotName name of the bot
-	BotName = NewStringFlag("jenkins-x-bot", "BOT_NAME")
+	BotName = NewStringFlag("jenkins-x-bot[bot]", "BOT_NAME")
 
 	// HttpPort the port to consumer on
 	HttpPort = NewStringFlag("8080", "LHA_HTTP_PORT")
