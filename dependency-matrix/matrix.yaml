@@ -3,8 +3,8 @@ dependencies:
   owner: cloudbees
   repo: jx-tenant-service
   url: https://github.com/cloudbees/jx-tenant-service
-  version: 0.0.314
-  versionURL: https://github.com/cloudbees/jx-tenant-service/releases/tag/v0.0.314
+  version: 0.0.315
+  versionURL: https://github.com/cloudbees/jx-tenant-service/releases/tag/v0.0.315
 - host: github.com
   owner: jenkins-x
   repo: go-scm
@@ -15,11 +15,11 @@ dependencies:
   owner: jenkins-x
   repo: jenkins-x-builders
   url: https://github.com/jenkins-x/jenkins-x-builders
-  version: 2.0.1077-409
+  version: 2.0.1077-410
   versionURL: ""
 - host: github.com
   owner: jenkins-x
   repo: lighthouse
   url: https://github.com/jenkins-x/lighthouse
-  version: 0.0.350
+  version: 0.0.351
   versionURL: ""
