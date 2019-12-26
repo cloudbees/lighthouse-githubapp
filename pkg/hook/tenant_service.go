@@ -26,9 +26,8 @@ func NewTenantService(host string) *TenantService {
 }
 
 // AppInstall registers an app installation on a number of repos
-func (t *TenantService) AppInstall(log *logrus.Entry, installationID int64, ownerURL string) error {
+func (t *TenantService) AppInstall(ctx context.Context, log *logrus.Entry, installationID int64, ownerURL string) error {
 	path := installationPath(installationID)
-	ctx := context.Background()
 	payload := &client.InstallAppRequest{
 		OwnerURL: &ownerURL,
 	}
@@ -42,10 +41,8 @@ func (t *TenantService) AppInstall(log *logrus.Entry, installationID int64, owne
 }
 
 // AppUnnstall removes an App installation
-func (t *TenantService) AppUnnstall(log *logrus.Entry, installationID int64) error {
+func (t *TenantService) AppUnnstall(ctx context.Context, log *logrus.Entry, installationID int64) error {
 	path := installationPath(installationID)
-	ctx := context.Background()
-
 	_, err := t.client.DeleteGitHubAppInstallGithubApp(ctx, path)
 	if err != nil {
 		log.WithError(err).Error("failed to uninstall app")
@@ -55,9 +52,8 @@ func (t *TenantService) AppUnnstall(log *logrus.Entry, installationID int64) err
 	return nil
 }
 
-func (t *TenantService) FindWorkspaces(log *logrus.Entry, installationID int64, gitURL string) ([]*access.WorkspaceAccess, error) {
+func (t *TenantService) FindWorkspaces(ctx context.Context, log *logrus.Entry, installationID int64, gitURL string) ([]*access.WorkspaceAccess, error) {
 	path := client.GetRepositoryWorkspacesWorkspacesPath()
-	ctx := context.Background()
 	installation := model.Int64ToA(installationID)
 	resp, err := t.client.GetRepositoryWorkspacesWorkspaces(ctx, path, &gitURL, &installation)
 	if err != nil {
@@ -73,10 +69,9 @@ func (t *TenantService) FindWorkspaces(log *logrus.Entry, installationID int64, 
 }
 
 // GetGithubAppToken returns the github app token for the installation
-func (t *TenantService) GetGithubAppToken(log *logrus.Entry, installationID int64) (*domain.InstallationToken, error) {
+func (t *TenantService) GetGithubAppToken(ctx context.Context, log *logrus.Entry, installationID int64) (*domain.InstallationToken, error) {
 	installation := model.Int64ToA(installationID)
 	path := client.GetGithubAppTokenWorkspacesPath(installation)
-	ctx := context.Background()
 	resp, err := t.client.GetGithubAppTokenWorkspaces(ctx, path)
 	if err != nil {
 		err = errors.Wrapf(err, "failed to get GitHub App token")
