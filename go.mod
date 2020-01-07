@@ -5,19 +5,21 @@ require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/bradleyfalzon/ghinstallation v0.1.2
 	github.com/cenkalti/backoff v2.2.1+incompatible
-	github.com/cloudbees/jx-tenant-service v0.0.349
+	github.com/cloudbees/jx-tenant-service v0.0.361
 	github.com/davecgh/go-spew v1.1.1
+	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.3.1
 	github.com/gorilla/mux v1.6.2
 	github.com/heptio/sonobuoy v0.16.0
-	github.com/jenkins-x/go-scm v1.5.65
-	github.com/jenkins-x/jx v0.0.0-20200102173147-f1e2a50dda01
+	github.com/jenkins-x/go-scm v1.5.66
+	github.com/jenkins-x/jx v0.0.0-20200107144239-dae04f4d6013
 	github.com/jenkins-x/lighthouse v0.0.369
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pborman/uuid v1.2.0
 	github.com/pkg/errors v0.8.1
 	github.com/rollout/rox-go v0.0.0-20181220111955-29ddae74a8c4
+	github.com/ryanuber/go-glob v0.0.0-20170128012129-256dc444b735 // indirect
 	github.com/shurcooL/githubv4 v0.0.0-20191006152017-6d1ea27df521 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/stretchr/testify v1.4.0
