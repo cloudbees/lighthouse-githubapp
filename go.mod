@@ -12,8 +12,8 @@ require (
 	github.com/gorilla/mux v1.6.2
 	github.com/heptio/sonobuoy v0.16.0
 	github.com/jenkins-x/go-scm v1.5.65
-	github.com/jenkins-x/jx v0.0.0-20200102173147-f1e2a50dda01
-	github.com/jenkins-x/lighthouse v0.0.369
+	github.com/jenkins-x/jx v0.0.0-20200107144239-dae04f4d6013
+	github.com/jenkins-x/lighthouse v0.0.377
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pborman/uuid v1.2.0
 	github.com/pkg/errors v0.8.1
@@ -21,7 +21,7 @@ require (
 	github.com/shurcooL/githubv4 v0.0.0-20191006152017-6d1ea27df521 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/stretchr/testify v1.4.0
-	github.com/tektoncd/pipeline v0.5.1
+	github.com/tektoncd/pipeline v0.8.0
 	gopkg.in/DataDog/dd-trace-go.v1 v1.19.0
 	k8s.io/apiextensions-apiserver v0.0.0-20190820064606-e49a3471dba5
 	k8s.io/apimachinery v0.0.0-20190816221834-a9f1d8a9c101
