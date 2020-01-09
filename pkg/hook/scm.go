@@ -48,7 +48,7 @@ func (o *HookOptions) getInstallScmClient(log *logrus.Entry, ctx context.Context
 		}
 	}
 
-	tokenResource, err := o.tenantService.GetGithubAppToken(log, ref.ID)
+	tokenResource, err := o.tenantService.GetGithubAppToken(ctx, log, ref.ID)
 	if err != nil {
 		return nil, tokenResource, errors.Wrapf(err, "failed to get the GitHub App token for installation %s", key)
 	}

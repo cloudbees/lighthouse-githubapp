@@ -57,7 +57,7 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 		}
 		l = l.WithField("Installation", installHook.Installation.ID)
 		l.Info("invoking Installation handler")
-		err = o.onInstallHook(l, installHook)
+		err = o.onInstallHook(r.Context(), l, installHook)
 		if err != nil {
 			responseHTTPError(w, http.StatusInternalServerError, "500 Internal Server Error: %s", err.Error())
 		} else {
@@ -74,7 +74,7 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	err = o.onGeneralHook(l, installRef, webhook)
+	err = o.onGeneralHook(r.Context(), l, installRef, webhook)
 	if err != nil {
 		l.WithError(err).Error("failed to process webook")
 

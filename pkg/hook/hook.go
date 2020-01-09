@@ -132,7 +132,7 @@ func (o *HookOptions) isReady() bool {
 	return true
 }
 
-func (o *HookOptions) onInstallHook(log *logrus.Entry, hook *scm.InstallationHook) error {
+func (o *HookOptions) onInstallHook(ctx context.Context, log *logrus.Entry, hook *scm.InstallationHook) error {
 	install := hook.Installation
 	id := install.ID
 	fields := map[string]interface{}{
@@ -172,16 +172,16 @@ func (o *HookOptions) onInstallHook(log *logrus.Entry, hook *scm.InstallationHoo
 
 			}
 		*/
-		return o.tenantService.AppInstall(log, id, ownerURL)
+		return o.tenantService.AppInstall(ctx, log, id, ownerURL)
 	} else if hook.Action == scm.ActionDelete {
-		return o.tenantService.AppUnnstall(log, id)
+		return o.tenantService.AppUnnstall(ctx, log, id)
 	} else {
 		log.Warnf("ignore unknown action")
 		return nil
 	}
 }
 
-func (o *HookOptions) onGeneralHook(log *logrus.Entry, install *scm.InstallationRef, webhook scm.Webhook) error {
+func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, install *scm.InstallationRef, webhook scm.Webhook) error {
 	id := install.ID
 	repo := webhook.Repository()
 	// TODO this should be fixed in go-scm
@@ -199,7 +199,7 @@ func (o *HookOptions) onGeneralHook(log *logrus.Entry, install *scm.Installation
 		return nil
 	}
 	log.Infof("onGeneralHook")
-	workspaces, err := o.tenantService.FindWorkspaces(log, id, u)
+	workspaces, err := o.tenantService.FindWorkspaces(ctx, log, id, u)
 	if err != nil {
 		return err
 	}
