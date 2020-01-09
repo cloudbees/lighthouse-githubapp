@@ -5,7 +5,7 @@ require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/bradleyfalzon/ghinstallation v0.1.2
 	github.com/cenkalti/backoff v2.2.1+incompatible
-	github.com/cloudbees/jx-tenant-service v0.0.368
+	github.com/cloudbees/jx-tenant-service v0.0.370
 	github.com/davecgh/go-spew v1.1.1
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/ghodss/yaml v1.0.0
@@ -13,8 +13,8 @@ require (
 	github.com/gorilla/mux v1.6.2
 	github.com/heptio/sonobuoy v0.16.0
 	github.com/jenkins-x/go-scm v1.5.66
-	github.com/jenkins-x/jx v0.0.0-20200108172032-717778d5bc91
-	github.com/jenkins-x/lighthouse v0.0.369
+	github.com/jenkins-x/jx v0.0.0-20200109001856-9433d1c29eca
+	github.com/jenkins-x/lighthouse v0.0.379
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pborman/uuid v1.2.0
 	github.com/pkg/errors v0.8.1
