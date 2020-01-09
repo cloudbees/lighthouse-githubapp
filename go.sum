@@ -151,8 +151,8 @@ github.com/chromedp/chromedp v0.1.1/go.mod h1:KKKRCns4HLd/N5oQR+vX13dV/U7U3+QeWF
 github.com/circonus-labs/circonus-gometrics v2.3.1+incompatible/go.mod h1:nmEj6Dob7S7YxXgwXpfOuvO54S+tGdZdw9fuRZt25Ag=
 github.com/circonus-labs/circonusllhist v0.1.3/go.mod h1:kMXHVDlOchFAehlya5ePtbp5jckzBHf4XRpQvBOLI+I=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
-github.com/cloudbees/jx-tenant-service v0.0.370 h1:iBllJHEwU1jZpdOYYT5jTEjZmWeM9oiGvaBJX7YHry0=
-github.com/cloudbees/jx-tenant-service v0.0.370/go.mod h1:UjxFvFkBKbav314eY/9ELKAoD61qycprYkX1Mbqybl0=
+github.com/cloudbees/jx-tenant-service v0.0.371 h1:RbezLeXqd2ftA2qFSiFeAueeUD200f1qe/lnwfTZPzI=
+github.com/cloudbees/jx-tenant-service v0.0.371/go.mod h1:UjxFvFkBKbav314eY/9ELKAoD61qycprYkX1Mbqybl0=
 github.com/cockroachdb/cmux v0.0.0-20170110192607-30d10be49292/go.mod h1:qRiX68mZX1lGBkTWyp3CLcenw9I94W2dLeRvMzcn9N4=
 github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd/go.mod h1:sE/e/2PUdi/liOCUjSTXgM1o87ZssimdTWN964YiIeI=
 github.com/codeship/codeship-go v0.0.0-20180717142545-7793ca823354/go.mod h1:cQ+OMEXZoX6vJ+FQ5L/RJidQuAdmEBIi3zDOLi5Cq0U=
@@ -708,6 +708,8 @@ github.com/russross/blackfriday v1.5.2/go.mod h1:JO/DiYxRf+HjHt06OyowR9PTA263kcR
 github.com/ryanuber/columnize v2.1.0+incompatible/go.mod h1:sm1tb6uqfes/u+d4ooFouqFdy9/2g9QGwK3SQygK0Ts=
 github.com/ryanuber/go-glob v0.0.0-20160226084822-572520ed46db h1:ge9atzKq16843f793fDVxKUhmTb4H5muzjJQ6PgsnHg=
 github.com/ryanuber/go-glob v0.0.0-20160226084822-572520ed46db/go.mod h1:807d1WSdnB0XRJzKNil9Om6lcp/3a0v4qIHxIXzX/Yc=
+github.com/ryanuber/go-glob v0.0.0-20170128012129-256dc444b735 h1:7YvPJVmEeFHR1Tj9sZEYsmarJEQfMVYpd/Vyy/A8dqE=
+github.com/ryanuber/go-glob v0.0.0-20170128012129-256dc444b735/go.mod h1:807d1WSdnB0XRJzKNil9Om6lcp/3a0v4qIHxIXzX/Yc=
 github.com/sanathkr/go-yaml v0.0.0-20170819195128-ed9d249f429b/go.mod h1:8458kAagoME2+LN5//WxE71ysZ3B7r22fdgb7qVmXSY=
 github.com/sanathkr/yaml v0.0.0-20170819201035-0056894fa522/go.mod h1:tQTYKOQgxoH3v6dEmdHiz4JG+nbxWwM5fgPQUpSZqVQ=
 github.com/satori/go.uuid v0.0.0-20160713180306-0aa62d5ddceb/go.mod h1:dA0hQrYB0VpLJoorglMZABFdXlWrHn1NEOzdhQKdks0=
