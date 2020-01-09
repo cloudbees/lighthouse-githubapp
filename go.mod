@@ -7,6 +7,7 @@ require (
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cloudbees/jx-tenant-service v0.0.370
 	github.com/davecgh/go-spew v1.1.1
+	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.3.1
 	github.com/gorilla/mux v1.6.2
@@ -18,6 +19,7 @@ require (
 	github.com/pborman/uuid v1.2.0
 	github.com/pkg/errors v0.8.1
 	github.com/rollout/rox-go v0.0.0-20181220111955-29ddae74a8c4
+	github.com/ryanuber/go-glob v0.0.0-20170128012129-256dc444b735 // indirect
 	github.com/shurcooL/githubv4 v0.0.0-20191006152017-6d1ea27df521 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	github.com/stretchr/testify v1.4.0
