@@ -151,8 +151,8 @@ github.com/chromedp/chromedp v0.1.1/go.mod h1:KKKRCns4HLd/N5oQR+vX13dV/U7U3+QeWF
 github.com/circonus-labs/circonus-gometrics v2.3.1+incompatible/go.mod h1:nmEj6Dob7S7YxXgwXpfOuvO54S+tGdZdw9fuRZt25Ag=
 github.com/circonus-labs/circonusllhist v0.1.3/go.mod h1:kMXHVDlOchFAehlya5ePtbp5jckzBHf4XRpQvBOLI+I=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
-github.com/cloudbees/jx-tenant-service v0.0.381 h1:tyxcOyW5KraEWpzhJfgeTxse4aQqxE6DGtyzqBNh2N8=
-github.com/cloudbees/jx-tenant-service v0.0.381/go.mod h1:PxPe1izJz9RpPW0fo7QFof/ofX1J2AILDMAey92jgY4=
+github.com/cloudbees/jx-tenant-service v0.0.382 h1:Ib6f0hcKzZ4xo3H1/7GrrNLpa9iWWoUYZ0w1q4mpZ+0=
+github.com/cloudbees/jx-tenant-service v0.0.382/go.mod h1:M7pXyH9JDgrAeY/IEJWiOzFXy9t3isb8IceZ1L3FL/w=
 github.com/cockroachdb/cmux v0.0.0-20170110192607-30d10be49292/go.mod h1:qRiX68mZX1lGBkTWyp3CLcenw9I94W2dLeRvMzcn9N4=
 github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd/go.mod h1:sE/e/2PUdi/liOCUjSTXgM1o87ZssimdTWN964YiIeI=
 github.com/codeship/codeship-go v0.0.0-20180717142545-7793ca823354/go.mod h1:cQ+OMEXZoX6vJ+FQ5L/RJidQuAdmEBIi3zDOLi5Cq0U=
@@ -460,8 +460,8 @@ github.com/jenkins-x/golang-jenkins v0.0.0-20180919102630-65b83ad42314 h1:kyBMx/
 github.com/jenkins-x/golang-jenkins v0.0.0-20180919102630-65b83ad42314/go.mod h1:C6j5HgwlHGjRU27W4XCs6jXksqYFo8OdBu+p44jqQeM=
 github.com/jenkins-x/jx v0.0.0-20200113145236-7233000fac02 h1:SIvt8WZ62ZJaERP70pnLotoE4aR+n+IOO2lVBucdHiI=
 github.com/jenkins-x/jx v0.0.0-20200113145236-7233000fac02/go.mod h1:o7HKXoZFuYR00t5LoKY9rg2sFvzGz2SsQXKh7V6+F7w=
-github.com/jenkins-x/jx v0.0.0-20200113192803-73a24b1c196b h1:2bOyjYtOUAgbGXONkCFFuMVXl+s7694m6Qbv8GdFWdw=
-github.com/jenkins-x/jx v0.0.0-20200113192803-73a24b1c196b/go.mod h1:o7HKXoZFuYR00t5LoKY9rg2sFvzGz2SsQXKh7V6+F7w=
+github.com/jenkins-x/jx v0.0.0-20200113203033-7a5d7ebf41c1 h1:FXT+UayG0e3/PXETnrQmrFG8Y6VCPyyFr6Cy2MSi254=
+github.com/jenkins-x/jx v0.0.0-20200113203033-7a5d7ebf41c1/go.mod h1:o7HKXoZFuYR00t5LoKY9rg2sFvzGz2SsQXKh7V6+F7w=
 github.com/jenkins-x/lighthouse v0.0.385 h1:lWA/n2ZgFsVnid8hZ9lWEjNC8ZUwjOUFE/IANVeewE4=
 github.com/jenkins-x/lighthouse v0.0.385/go.mod h1:eHzbrlgXgTn03IzTpS4cxqyveLW46QJI7ugo4mzY1Qw=
 github.com/jenkins-x/sonobuoy v0.11.7-0.20190318120422-253758214767 h1:lKtC9uHyWi8wd+EUch3Pfzk3/8XSJvYRJhvk9dK4YKY=
