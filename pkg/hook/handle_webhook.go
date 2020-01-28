@@ -2,8 +2,10 @@ package hook
 
 import (
 	"fmt"
+	"github.com/cenkalti/backoff"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/util"
 	"net/http"
+	"time"
 
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
 	"github.com/jenkins-x/go-scm/scm"
@@ -74,12 +76,21 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	err = o.onGeneralHook(r.Context(), l, installRef, webhook)
-	if err != nil {
-		l.WithError(err).Error("failed to process webook")
+	err = retry(time.Second*30, func() error {
+		return o.onGeneralHook(r.Context(), l, installRef, webhook)
+	})
 
+	if err != nil {
+		l.WithError(err).Error("failed to process webhook")
 		responseHTTPError(w, http.StatusInternalServerError, "500 Internal Server Error: %s", err.Error())
 	}
 	writeResult(l, w, "OK")
 	return
+}
+
+func retry(maxElapsedTime time.Duration, f func() error) error {
+    bo := backoff.NewExponentialBackOff()
+    bo.MaxElapsedTime = maxElapsedTime
+    bo.Reset()
+    return backoff.Retry(f, bo)
 }
