@@ -195,9 +195,10 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 	log = log.WithFields(fields)
 	u := repo.Link
 	if u == "" {
-		log.Warnf("ignoring webhook as no repository URL for")
-		return nil
+		log.Warnf("ignoring webhook as no repository URL for '%s'", repo.FullName)
+		return errors.New("ignoring webhook as no repository URL")
 	}
+
 	log.Infof("onGeneralHook")
 	workspaces, err := o.tenantService.FindWorkspaces(ctx, log, id, u)
 	if err != nil {
