@@ -11,10 +11,6 @@ import (
 	"github.com/jenkins-x/go-scm/scm"
 )
 
-var (
-
-)
-
 func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodPost {
