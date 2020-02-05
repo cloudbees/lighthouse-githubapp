@@ -12,8 +12,8 @@ require (
 	github.com/gorilla/mux v1.6.2
 	github.com/heptio/sonobuoy v0.16.0
 	github.com/jenkins-x/go-scm v1.5.72
-	github.com/jenkins-x/jx v0.0.0-20200204100742-d054a3a9d73d
-	github.com/jenkins-x/lighthouse v0.0.432
+	github.com/jenkins-x/jx v0.0.0-20200205200529-22551dcb0b89
+	github.com/jenkins-x/lighthouse v0.0.433
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pborman/uuid v1.2.0
 	github.com/pkg/errors v0.8.1
