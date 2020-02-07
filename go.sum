@@ -153,8 +153,8 @@ github.com/chromedp/chromedp v0.1.1/go.mod h1:KKKRCns4HLd/N5oQR+vX13dV/U7U3+QeWF
 github.com/circonus-labs/circonus-gometrics v2.3.1+incompatible/go.mod h1:nmEj6Dob7S7YxXgwXpfOuvO54S+tGdZdw9fuRZt25Ag=
 github.com/circonus-labs/circonusllhist v0.1.3/go.mod h1:kMXHVDlOchFAehlya5ePtbp5jckzBHf4XRpQvBOLI+I=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
-github.com/cloudbees/jx-tenant-service v0.0.405 h1:dVj/iP38Ge5hujLcSKwQFqa5zaDLZjmueeYSIprWeKc=
-github.com/cloudbees/jx-tenant-service v0.0.405/go.mod h1:+Bjmd+jRVKVFX+vIG76roqF3TgZYlhF2Lc8uYPUs63U=
+github.com/cloudbees/jx-tenant-service v0.0.406 h1:wR/ie0vbkFVAe2mrGDk4arJgAlGtPoQWkcXPCMRxczA=
+github.com/cloudbees/jx-tenant-service v0.0.406/go.mod h1:qOFt0xbK1wbpzmItGqFBW6jVBozB2YbF1NYGhGs+Prk=
 github.com/cockroachdb/cmux v0.0.0-20170110192607-30d10be49292/go.mod h1:qRiX68mZX1lGBkTWyp3CLcenw9I94W2dLeRvMzcn9N4=
 github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd/go.mod h1:sE/e/2PUdi/liOCUjSTXgM1o87ZssimdTWN964YiIeI=
 github.com/codeship/codeship-go v0.0.0-20180717142545-7793ca823354/go.mod h1:cQ+OMEXZoX6vJ+FQ5L/RJidQuAdmEBIi3zDOLi5Cq0U=
@@ -481,8 +481,8 @@ github.com/jenkins-x/jx v0.0.0-20200207105336-634efe5ea183 h1:wycHHiparbBCVKsjYJ
 github.com/jenkins-x/jx v0.0.0-20200207105336-634efe5ea183/go.mod h1:car5CAW0rh1TOp66fiesZe7uNoonZmSygozh9ba2fug=
 github.com/jenkins-x/jx v0.0.0-20200207164408-3e719ca49349 h1:4EEOBJMU/UFq2mQ0yYO2EfubF/lhDE1qMub60+aw/14=
 github.com/jenkins-x/jx v0.0.0-20200207164408-3e719ca49349/go.mod h1:car5CAW0rh1TOp66fiesZe7uNoonZmSygozh9ba2fug=
-github.com/jenkins-x/lighthouse v0.0.435 h1:4BVe/WHe+a0BQhzb0PvxCnWQxeYAaVPvBqvShm4V7u4=
-github.com/jenkins-x/lighthouse v0.0.435/go.mod h1:7kLrJmwglGAGYt5MVGi6BiLmdwuZa5bDuxxb33T4Wyc=
+github.com/jenkins-x/lighthouse v0.0.434 h1:i+vGH1iw/XRyBztJmQ2dYRIsnAE2Crq9ETBRX55Tr6g=
+github.com/jenkins-x/lighthouse v0.0.434/go.mod h1:PtS7CdjHk8ISi48o5ltxRwy4+rjDCJFS0THq8L6F+oE=
 github.com/jenkins-x/sonobuoy v0.11.7-0.20190318120422-253758214767 h1:lKtC9uHyWi8wd+EUch3Pfzk3/8XSJvYRJhvk9dK4YKY=
 github.com/jenkins-x/sonobuoy v0.11.7-0.20190318120422-253758214767/go.mod h1:UR3AoCKJHHKi2AoOWeFbZcMKyd5LqQkdCRgwqZkX/io=
 github.com/jetstack/cert-manager v0.5.2 h1:qs74mdAprZ5kcCYF3arzmEAZtbt+9HneldSJrk21tKs=
