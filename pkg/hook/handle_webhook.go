@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/cenkalti/backoff"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/util"
+	"io"
+	"io/ioutil"
 	"net/http"
 	"time"
 
@@ -34,7 +36,21 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 
 	webhook, err := scmClient.Webhooks.Parse(r, secretFn)
 	if err != nil {
-		util.TraceLogger(r.Context()).Errorf("failed to parse webhook: %s", err.Error())
+		rc, err := r.GetBody()
+		if err != nil {
+			util.TraceLogger(r.Context()).Errorf("unable to get body during parse: %s", err.Error())
+			responseHTTPError(w, http.StatusInternalServerError, fmt.Sprintf("500 Internal Server Error: unable to get body during parse: %s", err.Error()))
+			return
+		}
+		data, err := ioutil.ReadAll(
+			io.LimitReader(rc, 10000000),
+		)
+		if err != nil {
+			util.TraceLogger(r.Context()).Errorf("unable to read body during parse: %s", err.Error())
+			responseHTTPError(w, http.StatusInternalServerError, fmt.Sprintf("500 Internal Server Error: unable to read body during parse: %s", err.Error()))
+			return
+		}
+		util.TraceLogger(r.Context()).Errorf("failed to parse webhook: %s - %s", err.Error(), data)
 
 		responseHTTPError(w, http.StatusInternalServerError, fmt.Sprintf("500 Internal Server Error: Failed to parse webhook: %s", err.Error()))
 		return
