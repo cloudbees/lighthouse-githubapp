@@ -240,7 +240,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 		}
 	}
 	if len(workspaces) == 0 {
-		log.Warnf("no workspaces interested in repository")
+		log.Warnf("no workspaces interested in repository '%s'", repo.FullName)
 	}
 	return nil
 }
