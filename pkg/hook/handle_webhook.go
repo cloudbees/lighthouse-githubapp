@@ -76,21 +76,24 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	err = retry(time.Second*30, func() error {
+	duration := time.Second*60
+	err = retry(duration, func() error {
 		return o.onGeneralHook(r.Context(), l, installRef, webhook)
+	}, func(e error, d time.Duration) {
+		l.Warnf("onGeneralHook failed with %s, backing off for %s", e, d)
 	})
 
 	if err != nil {
-		l.WithError(err).Errorf("failed to process webhook after 30 seconds for '%s'", repository.FullName)
+		l.WithError(err).Errorf("failed to process webhook after %s seconds for '%s'", duration, repository.FullName)
 		responseHTTPError(w, http.StatusInternalServerError, "500 Internal Server Error: %s", err.Error())
 	}
 	writeResult(l, w, "OK")
 	return
 }
 
-func retry(maxElapsedTime time.Duration, f func() error) error {
+func retry(maxElapsedTime time.Duration, f func() error, n func(error, time.Duration) ) error {
     bo := backoff.NewExponentialBackOff()
     bo.MaxElapsedTime = maxElapsedTime
     bo.Reset()
-    return backoff.Retry(f, bo)
+    return backoff.RetryNotify(f, bo, n)
 }
