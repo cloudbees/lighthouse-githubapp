@@ -81,7 +81,7 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 	})
 
 	if err != nil {
-		l.WithError(err).Error("failed to process webhook after 30 seconds for '%s'", repository.FullName)
+		l.WithError(err).Errorf("failed to process webhook after 30 seconds for '%s'", repository.FullName)
 		responseHTTPError(w, http.StatusInternalServerError, "500 Internal Server Error: %s", err.Error())
 	}
 	writeResult(l, w, "OK")
