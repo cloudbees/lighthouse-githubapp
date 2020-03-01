@@ -186,6 +186,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 	repo := webhook.Repository()
 	// TODO this should be fixed in go-scm
 	if repo.FullName == "" {
+		log.Warnf("repo.FullName is empty, calculating full name as '%s/%s'", repo.Namespace, repo.Name)
 		repo.FullName = repo.Namespace + "/" + repo.Name
 	}
 	fields := map[string]interface{}{
@@ -196,7 +197,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 	u := repo.Link
 	if u == "" {
 		log.Warnf("ignoring webhook as no repository URL for '%s'", repo.FullName)
-		return errors.Errorf("ignoring webhook as no repository URL for '%s'", repo.FullName)
+		return nil
 	}
 
 	log.Infof("onGeneralHook")
