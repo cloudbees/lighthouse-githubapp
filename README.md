@@ -66,4 +66,3 @@ When you terminate the process/debug session `telepresence` will now switch back
 sudo killall lighthouse-githubapp
 sudo killall dlv
 ```   
-    
