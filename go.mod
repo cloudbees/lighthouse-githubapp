@@ -5,12 +5,11 @@ require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/bradleyfalzon/ghinstallation v0.1.2
 	github.com/cenkalti/backoff v2.2.1+incompatible
-	github.com/cloudbees/jx-tenant-service v0.0.474
+	github.com/cloudbees/jx-tenant-service v0.0.475
 	github.com/davecgh/go-spew v1.1.1
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.3.1
 	github.com/gorilla/mux v1.6.2
-	github.com/heptio/sonobuoy v0.16.0
 	github.com/jenkins-x/go-scm v1.5.77
 	github.com/jenkins-x/jx v0.0.0-20200306083643-a1270a93ed2c
 	github.com/jenkins-x/lighthouse v0.0.475
@@ -24,7 +23,6 @@ require (
 	github.com/stretchr/testify v1.4.0
 	github.com/tektoncd/pipeline v0.8.0
 	gopkg.in/DataDog/dd-trace-go.v1 v1.19.0
-	k8s.io/apiextensions-apiserver v0.0.0-20190820064606-e49a3471dba5
 	k8s.io/apimachinery v0.0.0-20190816221834-a9f1d8a9c101
 	k8s.io/client-go v11.0.1-0.20190805182717-6502b5e7b1b5+incompatible
 )
