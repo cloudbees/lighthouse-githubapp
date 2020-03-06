@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/cloudbees/lighthouse-githubapp/pkg/util"
 	"net/http"
 	"strings"
+
+	"github.com/cloudbees/lighthouse-githubapp/pkg/util"
 
 	"github.com/cloudbees/jx-tenant-service/pkg/gcloudhelpers"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"

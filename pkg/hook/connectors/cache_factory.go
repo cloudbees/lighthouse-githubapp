@@ -1,12 +1,10 @@
 package connectors
 
 import (
-	"github.com/heptio/sonobuoy/pkg/dynamic"
 	"github.com/jenkins-x/jx/pkg/client/clientset/versioned"
 	"github.com/jenkins-x/jx/pkg/jxfactory"
 	"github.com/jenkins-x/jx/pkg/kube"
 	tektonclient "github.com/tektoncd/pipeline/pkg/client/clientset/versioned"
-	apiextensionsclientset "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 
@@ -16,13 +14,11 @@ import (
 )
 
 type CachingFactory struct {
-	factory             jxfactory.Factory
-	ns                  string
-	apiExtensionsClient apiextensionsclientset.Interface
-	kubeClient          kubernetes.Interface
-	jxClient            versioned.Interface
-	tektonClient        tektonclient.Interface
-	dynamicClient       *dynamic.APIHelper
+	factory      jxfactory.Factory
+	ns           string
+	kubeClient   kubernetes.Interface
+	jxClient     versioned.Interface
+	tektonClient tektonclient.Interface
 }
 
 // NewCachingFactory creates a new client factory which caches clients across invocations
