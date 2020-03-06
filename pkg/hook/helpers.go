@@ -2,13 +2,14 @@ package hook
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 
 	"github.com/sirupsen/logrus"
 )
 
-func writeResult(log *logrus.Entry, w http.ResponseWriter, message string) {
+func writeResult(log *logrus.Entry, w io.Writer, message string) {
 	_, err := w.Write([]byte(message))
 	if err != nil {
 		log.WithError(err).Debugf("failed to write message: %s", message)

@@ -14,7 +14,6 @@ import (
 )
 
 type TenantService struct {
-	host   string
 	client *client.Client
 }
 

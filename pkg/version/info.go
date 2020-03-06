@@ -14,8 +14,9 @@
 package version
 
 import (
-	"github.com/cloudbees/jx-tenant-service/pkg/controller/app"
 	"strings"
+
+	"github.com/cloudbees/jx-tenant-service/pkg/controller/app"
 
 	"github.com/blang/semver"
 )

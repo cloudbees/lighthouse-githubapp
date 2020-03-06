@@ -108,7 +108,7 @@ func (o *GithubApp) handleInstalledRequests(w http.ResponseWriter, r *http.Reque
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	_, err = w.Write([]byte(res))
+	_, err = w.Write(res)
 	if err != nil {
 		l.Errorf("failed to write the message: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

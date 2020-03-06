@@ -2,18 +2,19 @@ package main
 
 import (
 	"context"
-	"github.com/TV4/logrus-stackdriver-formatter"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	stackdriver "github.com/TV4/logrus-stackdriver-formatter"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/hook"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/version"
 	"github.com/sirupsen/logrus"
 	muxtrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/gorilla/mux"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
 )
 
 func main() {
@@ -53,7 +54,10 @@ func main() {
 		logrus.Info("lighthouse github app is shutting down...")
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*30)
 		defer cancel()
-		server.Shutdown(ctx)
+		err = server.Shutdown(ctx)
+		if err != nil {
+			logrus.Errorf("unable to shutdown cleanly: %s", err)
+		}
 	}()
 
 	err = server.ListenAndServe()

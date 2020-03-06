@@ -2,10 +2,11 @@ package hook
 
 import (
 	"fmt"
-	"github.com/cenkalti/backoff"
-	"github.com/cloudbees/lighthouse-githubapp/pkg/util"
 	"net/http"
 	"time"
+
+	"github.com/cenkalti/backoff"
+	"github.com/cloudbees/lighthouse-githubapp/pkg/util"
 
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
 	"github.com/jenkins-x/go-scm/scm"
@@ -76,7 +77,7 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	duration := time.Second*60
+	duration := time.Second * 60
 	err = retry(duration, func() error {
 		return o.onGeneralHook(r.Context(), l, installRef, webhook)
 	}, func(e error, d time.Duration) {
@@ -91,9 +92,9 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 	return
 }
 
-func retry(maxElapsedTime time.Duration, f func() error, n func(error, time.Duration) ) error {
-    bo := backoff.NewExponentialBackOff()
-    bo.MaxElapsedTime = maxElapsedTime
-    bo.Reset()
-    return backoff.RetryNotify(f, bo, n)
+func retry(maxElapsedTime time.Duration, f func() error, n func(error, time.Duration)) error {
+	bo := backoff.NewExponentialBackOff()
+	bo.MaxElapsedTime = maxElapsedTime
+	bo.Reset()
+	return backoff.RetryNotify(f, bo, n)
 }
