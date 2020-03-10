@@ -11,8 +11,8 @@ require (
 	github.com/google/go-cmp v0.3.1
 	github.com/gorilla/mux v1.6.2
 	github.com/jenkins-x/go-scm v1.5.79
-	github.com/jenkins-x/jx v0.0.0-20200309091424-235e5a761e85
-	github.com/jenkins-x/lighthouse v0.0.482
+	github.com/jenkins-x/jx v0.0.0-20200310105147-c28a91670b2a
+	github.com/jenkins-x/lighthouse v0.0.485
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pborman/uuid v1.2.0
 	github.com/pkg/errors v0.8.1
