@@ -308,7 +308,7 @@ func (o *HookOptions) invokeLighthouse(log *logrus.Entry, webhook scm.Webhook, f
 	server := &lhhook.Server{
 		ClientAgent: &plugins.ClientAgent{
 			BotName:            botUser,
-			GitHubClient:       scmClient,
+			SCMProviderClient:  scmClient,
 			KubernetesClient:   kubeClient,
 			GitClient:          gitClient,
 			MetapipelineClient: metapipelineClient,
