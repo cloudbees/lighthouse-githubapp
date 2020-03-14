@@ -72,7 +72,6 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 	installRef := webhook.GetInstallationRef()
 	if installRef == nil || installRef.ID == 0 {
 		l.WithField("Hook", webhook).Error("no installation reference was passed for webhook")
-
 		responseHTTPError(w, http.StatusInternalServerError, "500 Internal Server Error: No installation in webhook")
 		return
 	}
@@ -81,7 +80,7 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 	err = retry(duration, func() error {
 		return o.onGeneralHook(r.Context(), l, installRef, webhook)
 	}, func(e error, d time.Duration) {
-		l.Warnf("onGeneralHook failed with %s, backing off for %s", e, d)
+		l.Warnf("onGeneralHook failed with '%s', backing off for %s", e, d)
 	})
 
 	if err != nil {

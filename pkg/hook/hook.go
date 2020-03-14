@@ -193,6 +193,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 	fields := map[string]interface{}{
 		"InstallationID": id,
 		"FullName":       repo.FullName,
+		"Link":           repo.Link,
 	}
 	log = log.WithFields(fields)
 	u := repo.Link
@@ -236,6 +237,9 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 			continue
 		}
 
+		log.WithField("Scheduler", scheduler.Name)
+		log.WithField("Bot", flags.BotName.Value())
+
 		err = o.invokeLighthouse(log, webhook, f, ws.Namespace, scheduler, install)
 		if err != nil {
 			log.WithError(err).Error("failed to invoke remote lighthouse")
@@ -244,7 +248,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 	}
 
 	if len(workspaces) == 0 {
-		log.Warnf("no workspaces interested in repository '%s'", repo.FullName)
+		return errors.Errorf("no workspaces interested in repository '%s', backing off...", repo.FullName)
 	}
 
 	return nil
