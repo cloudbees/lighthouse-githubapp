@@ -36,13 +36,11 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 	webhook, err := scmClient.Webhooks.Parse(r, secretFn)
 	if err != nil {
 		util.TraceLogger(r.Context()).Warnf("failed to parse webhook: %s", err.Error())
-
 		responseHTTPError(w, http.StatusInternalServerError, fmt.Sprintf("500 Internal Server Error: Failed to parse webhook: %s", err.Error()))
 		return
 	}
 	if webhook == nil {
 		util.TraceLogger(r.Context()).Error("no webhook was parsed")
-
 		responseHTTPError(w, http.StatusInternalServerError, "500 Internal Server Error: No webhook could be parsed")
 		return
 	}
