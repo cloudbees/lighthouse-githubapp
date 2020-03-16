@@ -211,7 +211,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 
 	for _, ws := range workspaces {
 		log := log.WithFields(ws.LogFields())
-		log.Infof("got workspace")
+		log.Infof("notifying workspace %s", ws.Project)
 
 		kubeConfig := ws.KubeConfig
 		if kubeConfig == "" {
@@ -246,6 +246,8 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 			return err
 		}
 	}
+
+	log.Logger.Infof("%d workspaces interested in repository %s", len(workspaces), repo.FullName)
 
 	if len(workspaces) == 0 {
 		return errors.Errorf("no workspaces interested in repository '%s', backing off...", repo.FullName)
