@@ -185,9 +185,10 @@ func (o *HookOptions) onInstallHook(ctx context.Context, log *logrus.Entry, hook
 func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, install *scm.InstallationRef, webhook scm.Webhook) error {
 	id := install.ID
 	repo := webhook.Repository()
+
 	// TODO this should be fixed in go-scm
 	if repo.FullName == "" {
-		log.Warnf("repo.FullName is empty, calculating full name as '%s/%s'", repo.Namespace, repo.Name)
+		log.Debugf("repo.FullName is empty, calculating full name as '%s/%s'", repo.Namespace, repo.Name)
 		repo.FullName = repo.Namespace + "/" + repo.Name
 	}
 	fields := map[string]interface{}{
@@ -211,7 +212,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 
 	for _, ws := range workspaces {
 		log := log.WithFields(ws.LogFields())
-		log.Infof("notifying workspace %s", ws.Project)
+		log.Infof("notifying workspace %s for %s", ws.Project, repo.FullName)
 
 		kubeConfig := ws.KubeConfig
 		if kubeConfig == "" {
@@ -227,13 +228,13 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 		// lets parse the Scheduler json
 		jsonText := ws.JSON
 		if jsonText == "" {
-			log.Error("no Scheduler JSON")
+			log.Error("no Scheduler JSON for workspace %s and repo %s", ws.Project, repo.FullName)
 			continue
 		}
 		scheduler := &v1.Scheduler{}
 		err = json.Unmarshal([]byte(jsonText), scheduler)
 		if err != nil {
-			log.WithError(err).Error("failed to parse Scheduler JSON")
+			log.WithError(err).Error("failed to parse Scheduler JSON for workspace %s and repo %s", ws.Project, repo.FullName)
 			continue
 		}
 
@@ -242,12 +243,12 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 
 		err = o.invokeLighthouse(log, webhook, f, ws.Namespace, scheduler, install)
 		if err != nil {
-			log.WithError(err).Error("failed to invoke remote lighthouse")
+			log.WithError(err).Error("failed to invoke remote lighthouse for workspace %s and repo %s", ws.Project, repo.FullName)
 			return err
 		}
 	}
 
-	log.Logger.Infof("%d workspaces interested in repository %s", len(workspaces), repo.FullName)
+	log.Infof("%d workspaces interested in repository %s", len(workspaces), repo.FullName)
 
 	if len(workspaces) == 0 {
 		return errors.Errorf("no workspaces interested in repository '%s', backing off...", repo.FullName)
