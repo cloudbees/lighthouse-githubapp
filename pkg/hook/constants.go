@@ -22,7 +22,7 @@ const (
 	tokenCacheExpiration = 10 * time.Minute
 
 	// tokenCacheExpireDelta the delta before the expire time when we re-request a token to ensure we don't get too close to the limit
-	tokenCacheExpireDelta = 2 * time.Minute
+	tokenCacheExpireDelta = 5 * time.Minute
 
 	// to verify scm tokens
 	verifyRepository  = "arcalos-environments/environment-devourerpaint-staging"
