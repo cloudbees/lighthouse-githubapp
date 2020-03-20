@@ -214,6 +214,10 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 		log := log.WithFields(ws.LogFields())
 		log.Infof("notifying workspace %s for %s", ws.Project, repo.FullName)
 
+		if ws.UseWebhookRelay {
+			log.Warnf("should be invoking webhook relay here! %s with hmac %s", ws.LighthouseURL, ws.HMAC)
+		}
+
 		kubeConfig := ws.KubeConfig
 		if kubeConfig == "" {
 			log.Error("no KubeConfig for workspace")
