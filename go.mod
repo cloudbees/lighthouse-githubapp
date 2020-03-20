@@ -5,22 +5,23 @@ require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/bradleyfalzon/ghinstallation v0.1.2
 	github.com/cenkalti/backoff v2.2.1+incompatible
-	github.com/cloudbees/jx-tenant-service v0.0.517
+	github.com/cloudbees/jx-tenant-service v0.0.526
 	github.com/davecgh/go-spew v1.1.1
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.3.1
 	github.com/gorilla/mux v1.6.2
 	github.com/jenkins-x/go-scm v1.5.82
-	github.com/jenkins-x/jx v0.0.0-20200318124807-81ef54e37b5f
+	github.com/jenkins-x/jx v0.0.0-20200319181526-b05ff956b88e
 	github.com/jenkins-x/lighthouse v0.0.493
+	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pborman/uuid v1.2.0
-	github.com/pkg/errors v0.8.1
-	github.com/rollout/rox-go v0.0.0-20181220111955-29ddae74a8c4
+	github.com/pkg/errors v0.9.1
+	github.com/rollout/rox-go v0.0.0-20200220092024-6eed0e7b0406
 	github.com/ryanuber/go-glob v0.0.0-20170128012129-256dc444b735 // indirect
 	github.com/shurcooL/githubv4 v0.0.0-20191006152017-6d1ea27df521 // indirect
 	github.com/sirupsen/logrus v1.4.2
-	github.com/stretchr/testify v1.4.0
+	github.com/stretchr/testify v1.5.1
 	github.com/tektoncd/pipeline v0.8.0
 	gopkg.in/DataDog/dd-trace-go.v1 v1.19.0
 	k8s.io/apimachinery v0.0.0-20190816221834-a9f1d8a9c101
