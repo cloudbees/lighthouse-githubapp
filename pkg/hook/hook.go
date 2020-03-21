@@ -252,7 +252,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 		return nil
 	}
 
-	log.Infof("onGeneralHook")
+	log.Infof("onGeneralHook - %+v", webhook)
 	workspaces, err := o.tenantService.FindWorkspaces(ctx, log, id, u)
 	if err != nil {
 		log.WithError(err).Errorf("Unable to find workspaces for %s", repo.FullName)
