@@ -69,23 +69,6 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	installationRepository, ok := webhook.(*scm.InstallationRepositoryHook)
-	if ok {
-		if installationRepository.Installation.ID == 0 {
-			responseHTTPError(w, http.StatusInternalServerError, "500 Internal Server Error: missing installation ID")
-			return
-		}
-		l = l.WithField("Installation", installationRepository.Installation.ID)
-		l.Info("invoking Installation Repository handler")
-		err = o.onInstallRepositoryHook(r.Context(), l, installationRepository)
-		if err != nil {
-			responseHTTPError(w, http.StatusInternalServerError, "500 Internal Server Error: %s", err.Error())
-		} else {
-			writeResult(l, w, "OK")
-		}
-		return
-	}
-
 	installRef := webhook.GetInstallationRef()
 	if installRef == nil || installRef.ID == 0 {
 		l.WithField("Hook", webhook).Error("no installation reference was passed for webhook")

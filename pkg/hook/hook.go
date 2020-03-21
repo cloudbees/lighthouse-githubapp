@@ -142,13 +142,13 @@ func (o *HookOptions) onInstallHook(ctx context.Context, log *logrus.Entry, hook
 		"Function":       "onInstallHook",
 	}
 	log = log.WithFields(fields)
-	log.Infof("installHook - %+v", hook)
-	log.Infof("installHook.Installation - %+v", hook.Installation)
-	log.Infof("installHook.Repos - %+v", hook.Repos)
+	log.Infof("installHook %+v", hook)
+	log.Infof("installHook Installation - %+v", hook.Installation)
+	log.Infof("installHook Repos - %+v", hook.Repos)
 
 	// ets register / unregister repositories to the InstallationID
 	if hook.Action == scm.ActionCreate {
-		ownerURL := hook.Installation.Link
+		ownerURL := hook.Installation.Account.Link
 		log = log.WithField("Owner", ownerURL)
 		if ownerURL == "" {
 			err := fmt.Errorf("missing ownerURL on install webhook")
@@ -180,55 +180,6 @@ func (o *HookOptions) onInstallHook(ctx context.Context, log *logrus.Entry, hook
 		return o.tenantService.AppUnnstall(ctx, log, id)
 	} else {
 		log.Warnf("ignore unknown action")
-		return nil
-	}
-}
-
-func (o *HookOptions) onInstallRepositoryHook(ctx context.Context, log *logrus.Entry, hook *scm.InstallationRepositoryHook) error {
-	install := hook.Installation
-	id := install.ID
-	fields := map[string]interface{}{
-		"Action":         hook.Action.String(),
-		"InstallationID": id,
-		"Function":       "onInstallRepositoryHook",
-	}
-	log = log.WithFields(fields)
-	log.Infof("installationRepository - %+v", hook)
-
-	// ets register / unregister repositories to the InstallationID
-	if hook.Action == scm.ActionCreate {
-		ownerURL := hook.Installation.Link
-		log = log.WithField("Owner", ownerURL)
-		if ownerURL == "" {
-			err := fmt.Errorf("missing ownerURL on installation repository webhook")
-			log.Error(err.Error())
-			return err
-		}
-
-		/*
-			repos := []RepositoryInfo{}
-			for _, repo := range hook.Repos {
-				link := strings.TrimSuffix(repo.Link, "/")
-				link = strings.TrimSuffix(link, ".git")
-				if link == "" {
-					full := repo.FullName
-					if full != "" {
-						link = util.UrlJoin("https://github.com", full)
-					}
-				}
-				if link != "" {
-					repos = append(repos, RepositoryInfo{URL: link})
-				}
-			}
-			if len(repos) == 0 {
-
-			}
-		*/
-		return o.tenantService.AppInstall(ctx, log, id, ownerURL)
-	} else if hook.Action == scm.ActionDelete {
-		return o.tenantService.AppUnnstall(ctx, log, id)
-	} else {
-		log.Warnf("ignore unknown action '%s'", hook.Action)
 		return nil
 	}
 }
