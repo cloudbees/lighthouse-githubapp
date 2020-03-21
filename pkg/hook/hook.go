@@ -142,7 +142,7 @@ func (o *HookOptions) onInstallHook(ctx context.Context, log *logrus.Entry, hook
 		"Function":       "onInstallHook",
 	}
 	log = log.WithFields(fields)
-	log.Infof("installHook")
+	log.Infof("installHook - %+v", hook)
 
 	// ets register / unregister repositories to the InstallationID
 	if hook.Action == scm.ActionCreate {
@@ -191,7 +191,7 @@ func (o *HookOptions) onInstallRepositoryHook(ctx context.Context, log *logrus.E
 		"Function":       "onInstallRepositoryHook",
 	}
 	log = log.WithFields(fields)
-	log.Infof("installationRepository")
+	log.Infof("installationRepository - %+v", hook)
 
 	// ets register / unregister repositories to the InstallationID
 	if hook.Action == scm.ActionCreate {
