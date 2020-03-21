@@ -226,7 +226,7 @@ func (o *HookOptions) onInstallRepositoryHook(ctx context.Context, log *logrus.E
 	} else if hook.Action == scm.ActionDelete {
 		return o.tenantService.AppUnnstall(ctx, log, id)
 	} else {
-		log.Warnf("ignore unknown action")
+		log.Warnf("ignore unknown action '%s'", hook.Action)
 		return nil
 	}
 }
