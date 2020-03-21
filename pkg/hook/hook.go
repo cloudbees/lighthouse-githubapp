@@ -142,7 +142,7 @@ func (o *HookOptions) onInstallHook(ctx context.Context, log *logrus.Entry, hook
 		"Function":       "onInstallHook",
 	}
 	log = log.WithFields(fields)
-	log.Infof("installHook")
+	log.Infof("installHook - %+v", hook)
 
 	// ets register / unregister repositories to the InstallationID
 	if hook.Action == scm.ActionCreate {
@@ -191,7 +191,7 @@ func (o *HookOptions) onInstallRepositoryHook(ctx context.Context, log *logrus.E
 		"Function":       "onInstallRepositoryHook",
 	}
 	log = log.WithFields(fields)
-	log.Infof("installationRepository")
+	log.Infof("installationRepository - %+v", hook)
 
 	// ets register / unregister repositories to the InstallationID
 	if hook.Action == scm.ActionCreate {
@@ -252,7 +252,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 		return nil
 	}
 
-	log.Infof("onGeneralHook")
+	log.Infof("onGeneralHook - %+v", webhook)
 	workspaces, err := o.tenantService.FindWorkspaces(ctx, log, id, u)
 	if err != nil {
 		log.WithError(err).Errorf("Unable to find workspaces for %s", repo.FullName)
@@ -281,13 +281,13 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 		// lets parse the Scheduler json
 		jsonText := ws.JSON
 		if jsonText == "" {
-			log.Error("no Scheduler JSON for workspace %s and repo %s", ws.Project, repo.FullName)
+			log.Errorf("no Scheduler JSON for workspace %s and repo %s", ws.Project, repo.FullName)
 			continue
 		}
 		scheduler := &v1.Scheduler{}
 		err = json.Unmarshal([]byte(jsonText), scheduler)
 		if err != nil {
-			log.WithError(err).Error("failed to parse Scheduler JSON for workspace %s and repo %s", ws.Project, repo.FullName)
+			log.WithError(err).Errorf("failed to parse Scheduler JSON for workspace %s and repo %s", ws.Project, repo.FullName)
 			continue
 		}
 
@@ -296,7 +296,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 
 		err = o.invokeLighthouse(log, webhook, f, ws.Namespace, scheduler, install)
 		if err != nil {
-			log.WithError(err).Error("failed to invoke remote lighthouse for workspace %s and repo %s", ws.Project, repo.FullName)
+			log.WithError(err).Errorf("failed to invoke remote lighthouse for workspace %s and repo %s", ws.Project, repo.FullName)
 			return err
 		}
 	}
