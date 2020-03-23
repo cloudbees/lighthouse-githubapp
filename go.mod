@@ -10,7 +10,7 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.3.1
 	github.com/gorilla/mux v1.6.2
-	github.com/jenkins-x/go-scm v1.5.82
+	github.com/jenkins-x/go-scm v1.5.83
 	github.com/jenkins-x/jx v0.0.0-20200320171935-589dbb26c650
 	github.com/jenkins-x/lighthouse v0.0.495
 	github.com/patrickmn/go-cache v2.1.0+incompatible
