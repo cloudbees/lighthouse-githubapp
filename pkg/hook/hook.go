@@ -3,6 +3,7 @@ package hook
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -226,9 +227,17 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 				continue
 			}
 
+			decodedHmac, err := base64.StdEncoding.DecodeString(ws.HMAC)
+			if err != nil {
+				log.WithError(err).Errorf("unable to decode hmac")
+				continue
+			}
+
 			req, err := http.NewRequest("POST", ws.LighthouseURL, bytes.NewReader(buf))
 			req.Header.Add("X-GitHub-Event", string(webhook.Kind()))
+			// TODO lets extract the github delivery event and really relay it
 			req.Header.Add("X-GitHub-Delivery", ws.HMAC)
+			req.Header.Add("X-Hub-Signature", string(decodedHmac))
 
 			client := &http.Client{}
 			resp, err := client.Do(req)
