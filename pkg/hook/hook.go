@@ -1,7 +1,9 @@
 package hook
 
 import (
+	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -218,39 +220,68 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 
 		if ws.UseWebhookRelay {
 			log.Warnf("should be invoking webhook relay here! %s with hmac %s", ws.LighthouseURL, ws.HMAC)
-		}
 
-		kubeConfig := ws.KubeConfig
-		if kubeConfig == "" {
-			log.Error("no KubeConfig for workspace")
-			continue
-		}
-		f, err := gcloudhelpers.CreateFactoryFromKubeConfig(kubeConfig)
-		if err != nil {
-			log.WithError(err).Error("failed to create remote client factory")
-			continue
-		}
+			buf, err := json.Marshal(webhook)
+			if err != nil {
+				log.WithError(err).Error("marshall webhook")
+				continue
+			}
 
-		// lets parse the Scheduler json
-		jsonText := ws.JSON
-		if jsonText == "" {
-			log.Errorf("no Scheduler JSON for workspace %s and repo %s", ws.Project, repo.FullName)
-			continue
-		}
-		scheduler := &v1.Scheduler{}
-		err = json.Unmarshal([]byte(jsonText), scheduler)
-		if err != nil {
-			log.WithError(err).Errorf("failed to parse Scheduler JSON for workspace %s and repo %s", ws.Project, repo.FullName)
-			continue
-		}
+			log.Infof("relaying %s", string(buf))
 
-		log.WithField("Scheduler", scheduler.Name)
-		log.WithField("Bot", flags.BotName.Value())
+			decodedHmac, err := base64.StdEncoding.DecodeString(ws.HMAC)
+			if err != nil {
+				log.WithError(err).Errorf("unable to decode hmac")
+				continue
+			}
 
-		err = o.invokeLighthouse(log, webhook, f, ws.Namespace, scheduler, install)
-		if err != nil {
-			log.WithError(err).Errorf("failed to invoke remote lighthouse for workspace %s and repo %s", ws.Project, repo.FullName)
-			return err
+			req, err := http.NewRequest("POST", ws.LighthouseURL, bytes.NewReader(buf))
+			req.Header.Add("X-GitHub-Event", string(webhook.Kind()))
+			// TODO lets extract the github delivery event and really relay it
+			req.Header.Add("X-GitHub-Delivery", ws.HMAC)
+			req.Header.Add("X-Hub-Signature", string(decodedHmac))
+
+			client := &http.Client{}
+			resp, err := client.Do(req)
+			if err != nil {
+				log.WithError(err).Error("failed to relay webhook")
+				continue
+			}
+
+			log.Infof("got response %+v", resp)
+		} else {
+			kubeConfig := ws.KubeConfig
+			if kubeConfig == "" {
+				log.Error("no KubeConfig for workspace")
+				continue
+			}
+			f, err := gcloudhelpers.CreateFactoryFromKubeConfig(kubeConfig)
+			if err != nil {
+				log.WithError(err).Error("failed to create remote client factory")
+				continue
+			}
+
+			// lets parse the Scheduler json
+			jsonText := ws.JSON
+			if jsonText == "" {
+				log.Errorf("no Scheduler JSON for workspace %s and repo %s", ws.Project, repo.FullName)
+				continue
+			}
+			scheduler := &v1.Scheduler{}
+			err = json.Unmarshal([]byte(jsonText), scheduler)
+			if err != nil {
+				log.WithError(err).Errorf("failed to parse Scheduler JSON for workspace %s and repo %s", ws.Project, repo.FullName)
+				continue
+			}
+
+			log.WithField("Scheduler", scheduler.Name)
+			log.WithField("Bot", flags.BotName.Value())
+
+			err = o.invokeLighthouse(log, webhook, f, ws.Namespace, scheduler, install)
+			if err != nil {
+				log.WithError(err).Errorf("failed to invoke remote lighthouse for workspace %s and repo %s", ws.Project, repo.FullName)
+				return err
+			}
 		}
 	}
 
