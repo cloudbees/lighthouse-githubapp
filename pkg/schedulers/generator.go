@@ -3,7 +3,7 @@ package schedulers
 import (
 	"strings"
 
-	"github.com/jenkins-x/jx/pkg/log"
+	"github.com/jenkins-x/jx-logging/pkg/log"
 
 	jenkinsv1 "github.com/jenkins-x/jx/pkg/apis/jenkins.io/v1"
 	"github.com/jenkins-x/jx/pkg/client/clientset/versioned"
