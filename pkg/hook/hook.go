@@ -227,6 +227,8 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 				continue
 			}
 
+			log.Infof("relaying %s", string(buf))
+
 			decodedHmac, err := base64.StdEncoding.DecodeString(ws.HMAC)
 			if err != nil {
 				log.WithError(err).Errorf("unable to decode hmac")
