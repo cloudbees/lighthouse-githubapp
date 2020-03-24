@@ -218,6 +218,9 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 		log := log.WithFields(ws.LogFields())
 		log.Infof("notifying workspace %s for %s", ws.Project, repo.FullName)
 
+		log.Warnf("webhook relay? %t - %s with hmac %s", ws.UseWebhookRelay, ws.LighthouseURL, ws.HMAC)
+
+
 		if ws.UseWebhookRelay {
 			log.Warnf("should be invoking webhook relay here! %s with hmac %s", ws.LighthouseURL, ws.HMAC)
 
