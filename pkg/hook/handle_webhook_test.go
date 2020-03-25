@@ -2,6 +2,7 @@ package hook
 
 import (
 	"bytes"
+	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -11,7 +12,6 @@ import (
 	"github.com/cloudbees/jx-tenant-service/pkg/access"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/tenant"
 	"github.com/jenkins-x/go-scm/scm"
-	"github.com/magiconair/properties/assert"
 )
 
 func TestWebhooks(t *testing.T) {
@@ -19,9 +19,9 @@ func TestWebhooks(t *testing.T) {
 
 	os.Setenv("GO_SCM_LOG_WEBHOOKS", "true")
 	tests := []struct {
-		event     string
-		before    string
-		workspace *access.WorkspaceAccess
+		event       string
+		before      string
+		workspace   *access.WorkspaceAccess
 		handlerFunc func(rw http.ResponseWriter, req *http.Request)
 	}{
 		// push
@@ -33,7 +33,8 @@ func TestWebhooks(t *testing.T) {
 				// Test request parameters
 				assert.Equal(t, req.URL.String(), "/")
 				// Send response to be tested
-				rw.Write([]byte(`OK`))
+				_, err := rw.Write([]byte(`OK`))
+				assert.NoError(t, err)
 			},
 		},
 		// installation of GitHub App
