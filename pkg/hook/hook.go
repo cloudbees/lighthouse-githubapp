@@ -42,6 +42,7 @@ type HookOptions struct {
 	tenantService tenant.TenantService
 	githubApp     *GithubApp
 	secretFn      func(webhook scm.Webhook) (string, error)
+	client        *http.Client
 }
 
 // NewHook create a new hook handler
@@ -209,7 +210,6 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 
 		if ws.LighthouseURL != "" && ws.HMAC != "" {
 			log.Infof("invoking webhook relay here! %s with hmac %s", ws.LighthouseURL, ws.HMAC)
-
 			log.Infof("relaying %s", string(bodyBytes))
 
 			decodedHmac, err := base64.StdEncoding.DecodeString(ws.HMAC)
@@ -218,16 +218,18 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 				continue
 			}
 
+			if o.client == nil {
+				o.client = &http.Client{}
+			}
 			req, err := http.NewRequest("POST", ws.LighthouseURL, bytes.NewReader(bodyBytes))
 			req.Header.Add("X-GitHub-Event", string(webhook.Kind()))
 			req.Header.Add("X-GitHub-Delivery", githubDeliveryEvent)
 			req.Header.Add("X-Hub-Signature", string(decodedHmac))
 
-			client := &http.Client{}
-			resp, err := client.Do(req)
+			resp, err := o.client.Do(req)
 			if err != nil {
 				log.WithError(err).Error("failed to relay webhook")
-				continue
+				return err
 			}
 
 			log.Infof("got response %+v", resp)

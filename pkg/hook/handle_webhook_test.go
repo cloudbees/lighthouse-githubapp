@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io/ioutil"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"testing"
 
@@ -21,12 +22,19 @@ func TestWebhooks(t *testing.T) {
 		event     string
 		before    string
 		workspace *access.WorkspaceAccess
+		handlerFunc func(rw http.ResponseWriter, req *http.Request)
 	}{
 		// push
 		{
 			event:     "push",
 			before:    "testdata/push.json",
-			workspace: &access.WorkspaceAccess{Project: "cbjx-mycluster", Cluster: "mycluster", LighthouseURL: "http://dummy-lighthouse-url", HMAC: "1234"},
+			workspace: &access.WorkspaceAccess{Project: "cbjx-mycluster", Cluster: "mycluster", LighthouseURL: "http://dummy-lighthouse-url/hook", HMAC: "1234"},
+			handlerFunc: func(rw http.ResponseWriter, req *http.Request) {
+				// Test request parameters
+				assert.Equal(t, req.URL.String(), "/")
+				// Send response to be tested
+				rw.Write([]byte(`OK`))
+			},
 		},
 		// installation of GitHub App
 		{
@@ -59,6 +67,15 @@ func TestWebhooks(t *testing.T) {
 					return "", nil
 				},
 			}
+
+			if test.workspace != nil {
+				server := httptest.NewServer(http.HandlerFunc(test.handlerFunc))
+				// Close the server when test finishes
+				defer server.Close()
+				test.workspace.LighthouseURL = server.URL
+				handler.client = server.Client()
+			}
+
 			w := NewFakeRespone(t)
 			handler.handleWebHookRequests(w, r)
 
