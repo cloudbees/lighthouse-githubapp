@@ -186,7 +186,7 @@ func (o *HookOptions) onInstallHook(ctx context.Context, log *logrus.Entry, hook
 	}
 }
 
-func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, install *scm.InstallationRef, webhook scm.Webhook) error {
+func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, install *scm.InstallationRef, webhook scm.Webhook, githubDeliveryEvent string) error {
 	id := install.ID
 	repo := webhook.Repository()
 
@@ -218,10 +218,8 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 		log := log.WithFields(ws.LogFields())
 		log.Infof("notifying workspace %s for %s", ws.Project, repo.FullName)
 
-		log.Warnf("webhook relay? %t - %s with hmac %s", ws.UseWebhookRelay, ws.LighthouseURL, ws.HMAC)
-
-		if ws.UseWebhookRelay {
-			log.Warnf("should be invoking webhook relay here! %s with hmac %s", ws.LighthouseURL, ws.HMAC)
+		if ws.LighthouseURL != "" && ws.HMAC != "" {
+			log.Infof("invoking webhook relay here! %s with hmac %s", ws.LighthouseURL, ws.HMAC)
 
 			buf, err := json.Marshal(webhook)
 			if err != nil {
@@ -239,8 +237,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 
 			req, err := http.NewRequest("POST", ws.LighthouseURL, bytes.NewReader(buf))
 			req.Header.Add("X-GitHub-Event", string(webhook.Kind()))
-			// TODO lets extract the github delivery event and really relay it
-			req.Header.Add("X-GitHub-Delivery", ws.HMAC)
+			req.Header.Add("X-GitHub-Delivery", githubDeliveryEvent)
 			req.Header.Add("X-Hub-Signature", string(decodedHmac))
 
 			client := &http.Client{}

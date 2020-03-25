@@ -76,9 +76,10 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	githubDeliveryEvent := r.Header.Get("X-GitHub-Delivery")
 	duration := time.Second * 60
 	err = retry(duration, func() error {
-		return o.onGeneralHook(r.Context(), l, installRef, webhook)
+		return o.onGeneralHook(r.Context(), l, installRef, webhook, githubDeliveryEvent)
 	}, func(e error, d time.Duration) {
 		l.Warnf("onGeneralHook failed with '%s', backing off for %s", e, d)
 	})
