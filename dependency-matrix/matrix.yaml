@@ -15,11 +15,11 @@ dependencies:
   owner: jenkins-x
   repo: jenkins-x-builders
   url: https://github.com/jenkins-x/jenkins-x-builders
-  version: 2.0.1253-593
+  version: 2.0.1255-594
   versionURL: ""
 - host: github.com
   owner: jenkins-x
   repo: lighthouse
   url: https://github.com/jenkins-x/lighthouse
-  version: 0.0.498
+  version: 0.0.499
   versionURL: ""
