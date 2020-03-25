@@ -60,33 +60,3 @@ func getPRLabels(l *logrus.Entry, scmClient *scm.Client, ctx context.Context, w 
 	}
 	writeResult(l, w, buffer.String())
 }
-
-func listRepositories(l *logrus.Entry, scmClient *scm.Client, ctx context.Context, w http.ResponseWriter, installation string) {
-	repos, _, err := scmClient.Repositories.List(ctx, scm.ListOptions{Size: 100})
-	if err != nil {
-		responseHTTPError(w, http.StatusInternalServerError, fmt.Sprintf("500 Internal Server Error: Failed to list repositories for installation: %s due to: %s", installation, err.Error()))
-		return
-	}
-	buffer := strings.Builder{}
-	buffer.WriteString("Found repositories:\n")
-	for _, org := range repos {
-		buffer.WriteString(org.Name)
-		buffer.WriteString("\n")
-	}
-	writeResult(l, w, buffer.String())
-}
-
-func listOrganisations(l *logrus.Entry, scmClient *scm.Client, ctx context.Context, w http.ResponseWriter, installation string) {
-	orgs, _, err := scmClient.Organizations.List(ctx, scm.ListOptions{Size: 100})
-	if err != nil {
-		responseHTTPError(w, http.StatusInternalServerError, fmt.Sprintf("500 Internal Server Error: Failed to list organisations for installation: %s due to: %s", installation, err.Error()))
-		return
-	}
-	buffer := strings.Builder{}
-	buffer.WriteString("Found organisations:\n")
-	for _, org := range orgs {
-		buffer.WriteString(org.Name)
-		buffer.WriteString("\n")
-	}
-	writeResult(l, w, buffer.String())
-}
