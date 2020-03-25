@@ -2,12 +2,13 @@ package hook
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/cloudbees/jx-tenant-service/pkg/access"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/tenant"
