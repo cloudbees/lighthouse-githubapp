@@ -2,8 +2,6 @@ package hook
 
 import (
 	"bytes"
-	"crypto/sha1"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -35,9 +33,8 @@ func TestWebhooks(t *testing.T) {
 			handlerFunc: func(rw http.ResponseWriter, req *http.Request) {
 				// Test request parameters
 				assert.Equal(t, req.URL.String(), "/")
-				sha := sha1.Sum([]byte("1234"))
-				expectedSignature := fmt.Sprintf("sha1=%x", sha)
-				assert.Equal(t, req.Header.Get("X-Hub-Signature"), expectedSignature)
+
+				assert.Equal(t, req.Header.Get("X-Hub-Signature"), "sha1=cedda785b4dd580b72f0d4fa92a9697125372c15")
 				// Send response to be tested
 				_, err := rw.Write([]byte(`OK`))
 				assert.NoError(t, err)
