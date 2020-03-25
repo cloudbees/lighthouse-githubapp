@@ -6,9 +6,10 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/cloudbees/lighthouse-githubapp/pkg/hmac"
 	"net/http"
 	"strings"
+
+	"github.com/cloudbees/lighthouse-githubapp/pkg/hmac"
 
 	"github.com/cloudbees/lighthouse-githubapp/pkg/tenant"
 

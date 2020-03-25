@@ -6,6 +6,8 @@ import (
 	"encoding/hex"
 	"fmt"
 	"strings"
+
+	"github.com/jenkins-x/jx-logging/pkg/log"
 )
 
 type Generator struct {
@@ -13,13 +15,16 @@ type Generator struct {
 }
 
 func NewGenerator(s []byte) *Generator {
-	return &Generator{ s}
+	return &Generator{s}
 }
 
 func (g *Generator) SignBody(body []byte) []byte {
 	computed := hmac.New(sha1.New, g.secret)
-	computed.Write(body)
-	return []byte(computed.Sum(nil))
+	_, err := computed.Write(body)
+	if err != nil {
+		log.Logger().Errorf("unable to write to hmac: %s", err)
+	}
+	return computed.Sum(nil)
 }
 
 func (g *Generator) HubSignature(body []byte) string {
@@ -37,7 +42,10 @@ func (g *Generator) VerifySignature(signature string, body []byte) bool {
 	}
 
 	actual := make([]byte, 20)
-	hex.Decode(actual, []byte(signature[5:]))
-
+	_, err := hex.Decode(actual, []byte(signature[5:]))
+	if err != nil {
+		log.Logger().Errorf("unable to decode: %s", err)
+		return false
+	}
 	return hmac.Equal(g.SignBody(body), actual)
 }

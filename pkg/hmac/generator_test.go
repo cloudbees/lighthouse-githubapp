@@ -1,8 +1,9 @@
 package hmac
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGenerateHmacSignature(t *testing.T) {
@@ -21,4 +22,3 @@ func AssertSignature(t *testing.T, secret, body []byte) {
 
 	assert.True(t, g.VerifySignature(signature, body))
 }
-
