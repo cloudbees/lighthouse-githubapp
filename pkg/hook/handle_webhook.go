@@ -1,14 +1,15 @@
 package hook
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"time"
 
 	"github.com/cenkalti/backoff"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/util"
 
-	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
 	"github.com/jenkins-x/go-scm/scm"
 )
 
@@ -29,11 +30,23 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	secretFn := func(webhook scm.Webhook) (string, error) {
-		return flags.HmacToken.Value(), nil
+	bodyBytes, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		util.TraceLogger(r.Context()).Errorf("failed to Read Body: %s", err.Error())
+		responseHTTPError(w, http.StatusInternalServerError, fmt.Sprintf("500 Internal Server Error: Read Body: %s", err.Error()))
+		return
 	}
 
-	webhook, err := scmClient.Webhooks.Parse(r, secretFn)
+	err = r.Body.Close() // must close
+	if err != nil {
+		util.TraceLogger(r.Context()).Errorf("failed to Close Body: %s", err.Error())
+		responseHTTPError(w, http.StatusInternalServerError, fmt.Sprintf("500 Internal Server Error: Read Close: %s", err.Error()))
+		return
+	}
+
+	r.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+
+	webhook, err := scmClient.Webhooks.Parse(r, o.secretFn)
 	if err != nil {
 		util.TraceLogger(r.Context()).Warnf("failed to parse webhook: %s", err.Error())
 		responseHTTPError(w, http.StatusInternalServerError, fmt.Sprintf("500 Internal Server Error: Failed to parse webhook: %s", err.Error()))
@@ -77,9 +90,9 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 	}
 
 	githubDeliveryEvent := r.Header.Get("X-GitHub-Delivery")
-	duration := time.Second * 60
+	duration := time.Second * 30
 	err = retry(duration, func() error {
-		return o.onGeneralHook(r.Context(), l, installRef, webhook, githubDeliveryEvent)
+		return o.onGeneralHook(r.Context(), l, installRef, webhook, githubDeliveryEvent, bodyBytes)
 	}, func(e error, d time.Duration) {
 		l.Warnf("onGeneralHook failed with '%s', backing off for %s", e, d)
 	})

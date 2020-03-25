@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/cloudbees/lighthouse-githubapp/pkg/tenant"
+
 	"github.com/cloudbees/lighthouse-githubapp/pkg/util"
 
 	"github.com/cloudbees/jx-tenant-service/pkg/gcloudhelpers"
@@ -37,17 +39,22 @@ type HookOptions struct {
 	Path          string
 	Version       string
 	tokenCache    *cache.Cache
-	tenantService *TenantService
+	tenantService tenant.TenantService
 	githubApp     *GithubApp
+	secretFn      func(webhook scm.Webhook) (string, error)
 }
 
 // NewHook create a new hook handler
 func NewHook() (*HookOptions, error) {
 	tokenCache := cache.New(tokenCacheExpiration, tokenCacheExpiration)
-	tenantService := NewTenantService("")
+	tenantService := tenant.NewTenantService("")
 	githubApp, err := NewGithubApp()
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to create hook")
+	}
+
+	secretFn := func(webhook scm.Webhook) (string, error) {
+		return flags.HmacToken.Value(), nil
 	}
 
 	return &HookOptions{
@@ -57,6 +64,7 @@ func NewHook() (*HookOptions, error) {
 		tokenCache:    tokenCache,
 		tenantService: tenantService,
 		githubApp:     githubApp,
+		secretFn:      secretFn,
 	}, nil
 }
 
@@ -158,25 +166,6 @@ func (o *HookOptions) onInstallHook(ctx context.Context, log *logrus.Entry, hook
 			return err
 		}
 
-		/*
-			repos := []RepositoryInfo{}
-			for _, repo := range hook.Repos {
-				link := strings.TrimSuffix(repo.Link, "/")
-				link = strings.TrimSuffix(link, ".git")
-				if link == "" {
-					full := repo.FullName
-					if full != "" {
-						link = util.UrlJoin("https://github.com", full)
-					}
-				}
-				if link != "" {
-					repos = append(repos, RepositoryInfo{URL: link})
-				}
-			}
-			if len(repos) == 0 {
-
-			}
-		*/
 		return o.tenantService.AppInstall(ctx, log, id, ownerURL)
 	} else if hook.Action == scm.ActionDelete {
 		return o.tenantService.AppUnnstall(ctx, log, id)
@@ -186,7 +175,7 @@ func (o *HookOptions) onInstallHook(ctx context.Context, log *logrus.Entry, hook
 	}
 }
 
-func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, install *scm.InstallationRef, webhook scm.Webhook, githubDeliveryEvent string) error {
+func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, install *scm.InstallationRef, webhook scm.Webhook, githubDeliveryEvent string, bodyBytes []byte) error {
 	id := install.ID
 	repo := webhook.Repository()
 
@@ -221,13 +210,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 		if ws.LighthouseURL != "" && ws.HMAC != "" {
 			log.Infof("invoking webhook relay here! %s with hmac %s", ws.LighthouseURL, ws.HMAC)
 
-			buf, err := json.Marshal(webhook)
-			if err != nil {
-				log.WithError(err).Error("marshall webhook")
-				continue
-			}
-
-			log.Infof("relaying %s", string(buf))
+			log.Infof("relaying %s", string(bodyBytes))
 
 			decodedHmac, err := base64.StdEncoding.DecodeString(ws.HMAC)
 			if err != nil {
@@ -235,7 +218,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 				continue
 			}
 
-			req, err := http.NewRequest("POST", ws.LighthouseURL, bytes.NewReader(buf))
+			req, err := http.NewRequest("POST", ws.LighthouseURL, bytes.NewReader(bodyBytes))
 			req.Header.Add("X-GitHub-Event", string(webhook.Kind()))
 			req.Header.Add("X-GitHub-Delivery", githubDeliveryEvent)
 			req.Header.Add("X-Hub-Signature", string(decodedHmac))
