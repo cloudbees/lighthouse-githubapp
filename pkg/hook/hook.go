@@ -3,6 +3,7 @@ package hook
 import (
 	"bytes"
 	"context"
+	"crypto/sha1"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -218,13 +219,16 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 				continue
 			}
 
+			sha := sha1.Sum(decodedHmac)
+			signature := fmt.Sprintf("sha1=%x", sha)
+
 			if o.client == nil {
 				o.client = &http.Client{}
 			}
 			req, err := http.NewRequest("POST", ws.LighthouseURL, bytes.NewReader(bodyBytes))
 			req.Header.Add("X-GitHub-Event", string(webhook.Kind()))
 			req.Header.Add("X-GitHub-Delivery", githubDeliveryEvent)
-			req.Header.Add("X-Hub-Signature", string(decodedHmac))
+			req.Header.Add("X-Hub-Signature", signature)
 
 			resp, err := o.client.Do(req)
 			if err != nil {

@@ -2,6 +2,8 @@ package hook
 
 import (
 	"bytes"
+	"crypto/sha1"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -29,10 +31,13 @@ func TestWebhooks(t *testing.T) {
 		{
 			event:     "push",
 			before:    "testdata/push.json",
-			workspace: &access.WorkspaceAccess{Project: "cbjx-mycluster", Cluster: "mycluster", LighthouseURL: "http://dummy-lighthouse-url/hook", HMAC: "1234"},
+			workspace: &access.WorkspaceAccess{Project: "cbjx-mycluster", Cluster: "mycluster", LighthouseURL: "http://dummy-lighthouse-url/hook", HMAC: "MTIzNA=="},
 			handlerFunc: func(rw http.ResponseWriter, req *http.Request) {
 				// Test request parameters
 				assert.Equal(t, req.URL.String(), "/")
+				sha := sha1.Sum([]byte("1234"))
+				expectedSignature := fmt.Sprintf("sha1=%x", sha)
+				assert.Equal(t, req.Header.Get("X-Hub-Signature"), expectedSignature)
 				// Send response to be tested
 				_, err := rw.Write([]byte(`OK`))
 				assert.NoError(t, err)
