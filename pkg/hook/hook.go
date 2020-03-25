@@ -3,12 +3,13 @@ package hook
 import (
 	"bytes"
 	"context"
-	"crypto/sha1"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
+
+	"github.com/cloudbees/lighthouse-githubapp/pkg/hmac"
 
 	"github.com/cloudbees/lighthouse-githubapp/pkg/tenant"
 
@@ -219,8 +220,8 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 				continue
 			}
 
-			sha := sha1.Sum(decodedHmac)
-			signature := fmt.Sprintf("sha1=%x", sha)
+			g := hmac.NewGenerator(decodedHmac)
+			signature := g.HubSignature(bodyBytes)
 
 			if o.client == nil {
 				o.client = &http.Client{}
