@@ -218,7 +218,6 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 
 		if ws.LighthouseURL != "" && ws.HMAC != "" {
 			log.Infof("invoking webhook relay here! %s with hmac %s", ws.LighthouseURL, ws.HMAC)
-			log.Infof("relaying %s", string(bodyBytes))
 
 			decodedHmac, err := base64.StdEncoding.DecodeString(ws.HMAC)
 			if err != nil {
@@ -226,18 +225,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 				continue
 			}
 
-			g := hmac.NewGenerator(decodedHmac)
-			signature := g.HubSignature(bodyBytes)
-
-			if o.client == nil {
-				o.client = &http.Client{}
-			}
-			req, err := http.NewRequest("POST", ws.LighthouseURL, bytes.NewReader(bodyBytes))
-			req.Header.Add("X-GitHub-Event", string(webhook.Kind()))
-			req.Header.Add("X-GitHub-Delivery", githubDeliveryEvent)
-			req.Header.Add("X-Hub-Signature", signature)
-
-			err = o.retryWebhookDelivery(req, log)
+			err = o.retryWebhookDelivery(ws.LighthouseURL, githubDeliveryEvent, webhook.Kind(), decodedHmac, bodyBytes, log)
 			if err != nil {
 				log.WithError(err).Error("failed to deliver webhook")
 				continue
@@ -431,12 +419,27 @@ func (o *HookOptions) verifyScmClient(log *logrus.Entry, scmClient *scm.Client, 
 
 // retryWebhookDelivery attempts to deliver the relayed webhook, but will retry a few times if the response is a 500 with
 // "repository not configured" in the body, in case the remote Lighthouse doesn't yet have this repository in its configuration.
-func (o *HookOptions) retryWebhookDelivery(req *http.Request, log *logrus.Entry) error {
+func (o *HookOptions) retryWebhookDelivery(lighthouseURL, githubDeliveryEvent string, webhookKind scm.WebhookKind, decodedHmac, bodyBytes []byte, log *logrus.Entry) error {
 	f := func() error {
+		log.Infof("relaying %s", string(bodyBytes))
+		g := hmac.NewGenerator(decodedHmac)
+		signature := g.HubSignature(bodyBytes)
+
+		if o.client == nil {
+			o.client = &http.Client{}
+		}
+
+		req, err := http.NewRequest("POST", lighthouseURL, bytes.NewReader(bodyBytes))
+		req.Header.Add("X-GitHub-Event", string(webhookKind))
+		req.Header.Add("X-GitHub-Delivery", githubDeliveryEvent)
+		req.Header.Add("X-Hub-Signature", signature)
+
 		resp, err := o.client.Do(req)
 		if err != nil {
 			return backoff.Permanent(err)
 		}
+		log.Infof("got response %+v", resp)
+
 		// If we got a 500, check if it's got the "repository not configured" string in the body. If so, we retry.
 		if resp.StatusCode == 500 {
 			respBody, err := ioutil.ReadAll(resp.Body)
@@ -445,17 +448,17 @@ func (o *HookOptions) retryWebhookDelivery(req *http.Request, log *logrus.Entry)
 			}
 			resp.Body.Close()
 			if strings.Contains(string(respBody), repoNotConfiguredMessage) {
+				log.Infof("")
 				return errors.New("repository not configured in Lighthouse")
 			}
 		}
 
 		// If we got anything other than a 2xx, error permanently.
 		if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-			return backoff.Permanent(errors.Errorf("%s not available, error was %d %s", req.URL.String(), resp.StatusCode, resp.Status))
+			return backoff.Permanent(errors.Errorf("%s not available, error was %s", req.URL.String(), resp.Status))
 		}
 
 		// And finally, if we haven't gotten any errors, just return nil because we're good.
-		log.Infof("got response %+v", resp)
 		return nil
 	}
 	bo := backoff.NewExponentialBackOff()
