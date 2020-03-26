@@ -435,10 +435,11 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL, githubDeliveryEvent st
 		req.Header.Add("X-Hub-Signature", signature)
 
 		resp, err := o.client.Do(req)
-		if err != nil {
-			return backoff.Permanent(err)
-		}
 		log.Infof("got response %+v", resp)
+		if err != nil {
+			log.Infof("got err %s", err)
+			return err
+		}
 
 		// If we got a 500, check if it's got the "repository not configured" string in the body. If so, we retry.
 		if resp.StatusCode == 500 {
@@ -448,7 +449,7 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL, githubDeliveryEvent st
 			}
 			resp.Body.Close()
 			if strings.Contains(string(respBody), repoNotConfiguredMessage) {
-				log.Infof("")
+				log.Infof("repository not configured in lighthouse, retrying maybe")
 				return errors.New("repository not configured in Lighthouse")
 			}
 		}
@@ -462,8 +463,8 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL, githubDeliveryEvent st
 		return nil
 	}
 	bo := backoff.NewExponentialBackOff()
-	// Try again after 1/2/4/8 seconds if necessary, for up to 30 seconds.
-	bo.InitialInterval = 1 * time.Second
+	// Try again after 2/4/8/... seconds if necessary, for up to 30 seconds.
+	bo.InitialInterval = 2 * time.Second
 	bo.MaxElapsedTime = 30 * time.Second
 	bo.Reset()
 	return backoff.Retry(f, bo)
