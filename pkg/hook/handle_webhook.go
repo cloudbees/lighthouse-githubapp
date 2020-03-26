@@ -90,7 +90,8 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 	}
 
 	githubDeliveryEvent := r.Header.Get("X-GitHub-Delivery")
-	duration := time.Second * 30
+	// Allow for two or three retries due to repository not configured.
+	duration := time.Second * 90
 	err = retry(duration, func() error {
 		return o.onGeneralHook(r.Context(), l, installRef, webhook, githubDeliveryEvent, bodyBytes)
 	}, func(e error, d time.Duration) {
