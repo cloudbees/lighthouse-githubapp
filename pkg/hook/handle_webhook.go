@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"time"
 
-	"github.com/cenkalti/backoff"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/util"
 
 	"github.com/jenkins-x/go-scm/scm"
@@ -90,25 +88,12 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 	}
 
 	githubDeliveryEvent := r.Header.Get("X-GitHub-Delivery")
-	// Allow for two or three retries due to repository not configured.
-	duration := time.Second * 90
-	err = retry(duration, func() error {
-		return o.onGeneralHook(r.Context(), l, installRef, webhook, githubDeliveryEvent, bodyBytes)
-	}, func(e error, d time.Duration) {
-		l.Warnf("onGeneralHook failed with '%s', backing off for %s", e, d)
-	})
+	err = o.onGeneralHook(r.Context(), l, installRef, webhook, githubDeliveryEvent, bodyBytes)
 
 	if err != nil {
-		l.WithError(err).Errorf("failed to process webhook after %s seconds for '%s'", duration, repository.FullName)
+		l.WithError(err).Errorf("failed to process webhook for '%s'", repository.FullName)
 		responseHTTPError(w, http.StatusInternalServerError, "500 Internal Server Error: %s", err.Error())
 	}
 	writeResult(l, w, "OK")
 	return
-}
-
-func retry(maxElapsedTime time.Duration, f func() error, n func(error, time.Duration)) error {
-	bo := backoff.NewExponentialBackOff()
-	bo.MaxElapsedTime = maxElapsedTime
-	bo.Reset()
-	return backoff.RetryNotify(f, bo, n)
 }

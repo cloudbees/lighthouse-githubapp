@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/cenkalti/backoff"
+	"github.com/cloudbees/jx-tenant-service/pkg/access"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/hmac"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/tenant"
 
@@ -206,9 +207,29 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 	}
 
 	log.Infof("onGeneralHook - %+v", webhook)
-	workspaces, err := o.tenantService.FindWorkspaces(ctx, log, id, u)
+	var workspaces []*access.WorkspaceAccess
+	getWsDuration := 30 * time.Second
+
+	getWsFunc := func() error {
+		ws, err := o.tenantService.FindWorkspaces(ctx, log, id, u)
+		if err != nil {
+			log.WithError(err).Errorf("Unable to find workspaces for %s", repo.FullName)
+			return err
+		}
+		log.Infof("%d workspaces interested in repository %s", len(ws), repo.FullName)
+
+		if len(ws) == 0 {
+			return errors.Errorf("no workspaces interested in repository '%s', backing off...", repo.FullName)
+		}
+		workspaces = append(workspaces, ws...)
+		return nil
+	}
+
+	err := retryGetWorkspaces(getWsDuration, getWsFunc, func(e error, d time.Duration) {
+		log.Warnf("get workspaces failed with '%s', backing off for %s", e, d)
+	})
 	if err != nil {
-		log.WithError(err).Errorf("Unable to find workspaces for %s", repo.FullName)
+		log.WithError(err).Errorf("failed to find any workspaces after %s seconds for '%s'", getWsDuration, repo.FullName)
 		return err
 	}
 
@@ -264,12 +285,6 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 				return err
 			}
 		}
-	}
-
-	log.Infof("%d workspaces interested in repository %s", len(workspaces), repo.FullName)
-
-	if len(workspaces) == 0 {
-		return errors.Errorf("no workspaces interested in repository '%s', backing off...", repo.FullName)
 	}
 
 	return nil
@@ -468,4 +483,11 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL, githubDeliveryEvent st
 	bo.MaxElapsedTime = 30 * time.Second
 	bo.Reset()
 	return backoff.Retry(f, bo)
+}
+
+func retryGetWorkspaces(maxElapsedTime time.Duration, f func() error, n func(error, time.Duration)) error {
+	bo := backoff.NewExponentialBackOff()
+	bo.MaxElapsedTime = maxElapsedTime
+	bo.Reset()
+	return backoff.RetryNotify(f, bo, n)
 }
