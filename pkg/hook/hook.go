@@ -6,11 +6,13 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 
+	"github.com/cenkalti/backoff"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/hmac"
-
 	"github.com/cloudbees/lighthouse-githubapp/pkg/tenant"
 
 	"github.com/cloudbees/lighthouse-githubapp/pkg/util"
@@ -34,6 +36,10 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	muxtrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/gorilla/mux"
+)
+
+const (
+	repoNotConfiguredMessage = "repository not configured"
 )
 
 type HookOptions struct {
@@ -231,13 +237,11 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 			req.Header.Add("X-GitHub-Delivery", githubDeliveryEvent)
 			req.Header.Add("X-Hub-Signature", signature)
 
-			resp, err := o.client.Do(req)
+			err = o.retryWebhookDelivery(req, log)
 			if err != nil {
-				log.WithError(err).Error("failed to relay webhook")
-				return err
+				log.WithError(err).Error("failed to deliver webhook")
+				continue
 			}
-
-			log.Infof("got response %+v", resp)
 		} else {
 			kubeConfig := ws.KubeConfig
 			if kubeConfig == "" {
@@ -423,4 +427,41 @@ func (o *HookOptions) verifyScmClient(log *logrus.Entry, scmClient *scm.Client, 
 		buffer.WriteString(label.Name)
 	}
 	log.Info(buffer.String())
+}
+
+// retryWebhookDelivery attempts to deliver the relayed webhook, but will retry a few times if the response is a 500 with
+// "repository not configured" in the body, in case the remote Lighthouse doesn't yet have this repository in its configuration.
+func (o *HookOptions) retryWebhookDelivery(req *http.Request, log *logrus.Entry) error {
+	f := func() error {
+		resp, err := o.client.Do(req)
+		if err != nil {
+			return backoff.Permanent(err)
+		}
+		// If we got a 500, check if it's got the "repository not configured" string in the body. If so, we retry.
+		if resp.StatusCode == 500 {
+			respBody, err := ioutil.ReadAll(resp.Body)
+			if err != nil {
+				return backoff.Permanent(errors.Wrap(err, "parsing response body"))
+			}
+			resp.Body.Close()
+			if strings.Contains(string(respBody), repoNotConfiguredMessage) {
+				return errors.New("repository not configured in Lighthouse")
+			}
+		}
+
+		// If we got anything other than a 2xx, error permanently.
+		if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+			return backoff.Permanent(errors.Errorf("%s not available, error was %d %s", req.URL.String(), resp.StatusCode, resp.Status))
+		}
+
+		// And finally, if we haven't gotten any errors, just return nil because we're good.
+		log.Infof("got response %+v", resp)
+		return nil
+	}
+	bo := backoff.NewExponentialBackOff()
+	// Try again after 1/2/4/8 seconds if necessary, for up to 30 seconds.
+	bo.InitialInterval = 1 * time.Second
+	bo.MaxElapsedTime = 30 * time.Second
+	bo.Reset()
+	return backoff.Retry(f, bo)
 }

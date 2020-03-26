@@ -20,16 +20,19 @@ func TestWebhooks(t *testing.T) {
 
 	os.Setenv("GO_SCM_LOG_WEBHOOKS", "true")
 	tests := []struct {
-		event       string
-		before      string
-		workspace   *access.WorkspaceAccess
-		handlerFunc func(rw http.ResponseWriter, req *http.Request)
+		name             string
+		event            string
+		before           string
+		multipleAttempts bool
+		workspace        *access.WorkspaceAccess
+		handlerFunc      func(rw http.ResponseWriter, req *http.Request)
 	}{
 		// push
 		{
-			event:     "push",
-			before:    "testdata/push.json",
-			workspace: &access.WorkspaceAccess{Project: "cbjx-mycluster", Cluster: "mycluster", LighthouseURL: "http://dummy-lighthouse-url/hook", HMAC: "MTIzNA=="},
+			event:            "push",
+			before:           "testdata/push.json",
+			multipleAttempts: false,
+			workspace:        &access.WorkspaceAccess{Project: "cbjx-mycluster", Cluster: "mycluster", LighthouseURL: "http://dummy-lighthouse-url/hook", HMAC: "MTIzNA=="},
 			handlerFunc: func(rw http.ResponseWriter, req *http.Request) {
 				// Test request parameters
 				assert.Equal(t, req.URL.String(), "/")
@@ -50,10 +53,49 @@ func TestWebhooks(t *testing.T) {
 			event:  "installation",
 			before: "testdata/installation_delete.json",
 		},
+		// unknown repository
+		{
+			name:             "unknown repository",
+			event:            "push",
+			before:           "testdata/push.json",
+			multipleAttempts: true,
+			workspace:        &access.WorkspaceAccess{Project: "cbjx-mycluster", Cluster: "mycluster", LighthouseURL: "http://dummy-lighthouse-url/hook", HMAC: "MTIzNA=="},
+			handlerFunc: func(rw http.ResponseWriter, req *http.Request) {
+				// Test request parameters
+				assert.Equal(t, req.URL.String(), "/")
+
+				assert.Equal(t, req.Header.Get("X-Hub-Signature"), "sha1=cedda785b4dd580b72f0d4fa92a9697125372c15")
+				// Send response to be tested
+				rw.WriteHeader(500)
+				_, err := rw.Write([]byte(repoNotConfiguredMessage))
+				assert.NoError(t, err)
+			},
+		},
+		// any other error
+		{
+			name:             "any other error",
+			event:            "push",
+			before:           "testdata/push.json",
+			multipleAttempts: false,
+			workspace:        &access.WorkspaceAccess{Project: "cbjx-mycluster", Cluster: "mycluster", LighthouseURL: "http://dummy-lighthouse-url/hook", HMAC: "MTIzNA=="},
+			handlerFunc: func(rw http.ResponseWriter, req *http.Request) {
+				// Test request parameters
+				assert.Equal(t, req.URL.String(), "/")
+
+				assert.Equal(t, req.Header.Get("X-Hub-Signature"), "sha1=cedda785b4dd580b72f0d4fa92a9697125372c15")
+				// Send response to be tested
+				rw.WriteHeader(500)
+				_, err := rw.Write([]byte(`not ok`))
+				assert.NoError(t, err)
+			},
+		},
 	}
 
 	for _, test := range tests {
-		t.Run(test.before, func(t *testing.T) {
+		if test.name == "" {
+			test.name = test.before
+		}
+		t.Run(test.name, func(t *testing.T) {
 			before, err := ioutil.ReadFile(test.before)
 			if err != nil {
 				t.Error(err)
@@ -72,8 +114,13 @@ func TestWebhooks(t *testing.T) {
 				},
 			}
 
+			attempts := 0
 			if test.workspace != nil {
-				server := httptest.NewServer(http.HandlerFunc(test.handlerFunc))
+				hf := func(rw http.ResponseWriter, req *http.Request) {
+					attempts++
+					test.handlerFunc(rw, req)
+				}
+				server := httptest.NewServer(http.HandlerFunc(hf))
 				// Close the server when test finishes
 				defer server.Close()
 				test.workspace.LighthouseURL = server.URL
@@ -84,6 +131,10 @@ func TestWebhooks(t *testing.T) {
 			handler.handleWebHookRequests(w, r)
 
 			assert.Equal(t, string(w.body), "OK")
+			if test.workspace != nil {
+				assert.Equal(t, test.multipleAttempts, attempts > 1, "expected multiple attempts %t, but got %d", test.multipleAttempts, attempts)
+			}
+
 		})
 	}
 }
