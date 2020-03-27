@@ -55,15 +55,20 @@ func (o *GithubApp) handleInstalledRequests(w http.ResponseWriter, r *http.Reque
 
 	githubAppResponse := &GithubAppResponse{}
 
-	installation, response, err := o.findRepositoryInstallation(scmClient, owner, repository)
+	var response *scm.Response
+	var installation *scm.Installation
 
-	if o.hasErrored(response, err) {
-		l.Errorf("error from repository installation %v", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	if repository != "" {
+		installation, response, err = o.findRepositoryInstallation(scmClient, owner, repository)
+
+		if o.hasErrored(response, err) {
+			l.Errorf("error from repository installation %v", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 
-	if response.Status == 404 {
+	if response == nil || response.Status == 404 {
 		l.Debugf("didn't find the installation via the repository trying organisation")
 		installation, response, err = scmClient.Apps.GetOrganisationInstallation(o.ctx, owner)
 		if o.hasErrored(response, err) {
