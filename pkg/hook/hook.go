@@ -43,15 +43,20 @@ const (
 	repoNotConfiguredMessage = "repository not configured"
 )
 
+var (
+	defaultMaxRetryDuration = 30 * time.Second
+)
+
 type HookOptions struct {
-	Port          string
-	Path          string
-	Version       string
-	tokenCache    *cache.Cache
-	tenantService tenant.TenantService
-	githubApp     *GithubApp
-	secretFn      func(webhook scm.Webhook) (string, error)
-	client        *http.Client
+	Port             string
+	Path             string
+	Version          string
+	tokenCache       *cache.Cache
+	tenantService    tenant.TenantService
+	githubApp        *GithubApp
+	secretFn         func(webhook scm.Webhook) (string, error)
+	client           *http.Client
+	maxRetryDuration *time.Duration
 }
 
 // NewHook create a new hook handler
@@ -68,13 +73,14 @@ func NewHook() (*HookOptions, error) {
 	}
 
 	return &HookOptions{
-		Path:          HookPath,
-		Port:          flags.HttpPort.Value(),
-		Version:       "TODO",
-		tokenCache:    tokenCache,
-		tenantService: tenantService,
-		githubApp:     githubApp,
-		secretFn:      secretFn,
+		Path:             HookPath,
+		Port:             flags.HttpPort.Value(),
+		Version:          "TODO",
+		tokenCache:       tokenCache,
+		tenantService:    tenantService,
+		githubApp:        githubApp,
+		secretFn:         secretFn,
+		maxRetryDuration: &defaultMaxRetryDuration,
 	}, nil
 }
 
@@ -186,6 +192,11 @@ func (o *HookOptions) onInstallHook(ctx context.Context, log *logrus.Entry, hook
 }
 
 func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, install *scm.InstallationRef, webhook scm.Webhook, githubDeliveryEvent string, bodyBytes []byte) error {
+	// Set a default max retry duration of 30 seconds if it's not set.
+	if o.maxRetryDuration == nil {
+		o.maxRetryDuration = &defaultMaxRetryDuration
+	}
+
 	id := install.ID
 	repo := webhook.Repository()
 
@@ -208,7 +219,6 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 
 	log.Infof("onGeneralHook - %+v", webhook)
 	var workspaces []*access.WorkspaceAccess
-	getWsDuration := 30 * time.Second
 
 	getWsFunc := func() error {
 		ws, err := o.tenantService.FindWorkspaces(ctx, log, id, u)
@@ -225,11 +235,11 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 		return nil
 	}
 
-	err := retryGetWorkspaces(getWsDuration, getWsFunc, func(e error, d time.Duration) {
+	err := o.retryGetWorkspaces(getWsFunc, func(e error, d time.Duration) {
 		log.Warnf("get workspaces failed with '%s', backing off for %s", e, d)
 	})
 	if err != nil {
-		log.WithError(err).Errorf("failed to find any workspaces after %s seconds for '%s'", getWsDuration, repo.FullName)
+		log.WithError(err).Errorf("failed to find any workspaces after %s seconds for '%s'", o.maxRetryDuration, repo.FullName)
 		return err
 	}
 
@@ -450,9 +460,7 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL, githubDeliveryEvent st
 		req.Header.Add("X-Hub-Signature", signature)
 
 		resp, err := o.client.Do(req)
-		log.Infof("got response %+v", resp)
 		if err != nil {
-			log.Infof("got err %s", err)
 			return err
 		}
 
@@ -464,14 +472,14 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL, githubDeliveryEvent st
 			}
 			resp.Body.Close()
 			if strings.Contains(string(respBody), repoNotConfiguredMessage) {
-				log.Infof("repository not configured in lighthouse, retrying maybe")
 				return errors.New("repository not configured in Lighthouse")
 			}
 		}
 
-		// If we got anything other than a 2xx, error permanently.
+		// If we got anything other than a 2xx, retry as well.
+		// We're leaving this distinct from the "not configured" behavior in case we want to resurrect that later. (apb)
 		if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-			return backoff.Permanent(errors.Errorf("%s not available, error was %s", req.URL.String(), resp.Status))
+			return errors.Errorf("%s not available, error was %s", req.URL.String(), resp.Status)
 		}
 
 		// And finally, if we haven't gotten any errors, just return nil because we're good.
@@ -480,14 +488,14 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL, githubDeliveryEvent st
 	bo := backoff.NewExponentialBackOff()
 	// Try again after 2/4/8/... seconds if necessary, for up to 30 seconds.
 	bo.InitialInterval = 2 * time.Second
-	bo.MaxElapsedTime = 30 * time.Second
+	bo.MaxElapsedTime = *o.maxRetryDuration
 	bo.Reset()
 	return backoff.Retry(f, bo)
 }
 
-func retryGetWorkspaces(maxElapsedTime time.Duration, f func() error, n func(error, time.Duration)) error {
+func (o *HookOptions) retryGetWorkspaces(f func() error, n func(error, time.Duration)) error {
 	bo := backoff.NewExponentialBackOff()
-	bo.MaxElapsedTime = maxElapsedTime
+	bo.MaxElapsedTime = *o.maxRetryDuration
 	bo.Reset()
 	return backoff.RetryNotify(f, bo, n)
 }
