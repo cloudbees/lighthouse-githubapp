@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 
@@ -76,7 +77,7 @@ func TestWebhooks(t *testing.T) {
 			name:             "any other error",
 			event:            "push",
 			before:           "testdata/push.json",
-			multipleAttempts: false,
+			multipleAttempts: true,
 			workspace:        &access.WorkspaceAccess{Project: "cbjx-mycluster", Cluster: "mycluster", LighthouseURL: "http://dummy-lighthouse-url/hook", HMAC: "MTIzNA=="},
 			handlerFunc: func(rw http.ResponseWriter, req *http.Request) {
 				// Test request parameters
@@ -107,11 +108,13 @@ func TestWebhooks(t *testing.T) {
 			r.Header.Set("X-GitHub-Delivery", "f2467dea-70d6-11e8-8955-3c83993e0aef")
 			r.Header.Set("X-Hub-Signature", "sha1=e9c4409d39729236fda483f22e7fb7513e5cd273")
 
+			retryDuration := 5 * time.Second
 			handler := HookOptions{
 				tenantService: tenant.NewFakeTenantService(test.workspace),
 				secretFn: func(scm.Webhook) (string, error) {
 					return "", nil
 				},
+				maxRetryDuration: &retryDuration,
 			}
 
 			attempts := 0
