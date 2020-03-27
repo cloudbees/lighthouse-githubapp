@@ -53,7 +53,7 @@ type HookOptions struct {
 	Version          string
 	tokenCache       *cache.Cache
 	tenantService    tenant.TenantService
-	githubApp        *GithubApp
+	githubApp        ghaClient
 	secretFn         func(webhook scm.Webhook) (string, error)
 	client           *http.Client
 	maxRetryDuration *time.Duration
@@ -85,6 +85,7 @@ func NewHook() (*HookOptions, error) {
 }
 
 func (o *HookOptions) Handle(mux *muxtrace.Router) {
+	mux.Handle(GitHubAppPathWithoutRepository, http.HandlerFunc(o.githubApp.handleInstalledRequests))
 	mux.Handle(GithubAppPath, http.HandlerFunc(o.githubApp.handleInstalledRequests))
 	mux.Handle(TestTokenPath, http.HandlerFunc(o.handleTokenValid))
 	mux.Handle(HealthPath, http.HandlerFunc(o.health))

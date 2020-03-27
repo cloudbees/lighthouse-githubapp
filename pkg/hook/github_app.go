@@ -13,6 +13,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+type ghaClient interface {
+	handleInstalledRequests(w http.ResponseWriter, r *http.Request)
+}
+
 type GithubApp struct {
 	ctx context.Context
 }

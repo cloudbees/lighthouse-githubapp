@@ -12,6 +12,9 @@ const (
 	// ReadyPath URL path for the HTTP endpoint that returns ready status.
 	ReadyPath = "/ready"
 
+	// GitHubAppPathWithoutRepository path query endpoint for cases where no repository is specified
+	GitHubAppPathWithoutRepository = "/installed/{owner}/"
+
 	// GithubApp path query endpoint to determine if repository is installed for a github app
 	GithubAppPath = "/installed/{owner}/{repository}"
 
