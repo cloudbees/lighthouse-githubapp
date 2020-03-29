@@ -465,13 +465,19 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL, githubDeliveryEvent st
 			return err
 		}
 
+		log.Infof("got response code %d from url '%s'", resp.StatusCode, lighthouseURL)
+
 		// If we got a 500, check if it's got the "repository not configured" string in the body. If so, we retry.
 		if resp.StatusCode == 500 {
 			respBody, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
 				return backoff.Permanent(errors.Wrap(err, "parsing response body"))
 			}
-			resp.Body.Close()
+			err = resp.Body.Close()
+			if err != nil {
+				return backoff.Permanent(errors.Wrap(err, "closing response body"))
+			}
+			log.Infof("got error response body '%s'", string(respBody))
 			if strings.Contains(string(respBody), repoNotConfiguredMessage) {
 				return errors.New("repository not configured in Lighthouse")
 			}
