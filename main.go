@@ -8,20 +8,18 @@ import (
 	"syscall"
 	"time"
 
-	stackdriver "github.com/TV4/logrus-stackdriver-formatter"
+	"github.com/cloudbees/lighthouse-githubapp/pkg/loghelpers"
+
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/hook"
-	"github.com/cloudbees/lighthouse-githubapp/pkg/version"
 	"github.com/sirupsen/logrus"
 	muxtrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/gorilla/mux"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 )
 
 func main() {
-	logrus.SetFormatter(stackdriver.NewFormatter(
-		stackdriver.WithService("lighthouse-githubapp"),
-		stackdriver.WithVersion(*version.GetBuildVersion()),
-	))
+	loghelpers.InitLogrus()
+
 	if flags.DebugLogging.Value() {
 		logrus.SetLevel(logrus.DebugLevel)
 	}
