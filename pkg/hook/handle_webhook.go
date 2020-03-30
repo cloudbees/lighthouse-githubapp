@@ -88,7 +88,8 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 	}
 
 	githubDeliveryEvent := r.Header.Get("X-GitHub-Delivery")
-	err = o.onGeneralHook(r.Context(), l, installRef, webhook, githubDeliveryEvent, bodyBytes)
+	githubEventType := r.Header.Get("X-GitHub-Event")
+	err = o.onGeneralHook(r.Context(), l, installRef, webhook, githubEventType, githubDeliveryEvent, bodyBytes)
 
 	if err != nil {
 		l.WithError(err).Errorf("failed to process webhook for '%s'", repository.FullName)
