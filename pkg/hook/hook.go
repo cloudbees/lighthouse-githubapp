@@ -3,6 +3,7 @@ package hook
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -249,7 +250,10 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 		log.Infof("notifying workspace %s for %s", ws.Project, repo.FullName)
 
 		if ws.LighthouseURL != "" && ws.HMAC != "" {
-			log.Infof("invoking webhook relay here! %s with hmac %s", ws.LighthouseURL, ws.HMAC)
+			// TODO insecure webhooks should be configured on workspace creation and passed to this function
+			useInsecureRelay := strings.Contains(ws.LighthouseURL, "cbjx-pr-")
+
+			log.Infof("invoking webhook relay here! url=%s, secure=%t", ws.LighthouseURL, useInsecureRelay)
 
 			decodedHmac, err := base64.StdEncoding.DecodeString(ws.HMAC)
 			if err != nil {
@@ -257,7 +261,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 				continue
 			}
 
-			err = o.retryWebhookDelivery(ws.LighthouseURL, githubDeliveryEvent, webhook.Kind(), decodedHmac, bodyBytes, log)
+			err = o.retryWebhookDelivery(ws.LighthouseURL, githubDeliveryEvent, webhook.Kind(), decodedHmac, useInsecureRelay, bodyBytes, log)
 			if err != nil {
 				log.WithError(err).Error("failed to deliver webhook")
 				continue
@@ -445,14 +449,26 @@ func (o *HookOptions) verifyScmClient(log *logrus.Entry, scmClient *scm.Client, 
 
 // retryWebhookDelivery attempts to deliver the relayed webhook, but will retry a few times if the response is a 500 with
 // "repository not configured" in the body, in case the remote Lighthouse doesn't yet have this repository in its configuration.
-func (o *HookOptions) retryWebhookDelivery(lighthouseURL, githubDeliveryEvent string, webhookKind scm.WebhookKind, decodedHmac, bodyBytes []byte, log *logrus.Entry) error {
+func (o *HookOptions) retryWebhookDelivery(lighthouseURL string, githubDeliveryEvent string, webhookKind scm.WebhookKind, decodedHmac []byte, useInsecureRelay bool, bodyBytes []byte, log *logrus.Entry) error {
 	f := func() error {
 		log.Infof("relaying %s", string(bodyBytes))
 		g := hmac.NewGenerator(decodedHmac)
 		signature := g.HubSignature(bodyBytes)
 
-		if o.client == nil {
-			o.client = &http.Client{}
+		var httpClient *http.Client
+
+		if o.client != nil {
+			httpClient = o.client
+		} else {
+			if useInsecureRelay {
+				tr := &http.Transport{
+					TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+				}
+
+				httpClient = &http.Client{Transport: tr}
+			} else {
+				httpClient = &http.Client{}
+			}
 		}
 
 		req, err := http.NewRequest("POST", lighthouseURL, bytes.NewReader(bodyBytes))
@@ -460,7 +476,7 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL, githubDeliveryEvent st
 		req.Header.Add("X-GitHub-Delivery", githubDeliveryEvent)
 		req.Header.Add("X-Hub-Signature", signature)
 
-		resp, err := o.client.Do(req)
+		resp, err := httpClient.Do(req)
 		if err != nil {
 			return err
 		}
