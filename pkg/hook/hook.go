@@ -193,7 +193,7 @@ func (o *HookOptions) onInstallHook(ctx context.Context, log *logrus.Entry, hook
 	}
 }
 
-func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, install *scm.InstallationRef, webhook scm.Webhook, githubDeliveryEvent string, bodyBytes []byte) error {
+func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, install *scm.InstallationRef, webhook scm.Webhook, githubEventType string, githubDeliveryEvent string, bodyBytes []byte) error {
 	// Set a default max retry duration of 30 seconds if it's not set.
 	if o.maxRetryDuration == nil {
 		o.maxRetryDuration = &defaultMaxRetryDuration
@@ -262,7 +262,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 				continue
 			}
 
-			err = o.retryWebhookDelivery(ws.LighthouseURL, githubDeliveryEvent, webhook.Kind(), decodedHmac, useInsecureRelay, bodyBytes, log)
+			err = o.retryWebhookDelivery(ws.LighthouseURL, githubEventType, githubDeliveryEvent, decodedHmac, useInsecureRelay, bodyBytes, log)
 			if err != nil {
 				log.WithError(err).Error("failed to deliver webhook")
 				continue
@@ -450,7 +450,7 @@ func (o *HookOptions) verifyScmClient(log *logrus.Entry, scmClient *scm.Client, 
 
 // retryWebhookDelivery attempts to deliver the relayed webhook, but will retry a few times if the response is a 500 with
 // "repository not configured" in the body, in case the remote Lighthouse doesn't yet have this repository in its configuration.
-func (o *HookOptions) retryWebhookDelivery(lighthouseURL string, githubDeliveryEvent string, webhookKind scm.WebhookKind, decodedHmac []byte, useInsecureRelay bool, bodyBytes []byte, log *logrus.Entry) error {
+func (o *HookOptions) retryWebhookDelivery(lighthouseURL string, githubEventType string, githubDeliveryEvent string, decodedHmac []byte, useInsecureRelay bool, bodyBytes []byte, log *logrus.Entry) error {
 	f := func() error {
 		log.Infof("relaying %s", string(bodyBytes))
 		g := hmac.NewGenerator(decodedHmac)
@@ -473,7 +473,7 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL string, githubDeliveryE
 		}
 
 		req, err := http.NewRequest("POST", lighthouseURL, bytes.NewReader(bodyBytes))
-		req.Header.Add("X-GitHub-Event", string(webhookKind))
+		req.Header.Add("X-GitHub-Event", githubEventType)
 		req.Header.Add("X-GitHub-Delivery", githubDeliveryEvent)
 		req.Header.Add("X-Hub-Signature", signature)
 
