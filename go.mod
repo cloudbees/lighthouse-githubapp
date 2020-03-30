@@ -13,7 +13,7 @@ require (
 	github.com/jenkins-x/go-scm v1.5.83
 	github.com/jenkins-x/jx v0.0.0-20200327170854-5c335e18137d
 	github.com/jenkins-x/jx-logging v0.0.1
-	github.com/jenkins-x/lighthouse v0.0.507
+	github.com/jenkins-x/lighthouse v0.0.508
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pborman/uuid v1.2.0
 	github.com/pkg/errors v0.9.1
