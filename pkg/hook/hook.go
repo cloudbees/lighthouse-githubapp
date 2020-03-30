@@ -251,7 +251,8 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 
 		if ws.LighthouseURL != "" && ws.HMAC != "" {
 			// TODO insecure webhooks should be configured on workspace creation and passed to this function
-			useInsecureRelay := strings.Contains(ws.LighthouseURL, "cbjx-pr-")
+			// cbjx-pr- & cbjx-vs-pr-
+			useInsecureRelay := strings.Contains(ws.LighthouseURL, "-pr-")
 
 			log.Infof("invoking webhook relay here! url=%s, insecure=%t", ws.LighthouseURL, useInsecureRelay)
 
