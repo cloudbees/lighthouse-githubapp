@@ -20,7 +20,6 @@ import (
 
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
 	"github.com/jenkins-x/go-scm/scm"
-	"github.com/jenkins-x/jx/pkg/jxfactory/connector"
 	"github.com/patrickmn/go-cache"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -255,39 +254,6 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 	}
 
 	return nil
-}
-
-func (o *HookOptions) invokeRemoteLighthouseViaProxy(log *logrus.Entry, webhook scm.Webhook, factory *connector.ConfigClientFactory, ns string) error {
-	log.Info("invoking remote lighthouse")
-	kubeClient, err := factory.CreateKubeClient()
-	if err != nil {
-		return errors.Wrap(err, "failed to create remote kubeClient")
-	}
-	params := map[string]string{}
-	data, err := kubeClient.CoreV1().Services(ns).ProxyGet("http", "hook", "80", "/", params).DoRaw()
-	if err != nil {
-		return errors.Wrap(err, "failed to get hook")
-	}
-	log.Infof("got response from hook: %s", string(data))
-	return nil
-}
-
-// verifyScmClient lets try verify the scm client on a webhook
-func (o *HookOptions) verifyScmClient(log *logrus.Entry, scmClient *scm.Client, repository scm.Repository) {
-	log = log.WithField("TestPR", fmt.Sprintf("%s #%d", verifyRepository, verifyPullRequest))
-	ctx := context.Background()
-	labels, _, err := scmClient.PullRequests.ListLabels(ctx, verifyRepository, verifyPullRequest, scm.ListOptions{Size: 100})
-	if err != nil {
-		log.WithError(err).Error("failed to list labels on PR")
-		return
-	}
-	buffer := strings.Builder{}
-	buffer.WriteString("Found labels: ")
-	for _, label := range labels {
-		buffer.WriteString(" ")
-		buffer.WriteString(label.Name)
-	}
-	log.Info(buffer.String())
 }
 
 // retryWebhookDelivery attempts to deliver the relayed webhook, but will retry a few times if the response is a 500 with
