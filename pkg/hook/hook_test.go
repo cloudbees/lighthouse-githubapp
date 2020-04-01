@@ -1,19 +1,19 @@
 package hook
 
 import (
+	"testing"
+
 	"github.com/cloudbees/jx-tenant-service/pkg/access"
 	"github.com/stretchr/testify/assert"
-	"strings"
-	"testing"
 )
 
 func TestCanDetermineInsecureWebhooks(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name             string
-		url            string
-		insecure           bool
+		name     string
+		url      string
+		insecure bool
 	}{
 		{
 			name:     "play-environment",
@@ -42,10 +42,9 @@ func TestCanDetermineInsecureWebhooks(t *testing.T) {
 		},
 	}
 
-
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			ws := &access.WorkspaceAccess{ LighthouseURL: test.url }
+			ws := &access.WorkspaceAccess{LighthouseURL: test.url}
 			assert.Equal(t, test.insecure, ShouldUseInsecureRelay(ws))
 		})
 	}
