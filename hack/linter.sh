@@ -20,20 +20,20 @@ golangci-lint run \
   --disable-all \
   -E misspell \
   -E unconvert \
-  -E unconvert \
+  -E unused \
   -E gofmt \
   -E goimports \
   -E structcheck \
   -E interfacer \
   -E typecheck \
   -E errcheck \
+  -E deadcode \
   --skip-dirs vendor \
   --deadline 15m0s \
   --verbose \
   --build-tags build
 
 # -E gosec \
-# -E deadcode \
 # -E varcheck \
 # -E govet \
 # -E unparam \
