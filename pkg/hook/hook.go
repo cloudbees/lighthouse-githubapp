@@ -5,7 +5,6 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -19,21 +18,9 @@ import (
 
 	"github.com/cloudbees/lighthouse-githubapp/pkg/util"
 
-	"github.com/cloudbees/jx-tenant-service/pkg/gcloudhelpers"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/flags"
-	"github.com/cloudbees/lighthouse-githubapp/pkg/hook/connectors"
-	"github.com/cloudbees/lighthouse-githubapp/pkg/schedulers"
 	"github.com/jenkins-x/go-scm/scm"
-	v1 "github.com/jenkins-x/jx/pkg/apis/jenkins.io/v1"
-	"github.com/jenkins-x/jx/pkg/client/clientset/versioned"
 	"github.com/jenkins-x/jx/pkg/jxfactory/connector"
-	"github.com/jenkins-x/jx/pkg/kube"
-	"github.com/jenkins-x/lighthouse/pkg/plumber"
-	"github.com/jenkins-x/lighthouse/pkg/prow/config"
-	"github.com/jenkins-x/lighthouse/pkg/prow/git"
-	lhhook "github.com/jenkins-x/lighthouse/pkg/prow/hook"
-	"github.com/jenkins-x/lighthouse/pkg/prow/plugins"
-	lhwebhook "github.com/jenkins-x/lighthouse/pkg/webhook"
 	"github.com/patrickmn/go-cache"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -249,56 +236,21 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 		log := log.WithFields(ws.LogFields())
 		log.Infof("notifying workspace %s for %s", ws.Project, repo.FullName)
 
-		if ws.LighthouseURL != "" && ws.HMAC != "" {
-			// TODO insecure webhooks should be configured on workspace creation and passed to this function
-			useInsecureRelay := ShouldUseInsecureRelay(ws)
+		// TODO insecure webhooks should be configured on workspace creation and passed to this function
+		useInsecureRelay := ShouldUseInsecureRelay(ws)
 
-			log.Infof("invoking webhook relay here! url=%s, insecure=%t", ws.LighthouseURL, useInsecureRelay)
+		log.Infof("invoking webhook relay here! url=%s, insecure=%t", ws.LighthouseURL, useInsecureRelay)
 
-			decodedHmac, err := base64.StdEncoding.DecodeString(ws.HMAC)
-			if err != nil {
-				log.WithError(err).Errorf("unable to decode hmac")
-				continue
-			}
+		decodedHmac, err := base64.StdEncoding.DecodeString(ws.HMAC)
+		if err != nil {
+			log.WithError(err).Errorf("unable to decode hmac")
+			continue
+		}
 
-			err = o.retryWebhookDelivery(ws.LighthouseURL, githubEventType, githubDeliveryEvent, decodedHmac, useInsecureRelay, bodyBytes, log)
-			if err != nil {
-				log.WithError(err).Error("failed to deliver webhook")
-				continue
-			}
-		} else {
-			kubeConfig := ws.KubeConfig
-			if kubeConfig == "" {
-				log.Error("no KubeConfig for workspace")
-				continue
-			}
-			f, err := gcloudhelpers.CreateFactoryFromKubeConfig(kubeConfig)
-			if err != nil {
-				log.WithError(err).Error("failed to create remote client factory")
-				continue
-			}
-
-			// lets parse the Scheduler json
-			jsonText := ws.JSON
-			if jsonText == "" {
-				log.Errorf("no Scheduler JSON for workspace %s and repo %s", ws.Project, repo.FullName)
-				continue
-			}
-			scheduler := &v1.Scheduler{}
-			err = json.Unmarshal([]byte(jsonText), scheduler)
-			if err != nil {
-				log.WithError(err).Errorf("failed to parse Scheduler JSON for workspace %s and repo %s", ws.Project, repo.FullName)
-				continue
-			}
-
-			log.WithField("Scheduler", scheduler.Name)
-			log.WithField("Bot", flags.BotName.Value())
-
-			err = o.invokeLighthouse(log, webhook, f, ws.Namespace, scheduler, install)
-			if err != nil {
-				log.WithError(err).Errorf("failed to invoke remote lighthouse for workspace %s and repo %s", ws.Project, repo.FullName)
-				return err
-			}
+		err = o.retryWebhookDelivery(ws.LighthouseURL, githubEventType, githubDeliveryEvent, decodedHmac, useInsecureRelay, bodyBytes, log)
+		if err != nil {
+			log.WithError(err).Error("failed to deliver webhook")
+			continue
 		}
 	}
 
@@ -317,115 +269,6 @@ func (o *HookOptions) invokeRemoteLighthouseViaProxy(log *logrus.Entry, webhook 
 		return errors.Wrap(err, "failed to get hook")
 	}
 	log.Infof("got response from hook: %s", string(data))
-	return nil
-}
-
-func (o *HookOptions) invokeLighthouse(log *logrus.Entry, webhook scm.Webhook, f *connector.ConfigClientFactory, ns string, scheduler *v1.Scheduler, installRef *scm.InstallationRef) error {
-	log.Info("invoking lighthouse")
-
-	clientFactory := connectors.ToJXFactory(f, ns)
-	kubeClient, _, err := clientFactory.CreateKubeClient()
-	if err != nil {
-		err = errors.Wrap(err, "failed to create KubeClient")
-		log.Error(err.Error())
-		return err
-	}
-	jxClient, _, err := clientFactory.CreateJXClient()
-	if err != nil {
-		err = errors.Wrap(err, "failed to create JXClient")
-		log.Error(err.Error())
-		return err
-	}
-
-	serverURL := webhook.Repository().Link
-
-	gitClient, _ := git.NewClient(serverURL, flags.GitKind.Value())
-
-	ctx := context.Background()
-	scmClient, tokenResource, err := o.getInstallScmClient(log, ctx, installRef)
-
-	if webhook.Kind() == scm.WebhookKindPullRequest {
-		o.verifyScmClient(log, scmClient, webhook.Repository())
-	}
-
-	botUser := flags.BotName.Value()
-	gitClient.SetCredentials(botUser, func() []byte {
-		return []byte(tokenResource.Token)
-	})
-
-	metapipelineClient, err := plumber.NewMetaPipelineClient(clientFactory)
-	if err != nil {
-		err = errors.Wrap(err, "failed to create Metapipeline Client")
-		log.Error(err.Error())
-		return err
-	}
-
-	server := &lhhook.Server{
-		ClientAgent: &plugins.ClientAgent{
-			BotName:            botUser,
-			SCMProviderClient:  scmClient,
-			KubernetesClient:   kubeClient,
-			GitClient:          gitClient,
-			MetapipelineClient: metapipelineClient,
-		},
-		ClientFactory:      clientFactory,
-		MetapipelineClient: metapipelineClient,
-		Plugins:            &plugins.ConfigAgent{},
-		ConfigAgent:        &config.Agent{},
-	}
-	err = o.updateProwConfiguration(log, webhook, server, scheduler, jxClient, ns)
-	if err != nil {
-		err = errors.Wrap(err, "failed to update prow configuration")
-		log.Error(err.Error())
-		return err
-	}
-
-	localHook := lhwebhook.NewWebhook(clientFactory, server)
-
-	log.Info("about to invoke lighthouse")
-
-	l, output, err := localHook.ProcessWebHook(log, webhook)
-	if err != nil {
-		err = errors.Wrap(err, "failed to process webhook")
-		l.WithError(err).Error(err.Error())
-		return err
-	}
-	l.Infof(output)
-	return nil
-}
-
-func (o *HookOptions) updateProwConfiguration(log *logrus.Entry, webhook scm.Webhook, server *lhhook.Server, scheduler *v1.Scheduler, jxClient versioned.Interface, ns string) error {
-	devEnv := kube.CreateDefaultDevEnvironment(ns)
-	fn := func(versioned.Interface, string) (map[string]*v1.Scheduler, *v1.SourceRepositoryGroupList, *v1.SourceRepositoryList, error) {
-		m := map[string]*v1.Scheduler{
-			scheduler.Name: scheduler,
-		}
-		repo := webhook.Repository()
-		sr := v1.SourceRepository{
-			Spec: v1.SourceRepositorySpec{
-				URL:  repo.Link,
-				Org:  repo.Namespace,
-				Repo: repo.Name,
-			},
-		}
-		sr.Spec.Scheduler.Name = scheduler.Name
-		srgs := &v1.SourceRepositoryGroupList{}
-		srs := &v1.SourceRepositoryList{
-			Items: []v1.SourceRepository{
-				sr,
-			},
-		}
-		return m, srgs, srs, nil
-	}
-
-	prowConfig, prowPlugins, err := schedulers.GenerateProw(false, false, jxClient, ns, "default", devEnv, fn)
-	if err != nil {
-		err = errors.Wrap(err, "failed to generate prow config")
-		log.WithError(err)
-		return err
-	}
-	server.ConfigAgent.Set(prowConfig)
-	server.Plugins.Set(prowPlugins)
 	return nil
 }
 
