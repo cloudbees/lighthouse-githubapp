@@ -68,7 +68,7 @@ version:
 	echo "Go version: $(GO_VERSION)"
 
 test:
-	DISABLE_SSO=true CGO_ENABLED=$(CGO_ENABLED) $(GO) test $(PACKAGE_DIRS)
+	DISABLE_SSO=true CGO_ENABLED=$(CGO_ENABLED) $(GO) test -cover $(PACKAGE_DIRS)
 
 testv:
 	DISABLE_SSO=true CGO_ENABLED=$(CGO_ENABLED) $(GO) test -test.v $(PACKAGE_DIRS)
