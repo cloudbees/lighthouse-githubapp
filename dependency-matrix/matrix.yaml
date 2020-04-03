@@ -3,8 +3,8 @@ dependencies:
   owner: cloudbees
   repo: jx-tenant-service
   url: https://github.com/cloudbees/jx-tenant-service
-  version: 0.0.566
-  versionURL: https://github.com/cloudbees/jx-tenant-service/releases/tag/v0.0.566
+  version: 0.0.567
+  versionURL: https://github.com/cloudbees/jx-tenant-service/releases/tag/v0.0.567
 - host: github.com
   owner: jenkins-x
   repo: go-scm
