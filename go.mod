@@ -10,7 +10,7 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.3.1
 	github.com/gorilla/mux v1.6.2
-	github.com/jenkins-x/go-scm v1.5.83
+	github.com/jenkins-x/go-scm v1.5.84
 	github.com/jenkins-x/jx v0.0.0-20200402075614-a9694c57f5a4
 	github.com/jenkins-x/jx-logging v0.0.1
 	github.com/jenkins-x/lighthouse v0.0.511
