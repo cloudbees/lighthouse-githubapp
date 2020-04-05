@@ -151,8 +151,8 @@ github.com/chromedp/chromedp v0.1.1/go.mod h1:KKKRCns4HLd/N5oQR+vX13dV/U7U3+QeWF
 github.com/circonus-labs/circonus-gometrics v2.3.1+incompatible/go.mod h1:nmEj6Dob7S7YxXgwXpfOuvO54S+tGdZdw9fuRZt25Ag=
 github.com/circonus-labs/circonusllhist v0.1.3/go.mod h1:kMXHVDlOchFAehlya5ePtbp5jckzBHf4XRpQvBOLI+I=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
-github.com/cloudbees/jx-tenant-service v0.0.571 h1:AQHdzrysruSvnOd9IBc3pNcQ2i+tB1D7RZUU02Z7rB0=
-github.com/cloudbees/jx-tenant-service v0.0.571/go.mod h1:baC+djG/LWPGoK01z+6zU2c9rYmJE8l5qqaQQRZbaK8=
+github.com/cloudbees/jx-tenant-service v0.0.572 h1:07Toienlg7T8us6xEUaKeM6T9LZXR3j1BrDZFPIbMQw=
+github.com/cloudbees/jx-tenant-service v0.0.572/go.mod h1:E4/j7bo41MkKuq2FGbutWoZCh+4P6/KWeNb6Wi7JoOU=
 github.com/cockroachdb/cmux v0.0.0-20170110192607-30d10be49292/go.mod h1:qRiX68mZX1lGBkTWyp3CLcenw9I94W2dLeRvMzcn9N4=
 github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd/go.mod h1:sE/e/2PUdi/liOCUjSTXgM1o87ZssimdTWN964YiIeI=
 github.com/coreos/bbolt v1.3.1-coreos.6/go.mod h1:iRUV2dpdMOn7Bo10OQBFzIJO9kkE559Wcmn+qkEiiKk=
@@ -469,8 +469,6 @@ github.com/jenkins-x/go-scm v1.5.83 h1:cZu6W6Ymx4kv/TcLn3qCp9Yutqz+O4hIwlrerdgIS
 github.com/jenkins-x/go-scm v1.5.83/go.mod h1:PCT338UhP/pQ0IeEeMEf/hoLTYKcH7qjGEKd7jPkeYg=
 github.com/jenkins-x/golang-jenkins v0.0.0-20180919102630-65b83ad42314 h1:kyBMx/ucSV92S+umX/V6DDaPNynlFFOM9MGJWApltoU=
 github.com/jenkins-x/golang-jenkins v0.0.0-20180919102630-65b83ad42314/go.mod h1:C6j5HgwlHGjRU27W4XCs6jXksqYFo8OdBu+p44jqQeM=
-github.com/jenkins-x/jx v0.0.0-20200403141500-778c2ca01427 h1:GZcHPFHC0vfyxPH4bXGkWKmqj2KFcbFB/i6DVPy0t4Y=
-github.com/jenkins-x/jx v0.0.0-20200403141500-778c2ca01427/go.mod h1:1c0Hd6mxyAJCLDZUN9ISELcVteIzTzc4tY9YlLOQKxI=
 github.com/jenkins-x/jx v0.0.0-20200405135239-b1831f1072b6 h1:lsshrka4blelSSM/fwu9Rcd8nKo7f5vQ2dBfrsRUE08=
 github.com/jenkins-x/jx v0.0.0-20200405135239-b1831f1072b6/go.mod h1:1c0Hd6mxyAJCLDZUN9ISELcVteIzTzc4tY9YlLOQKxI=
 github.com/jenkins-x/jx-logging v0.0.1 h1:leMHTJmv+0YC+RiVkU747r7bB4hiwlZ2VVOoNvAIHvE=
