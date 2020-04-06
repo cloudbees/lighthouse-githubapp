@@ -56,13 +56,6 @@ pipelineConfig:
                   - -f
                   - /builder/home/kaniko-secret.json
 
-              - name: warm-cache
-                image: gcr.io/kaniko-project/warmer
-                args:
-                  - --cache-dir=/workspace
-                  - --image=google/cloud-sdk:slim
-                command: /kaniko/warmer
-
               - image: gcr.io/kaniko-project/executor:9912ccbf8d22bbafbf971124600fbb0b13b9cbd6
                 command: /kaniko/executor
                 args:
@@ -166,13 +159,6 @@ pipelineConfig:
                   - kaniko-secret
                   - -f
                   - /builder/home/kaniko-secret.json
-
-              - name: warm-cache
-                image: gcr.io/kaniko-project/warmer
-                args:
-                  - --cache-dir=/workspace
-                  - --image=google/cloud-sdk:slim
-                command: /kaniko/warmer
 
               - image: gcr.io/kaniko-project/executor:9912ccbf8d22bbafbf971124600fbb0b13b9cbd6
                 command: /kaniko/executor
