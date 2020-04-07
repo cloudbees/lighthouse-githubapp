@@ -1,5 +1,7 @@
 module github.com/cloudbees/lighthouse-githubapp
 
+go 1.13
+
 require (
 	github.com/TV4/logrus-stackdriver-formatter v0.1.0
 	github.com/blang/semver v3.5.1+incompatible
