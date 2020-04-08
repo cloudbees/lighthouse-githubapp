@@ -62,7 +62,7 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 		"Webhook":  webhook.Kind(),
 	})
 
-	l.Infof("got hook %s", webhook.Kind())
+	l.Debugf("got hook %s", webhook.Kind())
 	installHook, ok := webhook.(*scm.InstallationHook)
 	if ok {
 		if installHook.Installation.ID == 0 {
