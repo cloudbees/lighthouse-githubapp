@@ -154,9 +154,6 @@ func (o *HookOptions) onInstallHook(ctx context.Context, log *logrus.Entry, hook
 		"Function":       "onInstallHook",
 	}
 	log = log.WithFields(fields)
-	log.Infof("installHook %+v", hook)
-	log.Infof("installHook Installation - %+v", hook.Installation)
-	log.Infof("installHook Repos - %+v", hook.Repos)
 
 	// ets register / unregister repositories to the InstallationID
 	if hook.Action == scm.ActionCreate {
@@ -199,7 +196,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 	log = log.WithFields(fields)
 	u := repo.Link
 	if u == "" {
-		log.Warnf("ignoring webhook as no repository URL for '%s'", repo.FullName)
+		log.Warnf("ignoring webhook '%s' as no repository URL for '%s'", webhook.Kind(), repo.FullName)
 		return nil
 	}
 
@@ -222,7 +219,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 	}
 
 	err := o.retryGetWorkspaces(getWsFunc, func(e error, d time.Duration) {
-		log.Warnf("get workspaces failed with '%s', backing off for %s", e, d)
+		log.Infof("get workspaces failed with '%s', backing off for %s", e, d)
 	})
 	if err != nil {
 		log.WithError(err).Errorf("failed to find any workspaces after %s seconds for '%s'", o.maxRetryDuration, repo.FullName)
@@ -249,6 +246,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 			log.WithError(err).Error("failed to deliver webhook")
 			continue
 		}
+		log.Infof("webhook delivery ok for %s", repo.FullName)
 	}
 
 	return nil
@@ -258,7 +256,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 // "repository not configured" in the body, in case the remote Lighthouse doesn't yet have this repository in its configuration.
 func (o *HookOptions) retryWebhookDelivery(lighthouseURL string, githubEventType string, githubDeliveryEvent string, decodedHmac []byte, useInsecureRelay bool, bodyBytes []byte, log *logrus.Entry) error {
 	f := func() error {
-		log.Infof("relaying %s", string(bodyBytes))
+		log.Debugf("relaying %s", string(bodyBytes))
 		g := hmac.NewGenerator(decodedHmac)
 		signature := g.HubSignature(bodyBytes)
 
@@ -284,11 +282,10 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL string, githubEventType
 		req.Header.Add("X-Hub-Signature", signature)
 
 		resp, err := httpClient.Do(req)
+		log.Infof("got response code %d from url '%s',err=%s", resp.StatusCode, lighthouseURL, err)
 		if err != nil {
 			return err
 		}
-
-		log.Infof("got response code %d from url '%s'", resp.StatusCode, lighthouseURL)
 
 		// If we got a 500, check if it's got the "repository not configured" string in the body. If so, we retry.
 		if resp.StatusCode == 500 {
