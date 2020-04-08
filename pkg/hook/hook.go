@@ -318,7 +318,7 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL string, githubEventType
 	bo.InitialInterval = 2 * time.Second
 	bo.MaxElapsedTime = *o.maxRetryDuration
 	bo.Reset()
-	
+
 	return backoff.RetryNotify(f, bo, func(e error, t time.Duration) {
 		log.Infof("webhook relaying failed: %s, backing off for %s", e, t)
 	})
