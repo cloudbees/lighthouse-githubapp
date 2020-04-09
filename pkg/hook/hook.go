@@ -282,7 +282,7 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL string, githubEventType
 		req.Header.Add("X-Hub-Signature", signature)
 
 		resp, err := httpClient.Do(req)
-		log.Infof("got response code %d from url '%s',err=%s", resp.StatusCode, lighthouseURL, err)
+		log.Infof("got resp code %d from url '%s',err=%s", resp.StatusCode, lighthouseURL, err)
 		if err != nil {
 			return err
 		}
@@ -291,11 +291,11 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL string, githubEventType
 		if resp.StatusCode == 500 {
 			respBody, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
-				return backoff.Permanent(errors.Wrap(err, "parsing response body"))
+				return backoff.Permanent(errors.Wrap(err, "parsing resp.body"))
 			}
 			err = resp.Body.Close()
 			if err != nil {
-				return backoff.Permanent(errors.Wrap(err, "closing response body"))
+				return backoff.Permanent(errors.Wrap(err, "closing resp.body"))
 			}
 			log.Infof("got error response body '%s'", string(respBody))
 			if strings.Contains(string(respBody), repoNotConfiguredMessage) {
