@@ -200,7 +200,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 		return nil
 	}
 
-	log.Infof("onGeneralHook - %+v", webhook)
+	log.Debugf("onGeneralHook - %+v", webhook)
 	var workspaces []*access.WorkspaceAccess
 
 	getWsFunc := func() error {
@@ -243,7 +243,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 
 		err = o.retryWebhookDelivery(ws.LighthouseURL, githubEventType, githubDeliveryEvent, decodedHmac, useInsecureRelay, bodyBytes, log)
 		if err != nil {
-			log.WithError(err).Error("failed to deliver webhook")
+			log.WithError(err).Errorf("failed to deliver webhook after %s", o.maxRetryDuration)
 			continue
 		}
 		log.Infof("webhook delivery ok for %s", repo.FullName)
@@ -312,13 +312,15 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL string, githubEventType
 		// And finally, if we haven't gotten any errors, just return nil because we're good.
 		return nil
 	}
+
 	bo := backoff.NewExponentialBackOff()
 	// Try again after 2/4/8/... seconds if necessary, for up to 30 seconds.
 	bo.InitialInterval = 2 * time.Second
 	bo.MaxElapsedTime = *o.maxRetryDuration
 	bo.Reset()
+
 	return backoff.RetryNotify(f, bo, func(e error, t time.Duration) {
-		log.Warnf("webhook relaying failed: %s", e)
+		log.Infof("webhook relaying failed: %s, backing off for %s", e, t)
 	})
 }
 

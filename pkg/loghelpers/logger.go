@@ -14,8 +14,11 @@ func InitLogrus() {
 	log.Logger()
 	jxlogger.Logger()
 
-	logrus.SetFormatter(stackdriver.NewFormatter(
+	formatter := stackdriver.NewFormatter(
 		stackdriver.WithService("lighthouse-githubapp"),
 		stackdriver.WithVersion(*version.GetBuildVersion()),
-	))
+	)
+
+	logrus.SetFormatter(formatter)
+
 }
