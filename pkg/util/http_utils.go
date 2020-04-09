@@ -102,7 +102,7 @@ func CallWithExponentialBackOff(url string, auth string, httpMethod string, reqB
 			}
 			respBody, err = ioutil.ReadAll(resp.Body)
 			if err != nil {
-				return backoff.Permanent(errors.Wrap(err, "parsing response body"))
+				return backoff.Permanent(errors.Wrap(err, "parsing respBody"))
 			}
 			resp.Body.Close()
 			return nil
