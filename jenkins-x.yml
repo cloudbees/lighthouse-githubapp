@@ -145,6 +145,12 @@ pipelineConfig:
               - image: gcr.io/jenkinsxio/builder-go
                 command: make
                 args:
+                  - test
+                dir: /workspace/source/
+
+              - image: gcr.io/jenkinsxio/builder-go
+                command: make
+                args:
                   - linux
                 dir: /workspace/source/
 
