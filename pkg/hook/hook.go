@@ -249,7 +249,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 
 		// TODO insecure webhooks should be configured on workspace creation and passed to this function
 		useInsecureRelay := ShouldUseInsecureRelay(ws)
-		
+
 		insecureFromDb := false
 		if ws.Insecure != nil {
 			insecureFromDb = *ws.Insecure
