@@ -1,7 +1,7 @@
 package loghelpers
 
 import (
-	stackdriver "github.com/TV4/logrus-stackdriver-formatter"
+	stackdriver "github.com/jenkins-x/logrus-stackdriver-formatter/pkg/stackdriver"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/version"
 	jxlogger "github.com/jenkins-x/jx-logging/pkg/log"
 	"github.com/jenkins-x/jx/pkg/log"
