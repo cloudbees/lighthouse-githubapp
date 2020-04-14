@@ -9,7 +9,7 @@ require (
 	github.com/gorilla/mux v1.6.2
 	github.com/jenkins-x/go-scm v1.5.90
 	github.com/jenkins-x/jx v0.0.0-20200413182250-109f0011927c
-	github.com/jenkins-x/jx-logging v0.0.2
+	github.com/jenkins-x/jx-logging v0.0.3
 	github.com/jenkins-x/logrus-stackdriver-formatter v0.2.3
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.9.1
@@ -48,5 +48,7 @@ replace github.com/Azure/azure-sdk-for-go => github.com/Azure/azure-sdk-for-go v
 replace github.com/Azure/go-autorest => github.com/Azure/go-autorest v10.15.5+incompatible
 
 replace github.com/banzaicloud/bank-vaults => github.com/banzaicloud/bank-vaults v0.0.0-20190508130850-5673d28c46bd
+
+replace github.com/TV4/logrus-stackdriver-formatter => github.com/jenkins-x/logrus-stackdriver-formatter v0.1.1-0.20200408213659-1dcf20c371bb
 
 go 1.13
