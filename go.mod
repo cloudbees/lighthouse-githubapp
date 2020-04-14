@@ -17,15 +17,11 @@ require (
 	github.com/shurcooL/githubv4 v0.0.0-20191006152017-6d1ea27df521 // indirect
 	github.com/sirupsen/logrus v1.5.0
 	github.com/stretchr/testify v1.5.1
-	github.com/tektoncd/pipeline v0.8.0
 	gopkg.in/DataDog/dd-trace-go.v1 v1.19.0
 	k8s.io/apimachinery v0.0.0-20190816221834-a9f1d8a9c101 // indirect
-	k8s.io/client-go v11.0.1-0.20190805182717-6502b5e7b1b5+incompatible
 )
 
 exclude github.com/jenkins-x/jx/pkg/prow v0.0.0-20191018175829-4badc08866cd
-
-replace github.com/golang/lint => golang.org/x/lint v0.0.0-20180702182130-06c8688daad7
 
 replace github.com/heptio/sonobuoy => github.com/jenkins-x/sonobuoy v0.11.7-0.20190318120422-253758214767
 
@@ -38,8 +34,6 @@ replace k8s.io/apimachinery => k8s.io/apimachinery v0.0.0-20190122181752-bebe27e
 replace k8s.io/client-go => k8s.io/client-go v2.0.0-alpha.0.0.20190115164855-701b91367003+incompatible
 
 replace k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.0.0-20181128195303-1f84094d7e8e
-
-replace git.apache.org/thrift.git => github.com/apache/thrift v0.0.0-20180902110319-2566ecd5d999
 
 replace github.com/sirupsen/logrus => github.com/jtnord/logrus v1.4.2-0.20190423161236-606ffcaf8f5d
 
