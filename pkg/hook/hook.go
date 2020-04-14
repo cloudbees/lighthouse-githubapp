@@ -6,11 +6,12 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"fmt"
-	"github.com/cloudbees/lighthouse-githubapp/pkg/version"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/cloudbees/lighthouse-githubapp/pkg/version"
 
 	"github.com/cenkalti/backoff"
 	"github.com/cloudbees/jx-tenant-service/pkg/access"
@@ -28,7 +29,7 @@ import (
 )
 
 const (
-	repoNotConfiguredMessage = "repository not configured"
+	repoNotConfiguredMessage       = "repository not configured"
 	noGithubAppSecretFoundForOwner = "no github app secret found for owner"
 )
 
