@@ -11,6 +11,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cloudbees/lighthouse-githubapp/pkg/version"
+
 	"github.com/cenkalti/backoff"
 	"github.com/cloudbees/jx-tenant-service/pkg/access"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/hmac"
@@ -27,11 +29,12 @@ import (
 )
 
 const (
-	repoNotConfiguredMessage = "repository not configured"
+	repoNotConfiguredMessage       = "repository not configured"
+	noGithubAppSecretFoundForOwner = "no github app secret found for owner"
 )
 
 var (
-	defaultMaxRetryDuration = 30 * time.Second
+	defaultMaxRetryDuration = 45 * time.Second
 )
 
 type HookOptions struct {
@@ -62,7 +65,7 @@ func NewHook() (*HookOptions, error) {
 	return &HookOptions{
 		Path:             HookPath,
 		Port:             flags.HttpPort.Value(),
-		Version:          "TODO",
+		Version:          *version.GetBuildVersion(),
 		tokenCache:       tokenCache,
 		tenantService:    tenantService,
 		githubApp:        githubApp,
@@ -312,8 +315,13 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL string, githubEventType
 				return backoff.Permanent(errors.Wrap(err, "closing resp.body"))
 			}
 			log.Infof("got error respBody '%s'", string(respBody))
+
 			if strings.Contains(string(respBody), repoNotConfiguredMessage) {
 				return errors.New("repository not configured in Lighthouse")
+			}
+
+			if strings.Contains(string(respBody), noGithubAppSecretFoundForOwner) {
+				return errors.New("no github app secret found for owner")
 			}
 		}
 
