@@ -87,7 +87,7 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 			return
 		}
 		l = l.WithField("Installation", installRepositoryHook.Installation.ID)
-		l.Info("invoking Installation Respository handler")
+		l.Info("invoking Installation Repository handler")
 		err = o.onInstallRepositoryHook(r.Context(), l, installRepositoryHook)
 		if err != nil {
 			responseHTTPError(w, http.StatusInternalServerError, "500 Internal Server Error: %s", err.Error())
@@ -96,7 +96,6 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 		}
 		return
 	}
-
 
 	installRef := webhook.GetInstallationRef()
 	if installRef == nil || installRef.ID == 0 {
