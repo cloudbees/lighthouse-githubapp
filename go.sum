@@ -142,8 +142,8 @@ github.com/chromedp/chromedp v0.1.1/go.mod h1:KKKRCns4HLd/N5oQR+vX13dV/U7U3+QeWF
 github.com/circonus-labs/circonus-gometrics v2.3.1+incompatible/go.mod h1:nmEj6Dob7S7YxXgwXpfOuvO54S+tGdZdw9fuRZt25Ag=
 github.com/circonus-labs/circonusllhist v0.1.3/go.mod h1:kMXHVDlOchFAehlya5ePtbp5jckzBHf4XRpQvBOLI+I=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
-github.com/cloudbees/jx-tenant-service v0.0.605 h1:rDTNAnBUKprqZwLWiRcyS/c/WFjGsyh0uIrIGTQ73dU=
-github.com/cloudbees/jx-tenant-service v0.0.605/go.mod h1:9EivPHXNG8sIv0T809UxFIdBB/iThXZlvSdQY42Zjn8=
+github.com/cloudbees/jx-tenant-service v0.0.606 h1:M/sMCjha+MUUBv/PBwPswMiX7N4Qc9GOHrEMrx5iAkA=
+github.com/cloudbees/jx-tenant-service v0.0.606/go.mod h1:9EivPHXNG8sIv0T809UxFIdBB/iThXZlvSdQY42Zjn8=
 github.com/cockroachdb/cmux v0.0.0-20170110192607-30d10be49292/go.mod h1:qRiX68mZX1lGBkTWyp3CLcenw9I94W2dLeRvMzcn9N4=
 github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd/go.mod h1:sE/e/2PUdi/liOCUjSTXgM1o87ZssimdTWN964YiIeI=
 github.com/coreos/bbolt v1.3.1-coreos.6/go.mod h1:iRUV2dpdMOn7Bo10OQBFzIJO9kkE559Wcmn+qkEiiKk=
@@ -802,6 +802,7 @@ github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415/go.mod h1:
 github.com/xeipuuv/gojsonschema v0.0.0-20181112162635-ac52e6811b56/go.mod h1:5yf86TLmAcydyeJq5YvxkGPE2fm/u4myDekKRoLuqhs=
 github.com/xeipuuv/gojsonschema v1.1.0 h1:ngVtJC9TY/lg0AA/1k48FYhBrhRoFlEmWzsehpNAaZg=
 github.com/xeipuuv/gojsonschema v1.1.0/go.mod h1:5yf86TLmAcydyeJq5YvxkGPE2fm/u4myDekKRoLuqhs=
+github.com/xeonx/timeago v1.0.0-rc4 h1:9rRzv48GlJC0vm+iBpLcWAr8YbETyN9Vij+7h2ammz4=
 github.com/xeonx/timeago v1.0.0-rc4/go.mod h1:qDLrYEFynLO7y5Ho7w3GwgtYgpy5UfhcXIIQvMKVDkA=
 github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8/go.mod h1:HUYIGzjTL3rfEspMxjDjgmT5uz5wzYJKVo23qUhYTos=
 github.com/xiang90/probing v0.0.0-20160813154853-07dd2e8dfe18/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
