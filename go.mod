@@ -32,7 +32,7 @@ replace k8s.io/metrics => k8s.io/metrics v0.0.0-20181128195641-3954d62a524d
 
 replace k8s.io/apimachinery => k8s.io/apimachinery v0.0.0-20190122181752-bebe27e40fb7
 
-replace k8s.io/client-go => k8s.io/client-go v2.0.0-alpha.0.0.20190115164855-701b91367003+incompatible
+replace k8s.io/client-go => k8s.io/client-go v0.0.0-20190528110200-4f3abb12cae2
 
 replace k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.0.0-20181128195303-1f84094d7e8e
 
