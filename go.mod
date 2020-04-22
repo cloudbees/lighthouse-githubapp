@@ -8,8 +8,8 @@ require (
 	github.com/cloudbees/jx-tenant-service v0.0.650
 	github.com/google/go-cmp v0.3.1 // indirect
 	github.com/gorilla/mux v1.6.2
-	github.com/jenkins-x/go-scm v1.5.99
-	github.com/jenkins-x/jx v0.0.0-20200422140903-1b93268b0b94
+	github.com/jenkins-x/go-scm v1.5.95
+	github.com/jenkins-x/jx v0.0.0-20200420183151-716e150464ad
 	github.com/jenkins-x/jx-logging v0.0.3
 	github.com/jenkins-x/logrus-stackdriver-formatter v0.2.3
 	github.com/patrickmn/go-cache v2.1.0+incompatible
