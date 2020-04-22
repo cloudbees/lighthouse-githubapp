@@ -247,10 +247,8 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 		log := log.WithFields(ws.LogFields())
 		log.Infof("notifying workspace %s for %s", ws.Project, repo.FullName)
 
-		// TODO insecure webhooks should be configured on workspace creation and passed to this function
-		useInsecureRelay := ShouldUseInsecureRelay(ws)
-
-		log.Infof("invoking webhook relay here! url=%s, insecure=%t, db=%t", ws.LighthouseURL, useInsecureRelay, ws.Insecure)
+		log.Infof("invoking webhook relay here! url=%s, db insecure=%t", ws.LighthouseURL, ws.Insecure)
+		useInsecureRelay := ws.Insecure
 
 		decodedHmac, err := base64.StdEncoding.DecodeString(ws.HMAC)
 		if err != nil {
@@ -351,10 +349,4 @@ func (o *HookOptions) retryGetWorkspaces(f func() error, n func(error, time.Dura
 	bo.MaxElapsedTime = *o.maxRetryDuration
 	bo.Reset()
 	return backoff.RetryNotify(f, bo, n)
-}
-
-func ShouldUseInsecureRelay(ws *access.WorkspaceAccess) bool {
-	return strings.Contains(ws.LighthouseURL, "-pr-") ||
-		strings.Contains(ws.LighthouseURL, ".play-jxaas.live") ||
-		strings.Contains(ws.LighthouseURL, ".staging-jxaas.live")
 }
