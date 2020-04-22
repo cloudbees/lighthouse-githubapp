@@ -8,7 +8,7 @@ require (
 	github.com/cloudbees/jx-tenant-service v0.0.651
 	github.com/google/go-cmp v0.3.1 // indirect
 	github.com/gorilla/mux v1.6.2
-	github.com/jenkins-x/go-scm v1.5.99
+	github.com/jenkins-x/go-scm v1.5.100
 	github.com/jenkins-x/jx v0.0.0-20200422154714-c9711b2ce5e5
 	github.com/jenkins-x/jx-logging v0.0.3
 	github.com/jenkins-x/logrus-stackdriver-formatter v0.2.3
