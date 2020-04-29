@@ -3,7 +3,7 @@ module github.com/cloudbees/lighthouse-githubapp
 require (
 	github.com/banzaicloud/bank-vaults v0.0.0-20190508130850-5673d28c46bd // indirect
 	github.com/blang/semver v3.5.1+incompatible
-	github.com/bradleyfalzon/ghinstallation v0.1.2
+	github.com/bradleyfalzon/ghinstallation v0.1.3
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cloudbees/jx-tenant-service v0.0.671
 	github.com/google/go-cmp v0.3.1 // indirect
