@@ -18,7 +18,7 @@ require (
 	github.com/shurcooL/githubv4 v0.0.0-20191006152017-6d1ea27df521 // indirect
 	github.com/sirupsen/logrus v1.5.0
 	github.com/stretchr/testify v1.5.1
-	gopkg.in/DataDog/dd-trace-go.v1 v1.19.0
+	gopkg.in/DataDog/dd-trace-go.v1 v1.23.2
 	k8s.io/apimachinery v0.0.0-20190816221834-a9f1d8a9c101 // indirect
 )
 
