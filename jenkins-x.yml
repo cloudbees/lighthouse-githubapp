@@ -38,7 +38,7 @@ pipelineConfig:
               - name: NETRC
                 value: /secrets/netrc/.netrc
             steps:
-              - image: gcr.io/jenkinsxio/builder-go
+              - image: docker.io/golang:1.13.10
                 command: make
                 args:
                   - linux
@@ -142,13 +142,13 @@ pipelineConfig:
                   - mountPath: /secrets/netrc
                     name: netrc
             steps:
-              - image: gcr.io/jenkinsxio/builder-go
+              - image: docker.io/golang:1.13.10
                 command: make
                 args:
                   - test
                 dir: /workspace/source/
 
-              - image: gcr.io/jenkinsxio/builder-go
+              - image: docker.io/golang:1.13.10
                 command: make
                 args:
                   - linux
