@@ -129,17 +129,17 @@ func (o *GithubApp) hasErrored(response *scm.Response, err error) bool {
 	if err != nil {
 		logrus.Debugf("Determine if error is an issue %v", err)
 		if response == nil {
-			logrus.Errorf("error response %v", err)
+			logrus.Errorf("error %v", err)
 			return true
 		} else if response.Status == 200 || response.Status == 404 {
-			logrus.Debugf("error is %v and response status is %q", err, response.Status)
+			logrus.Debugf("error is %v and resp status is %q", err, response.Status)
 			return false
 		} else {
-			logrus.Errorf("error response received status code %d with response %q", response.Status, response.Body)
+			logrus.Errorf("error resp received status code %d with resp %q", response.Status, response.Body)
 			return true
 		}
 	}
-	logrus.Debugf("Response received from github api %v", response)
+	logrus.Debugf("Resp received from github api %v", response)
 	return false
 }
 

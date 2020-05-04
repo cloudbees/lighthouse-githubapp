@@ -20,6 +20,7 @@ func TestWebhooks(t *testing.T) {
 	t.Parallel()
 
 	os.Setenv("GO_SCM_LOG_WEBHOOKS", "true")
+	insecure := false
 	tests := []struct {
 		name             string
 		event            string
@@ -33,7 +34,7 @@ func TestWebhooks(t *testing.T) {
 			event:            "push",
 			before:           "testdata/push.json",
 			multipleAttempts: false,
-			workspace:        &access.WorkspaceAccess{Project: "cbjx-mycluster", Cluster: "mycluster", LighthouseURL: "http://dummy-lighthouse-url/hook", HMAC: "MTIzNA=="},
+			workspace:        &access.WorkspaceAccess{Project: "cbjx-mycluster", Cluster: "mycluster", LighthouseURL: "http://dummy-lighthouse-url/hook", HMAC: "MTIzNA==", Insecure: insecure},
 			handlerFunc: func(rw http.ResponseWriter, req *http.Request) {
 				// Test request parameters
 				assert.Equal(t, req.URL.String(), "/")
@@ -60,7 +61,7 @@ func TestWebhooks(t *testing.T) {
 			event:            "push",
 			before:           "testdata/push.json",
 			multipleAttempts: true,
-			workspace:        &access.WorkspaceAccess{Project: "cbjx-mycluster", Cluster: "mycluster", LighthouseURL: "http://dummy-lighthouse-url/hook", HMAC: "MTIzNA=="},
+			workspace:        &access.WorkspaceAccess{Project: "cbjx-mycluster", Cluster: "mycluster", LighthouseURL: "http://dummy-lighthouse-url/hook", HMAC: "MTIzNA==", Insecure: insecure},
 			handlerFunc: func(rw http.ResponseWriter, req *http.Request) {
 				// Test request parameters
 				assert.Equal(t, req.URL.String(), "/")
@@ -78,7 +79,7 @@ func TestWebhooks(t *testing.T) {
 			event:            "push",
 			before:           "testdata/push.json",
 			multipleAttempts: true,
-			workspace:        &access.WorkspaceAccess{Project: "cbjx-mycluster", Cluster: "mycluster", LighthouseURL: "http://dummy-lighthouse-url/hook", HMAC: "MTIzNA=="},
+			workspace:        &access.WorkspaceAccess{Project: "cbjx-mycluster", Cluster: "mycluster", LighthouseURL: "http://dummy-lighthouse-url/hook", HMAC: "MTIzNA==", Insecure: insecure},
 			handlerFunc: func(rw http.ResponseWriter, req *http.Request) {
 				// Test request parameters
 				assert.Equal(t, req.URL.String(), "/")

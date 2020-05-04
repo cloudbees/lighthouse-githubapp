@@ -11,6 +11,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cloudbees/lighthouse-githubapp/pkg/version"
+
 	"github.com/cenkalti/backoff"
 	"github.com/cloudbees/jx-tenant-service/pkg/access"
 	"github.com/cloudbees/lighthouse-githubapp/pkg/hmac"
@@ -27,11 +29,12 @@ import (
 )
 
 const (
-	repoNotConfiguredMessage = "repository not configured"
+	repoNotConfiguredMessage       = "repository not configured"
+	noGithubAppSecretFoundForOwner = "no github app secret found for owner"
 )
 
 var (
-	defaultMaxRetryDuration = 30 * time.Second
+	defaultMaxRetryDuration = 45 * time.Second
 )
 
 type HookOptions struct {
@@ -62,7 +65,7 @@ func NewHook() (*HookOptions, error) {
 	return &HookOptions{
 		Path:             HookPath,
 		Port:             flags.HttpPort.Value(),
-		Version:          "TODO",
+		Version:          *version.GetBuildVersion(),
 		tokenCache:       tokenCache,
 		tenantService:    tenantService,
 		githubApp:        githubApp,
@@ -154,9 +157,6 @@ func (o *HookOptions) onInstallHook(ctx context.Context, log *logrus.Entry, hook
 		"Function":       "onInstallHook",
 	}
 	log = log.WithFields(fields)
-	log.Infof("installHook %+v", hook)
-	log.Infof("installHook Installation - %+v", hook.Installation)
-	log.Infof("installHook Repos - %+v", hook.Repos)
 
 	// ets register / unregister repositories to the InstallationID
 	if hook.Action == scm.ActionCreate {
@@ -175,6 +175,20 @@ func (o *HookOptions) onInstallHook(ctx context.Context, log *logrus.Entry, hook
 		log.Warnf("ignore unknown action")
 		return nil
 	}
+}
+
+func (o *HookOptions) onInstallRepositoryHook(ctx context.Context, log *logrus.Entry, hook *scm.InstallationRepositoryHook) error {
+	install := hook.Installation
+	id := install.ID
+	fields := map[string]interface{}{
+		"Action":         hook.Action.String(),
+		"InstallationID": id,
+		"Function":       "onInstallRepositoryHook",
+	}
+	log = log.WithFields(fields)
+
+	log.Infof("Ignoring installation_repository hook")
+	return nil
 }
 
 func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, install *scm.InstallationRef, webhook scm.Webhook, githubEventType string, githubDeliveryEvent string, bodyBytes []byte) error {
@@ -199,11 +213,11 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 	log = log.WithFields(fields)
 	u := repo.Link
 	if u == "" {
-		log.Warnf("ignoring webhook as no repository URL for '%s'", repo.FullName)
+		log.Warnf("ignoring webhook '%s' as no repository URL for '%s'", webhook.Kind(), repo.FullName)
 		return nil
 	}
 
-	log.Infof("onGeneralHook - %+v", webhook)
+	log.Debugf("onGeneralHook - %+v", webhook)
 	var workspaces []*access.WorkspaceAccess
 
 	getWsFunc := func() error {
@@ -222,7 +236,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 	}
 
 	err := o.retryGetWorkspaces(getWsFunc, func(e error, d time.Duration) {
-		log.Warnf("get workspaces failed with '%s', backing off for %s", e, d)
+		log.Infof("get workspaces failed with '%s', backing off for %s", e, d)
 	})
 	if err != nil {
 		log.WithError(err).Errorf("failed to find any workspaces after %s seconds for '%s'", o.maxRetryDuration, repo.FullName)
@@ -233,10 +247,8 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 		log := log.WithFields(ws.LogFields())
 		log.Infof("notifying workspace %s for %s", ws.Project, repo.FullName)
 
-		// TODO insecure webhooks should be configured on workspace creation and passed to this function
-		useInsecureRelay := ShouldUseInsecureRelay(ws)
-
-		log.Infof("invoking webhook relay here! url=%s, insecure=%t", ws.LighthouseURL, useInsecureRelay)
+		log.Infof("invoking webhook relay here! url=%s, db insecure=%t", ws.LighthouseURL, ws.Insecure)
+		useInsecureRelay := ws.Insecure
 
 		decodedHmac, err := base64.StdEncoding.DecodeString(ws.HMAC)
 		if err != nil {
@@ -246,9 +258,10 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 
 		err = o.retryWebhookDelivery(ws.LighthouseURL, githubEventType, githubDeliveryEvent, decodedHmac, useInsecureRelay, bodyBytes, log)
 		if err != nil {
-			log.WithError(err).Error("failed to deliver webhook")
+			log.WithError(err).Errorf("failed to deliver webhook after %s", o.maxRetryDuration)
 			continue
 		}
+		log.Infof("webhook delivery ok for %s", repo.FullName)
 	}
 
 	return nil
@@ -258,7 +271,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 // "repository not configured" in the body, in case the remote Lighthouse doesn't yet have this repository in its configuration.
 func (o *HookOptions) retryWebhookDelivery(lighthouseURL string, githubEventType string, githubDeliveryEvent string, decodedHmac []byte, useInsecureRelay bool, bodyBytes []byte, log *logrus.Entry) error {
 	f := func() error {
-		log.Infof("relaying %s", string(bodyBytes))
+		log.Debugf("relaying %s", string(bodyBytes))
 		g := hmac.NewGenerator(decodedHmac)
 		signature := g.HubSignature(bodyBytes)
 
@@ -284,25 +297,29 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL string, githubEventType
 		req.Header.Add("X-Hub-Signature", signature)
 
 		resp, err := httpClient.Do(req)
+		log.Infof("got resp code %d from url '%s'", resp.StatusCode, lighthouseURL)
 		if err != nil {
 			return err
 		}
-
-		log.Infof("got response code %d from url '%s'", resp.StatusCode, lighthouseURL)
 
 		// If we got a 500, check if it's got the "repository not configured" string in the body. If so, we retry.
 		if resp.StatusCode == 500 {
 			respBody, err := ioutil.ReadAll(resp.Body)
 			if err != nil {
-				return backoff.Permanent(errors.Wrap(err, "parsing response body"))
+				return backoff.Permanent(errors.Wrap(err, "parsing resp.body"))
 			}
 			err = resp.Body.Close()
 			if err != nil {
-				return backoff.Permanent(errors.Wrap(err, "closing response body"))
+				return backoff.Permanent(errors.Wrap(err, "closing resp.body"))
 			}
-			log.Infof("got error response body '%s'", string(respBody))
+			log.Infof("got error respBody '%s'", string(respBody))
+
 			if strings.Contains(string(respBody), repoNotConfiguredMessage) {
 				return errors.New("repository not configured in Lighthouse")
+			}
+
+			if strings.Contains(string(respBody), noGithubAppSecretFoundForOwner) {
+				return errors.New("no github app secret found for owner")
 			}
 		}
 
@@ -315,13 +332,15 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL string, githubEventType
 		// And finally, if we haven't gotten any errors, just return nil because we're good.
 		return nil
 	}
+
 	bo := backoff.NewExponentialBackOff()
 	// Try again after 2/4/8/... seconds if necessary, for up to 30 seconds.
 	bo.InitialInterval = 2 * time.Second
 	bo.MaxElapsedTime = *o.maxRetryDuration
 	bo.Reset()
+
 	return backoff.RetryNotify(f, bo, func(e error, t time.Duration) {
-		log.Warnf("webhook relaying failed: %s", e)
+		log.Infof("webhook relaying failed: %s, backing off for %s", e, t)
 	})
 }
 
@@ -330,10 +349,4 @@ func (o *HookOptions) retryGetWorkspaces(f func() error, n func(error, time.Dura
 	bo.MaxElapsedTime = *o.maxRetryDuration
 	bo.Reset()
 	return backoff.RetryNotify(f, bo, n)
-}
-
-func ShouldUseInsecureRelay(ws *access.WorkspaceAccess) bool {
-	return strings.Contains(ws.LighthouseURL, "-pr-") ||
-		strings.Contains(ws.LighthouseURL, ".play-jxaas.live") ||
-		strings.Contains(ws.LighthouseURL, ".staging-jxaas.live")
 }
