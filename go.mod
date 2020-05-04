@@ -16,7 +16,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/ryanuber/go-glob v0.0.0-20170128012129-256dc444b735 // indirect
 	github.com/shurcooL/githubv4 v0.0.0-20191006152017-6d1ea27df521 // indirect
-	github.com/sirupsen/logrus v1.5.0
+	github.com/sirupsen/logrus v1.6.0
 	github.com/stretchr/testify v1.5.1
 	gopkg.in/DataDog/dd-trace-go.v1 v1.19.0
 	k8s.io/apimachinery v0.0.0-20190816221834-a9f1d8a9c101 // indirect
