@@ -3,6 +3,7 @@ package hook
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 
@@ -28,7 +29,7 @@ func (o *HookOptions) handleWebHookRequests(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	bodyBytes, err := ioutil.ReadAll(r.Body)
+	bodyBytes, err := ioutil.ReadAll(io.LimitReader(r.Body, 10000000))
 	if err != nil {
 		util.TraceLogger(r.Context()).Errorf("failed to Read Body: %s", err.Error())
 		responseHTTPError(w, http.StatusInternalServerError, fmt.Sprintf("500 Internal Server Error: Read Body: %s", err.Error()))
