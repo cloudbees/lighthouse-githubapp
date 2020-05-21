@@ -38,8 +38,6 @@ replace k8s.io/client-go => k8s.io/client-go v0.0.0-20190528110200-4f3abb12cae2
 
 replace k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.0.0-20181128195303-1f84094d7e8e
 
-replace github.com/sirupsen/logrus => github.com/jtnord/logrus v1.4.2-0.20190423161236-606ffcaf8f5d
-
 replace github.com/Azure/azure-sdk-for-go => github.com/Azure/azure-sdk-for-go v21.1.0+incompatible
 
 replace github.com/Azure/go-autorest => github.com/Azure/go-autorest v10.15.5+incompatible

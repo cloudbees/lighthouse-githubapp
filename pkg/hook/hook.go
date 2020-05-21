@@ -134,8 +134,7 @@ func (o *HookOptions) defaultHandler(w http.ResponseWriter, r *http.Request) {
 func (o *HookOptions) getIndex(w http.ResponseWriter, r *http.Request) {
 	l := util.TraceLogger(r.Context())
 	l.Debug("GET index")
-	message := fmt.Sprintf(`Hello from Jenkins X Lighthouse version: %s
-`, o.Version)
+	message := fmt.Sprintf(`Hello from Jenkins X Lighthotel`)
 
 	_, err := w.Write([]byte(message))
 	if err != nil {
