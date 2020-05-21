@@ -6,6 +6,7 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -303,7 +304,7 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL string, githubEventType
 
 		// If we got a 500, check if it's got the "repository not configured" string in the body. If so, we retry.
 		if resp.StatusCode == 500 {
-			respBody, err := ioutil.ReadAll(resp.Body)
+			respBody, err := ioutil.ReadAll(io.LimitReader(resp.Body, 10000000))
 			if err != nil {
 				return backoff.Permanent(errors.Wrap(err, "parsing resp.body"))
 			}
