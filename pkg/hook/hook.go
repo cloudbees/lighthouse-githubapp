@@ -272,7 +272,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 func (o *HookOptions) retryWebhookDelivery(lighthouseURL string, githubEventType string, githubDeliveryEvent string, decodedHmac []byte, useInsecureRelay bool, bodyBytes []byte, log *logrus.Entry) error {
 	f := func() error {
 		log.Debugf("relaying %s", string(bodyBytes))
-		g := hmac.NewGenerator(decodedHmac)
+		g := hmac.NewGenerator("sha256", decodedHmac)
 		signature := g.HubSignature(bodyBytes)
 
 		var httpClient *http.Client

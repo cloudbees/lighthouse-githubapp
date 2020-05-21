@@ -39,7 +39,7 @@ func TestWebhooks(t *testing.T) {
 				// Test request parameters
 				assert.Equal(t, req.URL.String(), "/")
 
-				assert.Equal(t, req.Header.Get("X-Hub-Signature"), "sha1=cedda785b4dd580b72f0d4fa92a9697125372c15")
+				assert.Equal(t, req.Header.Get("X-Hub-Signature"), "sha256=99a6c7b0894b25577f26d06d94c320bc5e234ae72e414b038436877ccef02652")
 				// Send response to be tested
 				_, err := rw.Write([]byte(`OK`))
 				assert.NoError(t, err)
@@ -66,7 +66,7 @@ func TestWebhooks(t *testing.T) {
 				// Test request parameters
 				assert.Equal(t, req.URL.String(), "/")
 
-				assert.Equal(t, req.Header.Get("X-Hub-Signature"), "sha1=cedda785b4dd580b72f0d4fa92a9697125372c15")
+				assert.Equal(t, req.Header.Get("X-Hub-Signature"), "sha256=99a6c7b0894b25577f26d06d94c320bc5e234ae72e414b038436877ccef02652")
 				// Send response to be tested
 				rw.WriteHeader(500)
 				_, err := rw.Write([]byte(repoNotConfiguredMessage))
@@ -84,7 +84,7 @@ func TestWebhooks(t *testing.T) {
 				// Test request parameters
 				assert.Equal(t, req.URL.String(), "/")
 
-				assert.Equal(t, req.Header.Get("X-Hub-Signature"), "sha1=cedda785b4dd580b72f0d4fa92a9697125372c15")
+				assert.Equal(t, req.Header.Get("X-Hub-Signature"), "sha256=99a6c7b0894b25577f26d06d94c320bc5e234ae72e414b038436877ccef02652")
 				// Send response to be tested
 				rw.WriteHeader(500)
 				_, err := rw.Write([]byte(`not ok`))
