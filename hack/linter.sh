@@ -28,6 +28,7 @@ golangci-lint run \
   -E typecheck \
   -E errcheck \
   -E deadcode \
+  -E gosec \
   --skip-dirs vendor \
   --deadline 15m0s \
   --verbose \

@@ -30,7 +30,7 @@ import (
 
 const (
 	repoNotConfiguredMessage       = "repository not configured"
-	noGithubAppSecretFoundForOwner = "no github app secret found for owner"
+	noGithubAppSecretFoundForOwner = "no github app secret found for owner" // #nosec G101
 )
 
 var (
@@ -77,7 +77,6 @@ func NewHook() (*HookOptions, error) {
 func (o *HookOptions) Handle(mux *muxtrace.Router) {
 	mux.Handle(GitHubAppPathWithoutRepository, http.HandlerFunc(o.githubApp.handleInstalledRequests))
 	mux.Handle(GithubAppPath, http.HandlerFunc(o.githubApp.handleInstalledRequests))
-	mux.Handle(TestTokenPath, http.HandlerFunc(o.handleTokenValid))
 	mux.Handle(HealthPath, http.HandlerFunc(o.health))
 	mux.Handle(ReadyPath, http.HandlerFunc(o.ready))
 	mux.Handle(SetupPath, http.HandlerFunc(o.setup))
@@ -281,8 +280,11 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL string, githubEventType
 			httpClient = o.client
 		} else {
 			if useInsecureRelay {
+				// #nosec G402
 				tr := &http.Transport{
-					TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+					TLSClientConfig: &tls.Config{
+						InsecureSkipVerify: true,
+					},
 				}
 
 				httpClient = &http.Client{Transport: tr}
