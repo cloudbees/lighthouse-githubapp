@@ -6,6 +6,7 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -133,8 +134,7 @@ func (o *HookOptions) defaultHandler(w http.ResponseWriter, r *http.Request) {
 func (o *HookOptions) getIndex(w http.ResponseWriter, r *http.Request) {
 	l := util.TraceLogger(r.Context())
 	l.Debug("GET index")
-	message := fmt.Sprintf(`Hello from Jenkins X Lighthouse version: %s
-`, o.Version)
+	message := fmt.Sprintf(`Hello from Jenkins X Lighthotel`)
 
 	_, err := w.Write([]byte(message))
 	if err != nil {
@@ -271,7 +271,7 @@ func (o *HookOptions) onGeneralHook(ctx context.Context, log *logrus.Entry, inst
 func (o *HookOptions) retryWebhookDelivery(lighthouseURL string, githubEventType string, githubDeliveryEvent string, decodedHmac []byte, useInsecureRelay bool, bodyBytes []byte, log *logrus.Entry) error {
 	f := func() error {
 		log.Debugf("relaying %s", string(bodyBytes))
-		g := hmac.NewGenerator(decodedHmac)
+		g := hmac.NewGenerator("sha256", decodedHmac)
 		signature := g.HubSignature(bodyBytes)
 
 		var httpClient *http.Client
@@ -306,7 +306,7 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL string, githubEventType
 
 		// If we got a 500, check if it's got the "repository not configured" string in the body. If so, we retry.
 		if resp.StatusCode == 500 {
-			respBody, err := ioutil.ReadAll(resp.Body)
+			respBody, err := ioutil.ReadAll(io.LimitReader(resp.Body, 10000000))
 			if err != nil {
 				return backoff.Permanent(errors.Wrap(err, "parsing resp.body"))
 			}

@@ -6,16 +6,25 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGenerateHmacSignature(t *testing.T) {
+func TestGenerateHmacSignatureSha1(t *testing.T) {
 	key := "this is the key"
 	body := "this is a much longer message body"
 
-	AssertSignature(t, []byte(key), []byte(body))
+	g := NewGenerator("sha1", []byte(key))
+
+	AssertSignature(t, g, []byte(body))
 }
 
-func AssertSignature(t *testing.T, secret, body []byte) {
-	g := NewGenerator(secret)
+func TestGenerateHmacSignatureSha256(t *testing.T) {
+	key := "this is the key"
+	body := "this is a much longer message body"
 
+	g := NewGenerator("sha256", []byte(key))
+
+	AssertSignature(t, g, []byte(body))
+}
+
+func AssertSignature(t *testing.T, g *Generator, body []byte) {
 	signature := g.HubSignature(body)
 	assert.NotEmpty(t, signature)
 	t.Logf("signature = '%s'", signature)
