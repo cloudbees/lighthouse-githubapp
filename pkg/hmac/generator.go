@@ -2,7 +2,7 @@ package hmac
 
 import (
 	"crypto/hmac"
-	"crypto/sha1"
+	"crypto/sha1" // #nosec G505
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
