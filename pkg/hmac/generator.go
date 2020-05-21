@@ -13,7 +13,7 @@ import (
 )
 
 type Generator struct {
-	algo string
+	algo   string
 	secret []byte
 }
 
@@ -29,7 +29,7 @@ func (g *Generator) SignBody(body []byte) []byte {
 	case "sha256":
 		computed = hmac.New(sha256.New, g.secret)
 	default:
-		panic("unknown algorithum")
+		panic("unknown algorithm")
 	}
 
 	_, err := computed.Write(body)
@@ -58,7 +58,7 @@ func (g *Generator) VerifySignature(signature string, body []byte) bool {
 		signatureLength = 71
 		actual = make([]byte, 32)
 	default:
-		panic("unknown algorithum")
+		panic("unknown algorithm")
 	}
 
 	if len(signature) != signatureLength || !strings.HasPrefix(signature, signaturePrefix) {

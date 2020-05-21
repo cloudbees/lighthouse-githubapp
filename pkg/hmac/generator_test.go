@@ -24,8 +24,6 @@ func TestGenerateHmacSignatureSha256(t *testing.T) {
 	AssertSignature(t, g, []byte(body))
 }
 
-
-
 func AssertSignature(t *testing.T, g *Generator, body []byte) {
 	signature := g.HubSignature(body)
 	assert.NotEmpty(t, signature)
@@ -33,4 +31,3 @@ func AssertSignature(t *testing.T, g *Generator, body []byte) {
 
 	assert.True(t, g.VerifySignature(signature, body))
 }
-
