@@ -3,16 +3,14 @@ module github.com/cloudbees/lighthouse-githubapp
 go 1.13
 
 require (
-	github.com/banzaicloud/bank-vaults v0.0.0-20190508130850-5673d28c46bd // indirect
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/bradleyfalzon/ghinstallation v0.1.2
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cloudbees/jx-tenant-service v0.0.728
-	github.com/google/go-cmp v0.3.1 // indirect
 	github.com/gorilla/mux v1.6.2
 	github.com/jenkins-x/go-scm v1.5.137
-	github.com/jenkins-x/jx v0.0.0-20200518142902-d0d715e40f22
 	github.com/jenkins-x/jx-logging v0.0.8
+	github.com/jenkins-x/jx/v2 v2.1.45
 	github.com/jenkins-x/logrus-stackdriver-formatter v0.2.3
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.9.1
