@@ -314,7 +314,7 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL string, githubEventType
 			if err != nil {
 				return backoff.Permanent(errors.Wrap(err, "closing resp.body"))
 			}
-			log.Infof("got error respBody '%s'", string(respBody))
+			log.Errorf("got error respBody '%s'", string(respBody))
 
 			if strings.Contains(string(respBody), repoNotConfiguredMessage) {
 				return errors.New("repository not configured in Lighthouse")
