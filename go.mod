@@ -10,7 +10,7 @@ require (
 	github.com/gorilla/mux v1.6.2
 	github.com/jenkins-x/go-scm v1.5.140
 	github.com/jenkins-x/jx-logging v0.0.8
-	github.com/jenkins-x/jx/v2 v2.1.49
+	github.com/jenkins-x/jx/v2 v2.1.55
 	github.com/jenkins-x/logrus-stackdriver-formatter v0.2.3
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.9.1
