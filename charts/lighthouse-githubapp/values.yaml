@@ -47,13 +47,13 @@ readinessProbe:
 
 tenantService:
   url: https://jx-tenant-service-jx-staging.jenkins-x.live
-
-secret: vault:lh-github-app:secret
-saasSA: vault:tekton-weasel/jx-tenant-service-saas-sa:json
+  
+saasSA: dummy-service-account
 
 # github app support
-cert: vault:lh-github-app:cert
-id: vault:lh-github-app:id
+id: dummy-id
+cert: dummy-cert
+secret: dummy-secret
 
 datadog:
   enabled: true
