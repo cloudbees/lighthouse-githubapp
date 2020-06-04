@@ -51,7 +51,7 @@ tenantService:
 secret: vault:lh-github-app:secret
 saasSA: vault:tekton-weasel/jx-tenant-service-saas-sa:json
 
-# github app support
+# github app support test
 cert: vault:lh-github-app:cert
 id: vault:lh-github-app:id
 
