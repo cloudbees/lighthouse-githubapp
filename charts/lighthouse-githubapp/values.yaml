@@ -48,12 +48,12 @@ readinessProbe:
 tenantService:
   url: https://jx-tenant-service-jx-staging.jenkins-x.live
   
-saasSA: dummy-service-account
+saasSA: dummy_service_account
 
 # github app support
-id: dummy-id
-cert: dummy-cert
-secret: dummy-secret
+id: dummy_id
+cert: dummy_cert
+secret: dummy_secret
 
 datadog:
   enabled: true
