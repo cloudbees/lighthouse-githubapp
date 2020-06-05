@@ -12,6 +12,7 @@ cloud.google.com/go/bigquery v1.0.1/go.mod h1:i/xbL2UlR5RvWAURpBYZTtm/cXjCha9lbf
 cloud.google.com/go/datastore v1.0.0/go.mod h1:LXYbyblFSglQ5pkeyhO+Qmw7ukd3C+pD7TKLgZqpHYE=
 code.gitea.io/sdk v0.0.0-20180702024448-79a281c4e34a h1:6FO4ymUxOGJdK30fvXqCSkZ5Em3GWQ4RpNKq9hR4lEc=
 code.gitea.io/sdk v0.0.0-20180702024448-79a281c4e34a/go.mod h1:5bZt0dRznpn2JysytQnV0yCru3FwDv9O5G91jo+lDAk=
+code.gitea.io/sdk/gitea v0.12.0/go.mod h1:z3uwDV/b9Ls47NGukYM9XhnHtqPh/J+t40lsUrR6JDY=
 contrib.go.opencensus.io/exporter/aws v0.0.0-20180906190126-dd54a7ef511e/go.mod h1:uu1P0UCM/6RbsMrgPa98ll8ZcHM858i/AD06a9aLRCA=
 contrib.go.opencensus.io/exporter/ocagent v0.2.0 h1:Q/jXnVbliDYozuWJni9452xsSUuo+y8yrioxRgofBhE=
 contrib.go.opencensus.io/exporter/ocagent v0.2.0/go.mod h1:0fnkYHF+ORKj7HWzOExKkUHeFX79gXSKUQbpnAM+wzo=
@@ -517,10 +518,13 @@ github.com/jenkins-x/go-scm v1.5.141 h1:sd0A41HYU6i9Kfl5/jH3ldgq4VkSiwuW5+KwvRxT
 github.com/jenkins-x/go-scm v1.5.141/go.mod h1:PCT338UhP/pQ0IeEeMEf/hoLTYKcH7qjGEKd7jPkeYg=
 github.com/jenkins-x/golang-jenkins v0.0.0-20180919102630-65b83ad42314 h1:kyBMx/ucSV92S+umX/V6DDaPNynlFFOM9MGJWApltoU=
 github.com/jenkins-x/golang-jenkins v0.0.0-20180919102630-65b83ad42314/go.mod h1:C6j5HgwlHGjRU27W4XCs6jXksqYFo8OdBu+p44jqQeM=
+github.com/jenkins-x/jx v1.3.1119 h1:yArkuyBqpklDSWaYT8zg0nhdVe6uVQeZRGP2jc2tjI4=
 github.com/jenkins-x/jx-logging v0.0.8 h1:V6W3il1JFSL1BTuXio3NVefqtJWFIm3Dg/99nxGFMuU=
 github.com/jenkins-x/jx-logging v0.0.8/go.mod h1:mjEejiArk2Mk+J+72/YcSKGo9bZlJ/LwKYjMgAiv+G4=
 github.com/jenkins-x/jx/v2 v2.1.49 h1:VwVlG1w+V2NIbWaxY2UZTEMRT+CsfRCdyG58YaTiTn8=
 github.com/jenkins-x/jx/v2 v2.1.49/go.mod h1:4pQ8uZw7zDvhKyABaSvq17o9OhI/F2d7X+MJIhn2Of8=
+github.com/jenkins-x/jx/v2 v2.1.59 h1:nokUVyGWnylnqjGRjQ+lNL6rmk0KYA/vNIdU9uQVsis=
+github.com/jenkins-x/jx/v2 v2.1.59/go.mod h1:JT2TQENTiVGT+GotNIMa/7qGXAQwbLujPumsAcvQoaA=
 github.com/jenkins-x/logrus-stackdriver-formatter v0.1.1-0.20200408213659-1dcf20c371bb h1:woC0LbYpL9rgwZn13Z0KQBEGAmi9ugpWgWtQezHqsBM=
 github.com/jenkins-x/logrus-stackdriver-formatter v0.1.1-0.20200408213659-1dcf20c371bb/go.mod h1:Erk5rrGYkvFlFAoVbz/7obMDEIUFCEbhK1odoR0Msqo=
 github.com/jenkins-x/logrus-stackdriver-formatter v0.2.3 h1:NuRWKUPCEX1wKlXA8ZYSG28qGKd41R7BK11YDQkPwqo=
