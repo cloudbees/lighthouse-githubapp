@@ -174,14 +174,14 @@ pipelineConfig:
                   - preview
                 dir: /workspace/source/charts/preview
 
-#              - image: gcr.io/jenkinsxio/builder-go
-#                command: jx
-#                name: preview
-#                dir: /workspace/source/charts/preview
-#                args:
-#                  - preview
-#                  - --app
-#                  - lighthouse-githubapp
-#                  - --dir
-#                  - /workspace/source/charts/preview
+              - image: gcr.io/jenkinsxio/builder-go
+                command: jx
+                name: preview
+                dir: /workspace/source/charts/preview
+                args:
+                  - preview
+                  - --app
+                  - lighthouse-githubapp
+                  - --dir
+                  - /workspace/source/charts/preview
 
