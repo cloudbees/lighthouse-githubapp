@@ -25,13 +25,6 @@ spec:
         - name: private-key
           secret:
             secretName: {{ template "fullname" . }}
-        - name: secret-saas
-          secret:
-            secretName: {{ template "fullname" . }}-saas
-            items:
-            - key: service-account
-              path: service-account.key.json
-              mode: 256
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.imagerepository }}:{{ .Values.image.imagetag }}"
@@ -40,8 +33,6 @@ spec:
         - mountPath: "/secrets/githubapp-key"
           name: private-key
           readOnly: true
-        - mountPath: /secrets/saas
-          name: secret-saas
         env:
         - name: LHA_PRIVATE_KEY_FILE
           value: "/secrets/githubapp-key/cert"

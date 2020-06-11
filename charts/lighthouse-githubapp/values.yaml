@@ -49,7 +49,6 @@ tenantService:
   url: https://jx-tenant-service-jx-staging.jenkins-x.live
 
 secret: dummy_secret
-saasSA: dummy_saas_service_account_json
 
 # github app support test
 cert: dummy_githubapp_cert
