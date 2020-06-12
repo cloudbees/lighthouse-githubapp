@@ -336,9 +336,9 @@ func (o *HookOptions) retryWebhookDelivery(lighthouseURL string, githubEventType
 	}
 
 	bo := backoff.NewExponentialBackOff()
-	// Try again after 2/4/8/... seconds if necessary, for up to 30 seconds.
+	// Try again after 2/4/8/... seconds if necessary, for up to 90 seconds, may take up to a minute to for the secret to replicate
 	bo.InitialInterval = 2 * time.Second
-	bo.MaxElapsedTime = *o.maxRetryDuration
+	bo.MaxElapsedTime = 2 * (*o.maxRetryDuration)
 	bo.Reset()
 
 	return backoff.RetryNotify(f, bo, func(e error, t time.Duration) {
