@@ -3,23 +3,30 @@ module github.com/cloudbees/lighthouse-githubapp
 go 1.13
 
 require (
+	code.gitea.io/sdk v0.0.0-20180702024448-79a281c4e34a // indirect
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/bradleyfalzon/ghinstallation v0.1.2
 	github.com/cenkalti/backoff v2.2.1+incompatible
-	github.com/cloudbees/jx-tenant-service v0.0.751
+	github.com/cloudbees/jx-tenant-service v0.0.752
+	github.com/go-openapi/errors v0.19.4 // indirect
+	github.com/go-openapi/loads v0.19.5 // indirect
+	github.com/go-openapi/strfmt v0.19.5 // indirect
 	github.com/gorilla/mux v1.6.2
 	github.com/jenkins-x/go-scm v1.5.141
 	github.com/jenkins-x/jx-logging v0.0.8
-	github.com/jenkins-x/jx/v2 v2.1.49
+	github.com/jenkins-x/jx/v2 v2.1.69
 	github.com/jenkins-x/logrus-stackdriver-formatter v0.2.3
+	github.com/kubernetes-incubator/reference-docs v0.0.0-20190912061656-a61bc210ee54 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.9.1
 	github.com/ryanuber/go-glob v0.0.0-20170128012129-256dc444b735 // indirect
 	github.com/shurcooL/githubv4 v0.0.0-20191006152017-6d1ea27df521 // indirect
 	github.com/sirupsen/logrus v1.6.0
-	github.com/stretchr/testify v1.5.1
+	github.com/stretchr/testify v1.6.0
+	go.mongodb.org/mongo-driver v1.3.2 // indirect
 	gopkg.in/DataDog/dd-trace-go.v1 v1.19.0
-	k8s.io/apimachinery v0.0.0-20190816221834-a9f1d8a9c101 // indirect
+	k8s.io/gengo v0.0.0-20200413195148-3a45101e95ac // indirect
+	k8s.io/klog v1.0.0 // indirect
 )
 
 exclude github.com/jenkins-x/jx/pkg/prow v0.0.0-20191018175829-4badc08866cd
