@@ -7,11 +7,11 @@ require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/bradleyfalzon/ghinstallation v0.1.2
 	github.com/cenkalti/backoff v2.2.1+incompatible
-	github.com/cloudbees/jx-tenant-service v0.0.755
+	github.com/cloudbees/jx-tenant-service v0.0.756
 	github.com/gorilla/mux v1.6.2
 	github.com/jenkins-x/go-scm v1.5.141
 	github.com/jenkins-x/jx-logging v0.0.8
-	github.com/jenkins-x/jx/v2 v2.1.69
+	github.com/jenkins-x/jx/v2 v2.1.71
 	github.com/jenkins-x/logrus-stackdriver-formatter v0.2.3
 	github.com/kubernetes-incubator/reference-docs v0.0.0-20190912061656-a61bc210ee54 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible
