@@ -7,10 +7,7 @@ require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/bradleyfalzon/ghinstallation v0.1.2
 	github.com/cenkalti/backoff v2.2.1+incompatible
-	github.com/cloudbees/jx-tenant-service v0.0.753
-	github.com/go-openapi/errors v0.19.4 // indirect
-	github.com/go-openapi/loads v0.19.5 // indirect
-	github.com/go-openapi/strfmt v0.19.5 // indirect
+	github.com/cloudbees/jx-tenant-service v0.0.754
 	github.com/gorilla/mux v1.6.2
 	github.com/jenkins-x/go-scm v1.5.141
 	github.com/jenkins-x/jx-logging v0.0.8
