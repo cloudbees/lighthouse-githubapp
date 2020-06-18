@@ -6,18 +6,18 @@ require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/bradleyfalzon/ghinstallation v0.1.2
 	github.com/cenkalti/backoff v2.2.1+incompatible
-	github.com/cloudbees/jx-tenant-service v0.0.752
+	github.com/cloudbees/jx-tenant-service v0.0.757
 	github.com/gorilla/mux v1.6.2
 	github.com/jenkins-x/go-scm v1.5.141
 	github.com/jenkins-x/jx-logging v0.0.8
-	github.com/jenkins-x/jx/v2 v2.1.69
+	github.com/jenkins-x/jx/v2 v2.1.71
 	github.com/jenkins-x/logrus-stackdriver-formatter v0.2.3
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.9.1
 	github.com/ryanuber/go-glob v0.0.0-20170128012129-256dc444b735 // indirect
 	github.com/shurcooL/githubv4 v0.0.0-20191006152017-6d1ea27df521 // indirect
 	github.com/sirupsen/logrus v1.6.0
-	github.com/stretchr/testify v1.6.0
+	github.com/stretchr/testify v1.6.1
 	gopkg.in/DataDog/dd-trace-go.v1 v1.19.0
 )
 
