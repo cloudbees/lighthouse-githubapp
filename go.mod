@@ -8,7 +8,7 @@ require (
 	github.com/cenkalti/backoff v2.2.1+incompatible
 	github.com/cloudbees/jx-tenant-service v0.0.766
 	github.com/gorilla/mux v1.6.2
-	github.com/jenkins-x/go-scm v1.5.143
+	github.com/jenkins-x/go-scm v1.5.144
 	github.com/jenkins-x/jx-logging v0.0.8
 	github.com/jenkins-x/jx/v2 v2.1.80
 	github.com/jenkins-x/logrus-stackdriver-formatter v0.2.3
