@@ -20,9 +20,9 @@ preview:
     imagerepository:
     imagetag: <VERSION>
     pullPolicy: IfNotPresent
-  cert: vault:tekton-weasel/preview/jx-github-app:cert
-  id: vault:tekton-weasel/preview/jx-github-app:id
-  secret: vault:tekton-weasel/preview/jx-github-app:secret
+  cert: vault:oss-weasel/preview/jx-github-app:cert
+  id: vault:oss-weasel/preview/jx-github-app:id
+  secret: vault:oss-weasel/preview/jx-github-app:secret
   debug: true
   datadog:
     enabled: false
