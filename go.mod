@@ -6,19 +6,23 @@ require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/bradleyfalzon/ghinstallation v0.1.2
 	github.com/cenkalti/backoff v2.2.1+incompatible
-	github.com/cloudbees/jx-tenant-service v0.0.768
-	github.com/gorilla/mux v1.6.2
+	github.com/cloudbees/jx-tenant-service v0.0.769
+	github.com/frankban/quicktest v1.10.0 // indirect
+	github.com/gofrs/uuid v3.3.0+incompatible // indirect
+	github.com/gorilla/mux v1.7.3
 	github.com/jenkins-x/go-scm v1.5.145
-	github.com/jenkins-x/jx-logging v0.0.8
-	github.com/jenkins-x/jx/v2 v2.1.80
+	github.com/jenkins-x/jx-logging v0.0.10
 	github.com/jenkins-x/logrus-stackdriver-formatter v0.2.3
+	github.com/knative/build v0.7.0 // indirect
+	github.com/knative/pkg v0.0.0-20190624141606-d82505e6c5b4 // indirect
+	github.com/knative/serving v0.7.0 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.9.1
-	github.com/ryanuber/go-glob v0.0.0-20170128012129-256dc444b735 // indirect
-	github.com/shurcooL/githubv4 v0.0.0-20191006152017-6d1ea27df521 // indirect
 	github.com/sirupsen/logrus v1.6.0
 	github.com/stretchr/testify v1.6.1
+	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1 // indirect
 	gopkg.in/DataDog/dd-trace-go.v1 v1.19.0
+	k8s.io/utils v0.0.0-20200603063816-c1c6865ac451 // indirect
 )
 
 exclude github.com/jenkins-x/jx/pkg/prow v0.0.0-20191018175829-4badc08866cd
