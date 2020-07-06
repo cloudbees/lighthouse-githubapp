@@ -16,7 +16,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.6.0
 	github.com/stretchr/testify v1.6.1
-	gopkg.in/DataDog/dd-trace-go.v1 v1.19.0
+	gopkg.in/DataDog/dd-trace-go.v1 v1.25.0
 )
 
 exclude github.com/jenkins-x/jx/pkg/prow v0.0.0-20191018175829-4badc08866cd
